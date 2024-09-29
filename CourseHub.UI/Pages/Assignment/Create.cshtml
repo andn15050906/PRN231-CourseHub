@@ -1,0 +1,134 @@
+﻿@page
+@model CourseHub.UI.Pages.Assignment.CreateModel
+@{
+    ViewData[Global.TITLE] = "Create assignment";
+}
+
+<style>
+    .dropzone {
+      width: 98%;
+      margin: 1%;
+      border: 2px dashed #3498db !important;
+      border-radius: 5px;
+      transition: 0.2s;
+    }
+
+    .dropzone.dz-drag-hover {
+      border: 2px solid #3498db !important;
+    }
+
+    .dz-message.needsclick img {
+      width: 50px;
+      display: block;
+      margin: auto;
+      opacity: 0.6;
+      margin-bottom: 15px;
+    }
+
+    span.plus {
+      display: none;
+    }
+
+    .dropzone.dz-started .dz-message {
+      display: inline-block !important;
+      width: 120px;
+      float: right;
+      border: 1px solid rgba(238, 238, 238, 0.36);
+      border-radius: 30px;
+      height: 120px;
+      margin: 16px;
+      transition: 0.2s;
+    }
+
+    .dropzone.dz-started .dz-message span.text {
+      display: none;
+    }
+
+    .dropzone.dz-started .dz-message span.plus {
+      display: block;
+      font-size: 70px;
+      color: #AAA;
+      line-height: 110px;
+    }
+</style>
+<link rel="stylesheet" href="~/css/Misc/dropzone.css" />
+<style>
+    .dropzone:hover {
+        cursor: pointer;
+    }
+</style>
+
+
+
+
+
+
+@await Html.PartialAsync("Shared/_Alert")
+
+
+
+<h2 style="text-align: center; font-size: 32px; margin-top: 24px;">Create assignment</h2>
+
+
+
+<div style="width: 50%; margin: 0 auto;">
+    <!--<div>
+        <h3 style="text-align: center; font-size: 24px">Model.Course?.Title</h3>
+    </div>-->
+
+    <div class="dropzone needsclick">
+        <div id="dropzone">
+            <div class="dz-message needsclick">
+              <span class="text">
+                <object data="~/img/upload-icon.svg" type="image/svg+xml"></object>
+                <span id="dropzone-text">Drop files here or click to upload.</span>
+              </span>
+              <span class="plus">+</span>
+            </div>
+
+        </div>
+    </div>
+
+
+    <form method="post" enctype="multipart/form-data" id="app-form-create">
+        <input asp-for="Dto.SectionId" value="@Model.SectionId" class="form-control" hidden />
+        <label asp-for="Dto.Name">Assignment Name</label>
+        <input asp-for="Dto.Name" type="text" class="form-control" />
+        <label asp-for="Dto.Duration">Duration</label>
+        <input asp-for="Dto.Duration" type="number" class="form-control" value="@Model.Dto.Duration"/>
+        <label asp-for="Dto.GradeToPass">Grade to pass ( / 10)</label>
+        <input asp-for="Dto.GradeToPass" type="number" class="form-control" value="@Model.Dto.GradeToPass" />
+
+
+
+        <input asp-for="File" type="file" id="app-file-inp" hidden />
+        <div class="row" style="margin-top: 24px; justify-content: center;">
+            <button type="submit" class="btn btn-outline-success btn-lg">Submit</button>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    <script>
+        var dropzone = document.getElementById('dropzone');
+        var dropzoneText = document.getElementById('dropzone-text');
+        var submitedFileInp = document.getElementById('app-file-inp');
+        
+
+
+        dropzone.onclick = () => {
+            submitedFileInp.click();
+            submitedFileInp.onchange = () => {
+                if (submitedFileInp.files.length > 0)
+                    dropzoneText.innerHTML = submitedFileInp.files[0].name;
+                else
+                    dropzoneText.innerHTML = 'Drop files here or click to upload.';
+            }
+        }
+    </script>
+}

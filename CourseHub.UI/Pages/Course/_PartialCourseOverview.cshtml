@@ -1,0 +1,57 @@
+﻿@using CourseHub.Core.Helpers.Business;
+@using CourseHub.Core.Models.Course.CourseModels;
+@using CourseHub.UI.Helpers.Utils;
+
+@*List, count*@
+@model (List<CourseOverviewModel>, int)
+
+@foreach (var item in Model.Item1.Take(Model.Item2))
+{
+	<div class="col-md-3 col-sm-6 col-xs-12 form-group">
+		<a style="height: 236px; max-height: unset" href="@UIHelper.GetCourseDetailPage(item.Id)" class="course-box-slider pop" data-original-title="" title="">
+			@if (item.Discount > 0 && item.DiscountExpiry > DateTime.UtcNow)
+			{
+				<span class="sale-off">-@(item.Discount * 100)%</span>
+			}
+			<div class="img-course">
+				<img class="img-responsive" src="@item.ThumbUrl" alt="thumb" loading="lazy"></div>
+			<div class="content-course">
+			<h3 class="title-course">
+				<span>@item.Title</span>
+			</h3>
+			<div class="name-gv">
+				<b>@item.Creator.FullName</b>
+				<div class="rate-combo">
+					<p>
+						<span class="star-rate">
+							@for (int i = 0; i < Math.Ceiling(TextHelper.GetDoubleAverageRating(item.TotalRating, item.RatingCount)); i++)
+							{
+								<i class="fa fa-star co-or" aria-hidden="true"></i>
+							}
+							@if (item.RatingCount > 0)
+							{
+								<span>(@item.RatingCount)</span>
+							}
+							else
+							{
+								<span>No rating yet</span>
+							}
+						</span>
+					</p>
+				</div>
+			</div>
+			</div>
+			<div class="price-course" style="clear: both; top: -40px;">
+				@if (CourseBusinessHelper.IsOnDiscount(item.Discount, item.DiscountExpiry))
+				{
+					<span class="price-b">@item.Price<sup>đ</sup></span>
+					<span class="price-a">@CourseBusinessHelper.GetPostDiscount(item.Price, item.Discount, item.DiscountExpiry)<sup>đ</sup></span>
+				}
+				else
+				{
+					<span class="price-a">@item.Price<sup>đ</sup></span>
+				}
+			</div>
+		</a>
+	</div>
+}

@@ -1,0 +1,79 @@
+﻿@page
+@using CourseHub.Core.Helpers.Business;
+@using CourseHub.UI.Helpers.Utils;
+@model CourseHub.UI.Pages.Course.EnrolledModel
+@{
+    ViewData[Global.TITLE] = "Enrolled courses";
+}
+
+
+
+<style>
+    #dataTable th, #dataTable td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+
+
+<div class="container-fluid" style="margin-top: 40px;">
+
+    <h1 style="font-size: 48px; text-align: center;">Enrolled Courses</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Course Title</th>
+                            <th class="text-center">Course Thumb</th>
+                            <th class="text-center">Instructor</th>
+                            <th class="text-center">Rating</th>
+                            <th class="text-center">Enrolled At</th>
+                            <th class="text-center">Status</th>
+                            <!--<th class="text-center">Bill</th>-->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Enrollments.Count == 0)
+                        {
+                            <tr>
+                                <th style="text-align: center; color: red" colspan="10">You haven't enrolled in any course yet.</th>
+                            </tr>
+                        }
+                        else foreach (var enrollment in Model.Enrollments)
+                        {
+                            var course = enrollment.Course;
+                            if (course is null)
+                                continue;
+                            else
+                            {
+                                string avgRating = TextHelper.GetAverageRating(course.TotalRating, course.RatingCount);
+
+                                <tr>
+                                    <td>
+                                        <a asp-page="@Global.PAGE_COURSE_DETAIL" asp-route-id="@course.Id">@course.Title</a>
+                                    </td>
+                                    <td style="width: 300px">
+                                        <img src="@course.ThumbUrl" alt="thumb" style="aspect-ratio: 1.5" />
+                                    </td>
+                                    <td>
+                                        <a asp-page="@Global.PAGE_USER" asp-route-id="@course.Creator.Id">@course.Creator.FullName</a>
+                                    </td>
+                                    <td>@avgRating</td>
+                                    <td>@enrollment.CreationTime</td>
+                                    <td>@enrollment.Status.ToString()</td>
+                                    <!--<td>
+                                        @enrollment.BillId
+                                    </td>-->
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

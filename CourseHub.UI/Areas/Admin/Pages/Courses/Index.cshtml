@@ -1,0 +1,173 @@
+﻿@page
+@using CourseHub.Core.Entities.CommonDomain.Enums;
+@using CourseHub.UI.Helpers;
+@using CourseHub.UI.Helpers.AppStart;
+@model CourseHub.UI.Areas.Admin.Pages.Courses.IndexModel
+
+
+
+@{
+    ViewData[Global.TITLE] = "Courses";
+
+    string notificationRequestPath = Configurer.GetApiClientOptions().ApiServerPath + "/api/notifications";
+}
+
+
+
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Reporter</th>
+                            <th class="text-center">Course</th>
+                            <th class="text-center">Message</th>
+                            <th class="text-center">Instructor</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Notifications)
+                        {
+                            var course = Model.Notification_Course[item.Id];
+                            var creator = Model.RelatedUsers[item.CreatorId];
+
+                            <tr>
+                                <td>
+                                    <a href="@("/User?id=" + creator.Id)">@creator.FullName</a>
+                                </td>
+                                <td>
+                                    <a asp-page="@Global.PAGE_COURSE_DETAIL" asp-route-id="@course.Id">@course.Title</a>
+                                </td>
+                                <td>@Model.Notification_Message[item.Id]</td>
+                                <td>@course.Creator.FullName</td>
+                                <td>
+                                    @if (item.Status == Core.Entities.CommonDomain.Enums.NotificationStatus.None)
+                                    {
+                                        @*<div class="app-approve-btn btn btn-primary" data-id="@item.Id">Contact Instructor</div>*@
+                                        <div class="app-approve-btn btn btn-primary" data-id="@item.Id">Alert</div>
+                                        <div class="app-dismiss-btn btn btn-danger" data-id="@item.Id">Dismiss</div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script type="module">
+    import { patchJsonWithCredentials } from '/js/apis/http.js';
+
+
+
+    var approveBtns = document.getElementsByClassName('app-approve-btn');
+    var dismissBtns = document.getElementsByClassName('app-dismiss-btn');
+
+    for (let btn of approveBtns) {
+        btn.addEventListener('click', () => {
+            patchJsonWithCredentials("@notificationRequestPath", {
+                Id : btn.getAttribute('data-id'),
+                Status: @((int)NotificationStatus.Approved)
+            }).then(res => {
+                if (res.ok) {
+                    swal({
+                        title: "Success",
+                        text: "Sent alert to instructor!",
+                        icon: "success",
+                        buttons: {
+                            confirm: "Okay"
+                        },
+                        closeOnClickOutside: false
+                    });
+                    setTimeoutReload();
+                }
+            })
+        });
+    }
+
+    for (let btn of dismissBtns) {
+        btn.addEventListener('click', () => {
+            patchJsonWithCredentials("@notificationRequestPath", {
+                Id : btn.getAttribute('data-id'),
+                Status: @((int)NotificationStatus.Dismissed)
+            }).then(res => {
+                if (res.ok) {
+                    swal({
+                        title: "Success",
+                        text: "",
+                        icon: "success",
+                        buttons: {
+                            confirm: "Okay"
+                        },
+                        closeOnClickOutside: false
+                    });
+                    setTimeoutReload();
+                }
+            })
+        });
+    }
+
+    function setTimeoutReload() {
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    }
+
+</script>
+@* //... *@
+@*<script>
+    var approveBtns = document.getElementsByClassName('app-approve-btn');
+    for (var i = 0; i < approveBtns.length; i++) {
+        let btn = approveBtns[i];
+        btn.onclick = () => {
+            fetch("@notificationPath", {
+                method: "POST",
+                body: JSON.stringify({ Id : btn.getAttribute('data-id'), Status: @((int)NotificationStatus.Approved) }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+            }).then(res => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            });
+        }
+    }
+
+    var dismissBtns = document.getElementsByClassName('app-dismiss-btn');
+    for (var i = 0; i < dismissBtns.length; i++) {
+        let btn = dismissBtns[i];
+        btn.onclick = () => {
+            /* CreateAdminMessageDto */
+            var jsonMessage = {
+                "Message" : "",
+            }
+
+            fetch("@notificationPath", {
+                method: "POST",
+                body: JSON.stringify({ Id : btn.getAttribute('data-id'), Status: @((int)NotificationStatus.Dismissed) }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+            }).then(res => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            });
+        }
+    }
+</script>*@

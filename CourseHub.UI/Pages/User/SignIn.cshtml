@@ -1,0 +1,41 @@
+﻿@page
+@model CourseHub.UI.Pages.User.SignInModel
+@{
+}
+
+
+<div class="d-flex justify-content-center align-items-center">
+    <div asp-validation-summary="All" class="alert alert-danger mt-5 w-75 fs-4 loginError text-center"></div>
+</div>
+<div>
+    <form method="post">
+        <div>
+            <label asp-for="SignInDto.UserName">Tài khoản</label>
+            <input asp-for="SignInDto.UserName" aria-describedby="UsernameHelp">
+            <div id="UsernameHelp">Nhập tài khoản của bạn</div>
+            <span asp-validation-for="SignInDto.UserName"></span>
+        </div>
+        <div>
+            <label asp-for="SignInDto.Password" >Mật khẩu</label>
+            <input asp-for="SignInDto.Password" type="password" aria-describedby="PasswordHelp">
+            <div id="PasswordHelp">Nhập mật khẩu của bạn</div>
+            <span asp-validation-for="SignInDto.Password"></span>
+        </div>
+        <div>
+            <input asp-for="RememberMe">
+            <label asp-for="RememberMe">Nhớ mật khẩu</label>
+        </div>
+        <button type="button">Hiện mật khẩu</button>
+        <br />
+        <br />
+        <button type="submit">Đăng nhập</button>
+    </form>
+</div>
+
+<script>
+    let errorBox = document.querySelector(".loginError");
+    if (errorBox.innerHTML == '<ul><li style="display:none"></li>\n</ul>')
+        errorBox.classList.add("d-none");
+    else
+        errorBox.classList.remove("d-none");
+</script>

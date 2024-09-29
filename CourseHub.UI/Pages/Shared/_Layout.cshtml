@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebUni Education Template">
+    <meta name="keywords" content="webuni, education, creative, html">
+    <title>@ViewData["Title"] - @Global.APP_NAME</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/CourseHub.UI.styles.css" asp-append-version="true" /> *@
+    <!-- Favicon -->
+    <link href="~/img/favicon.ico" rel="shortcut icon" />
+
+    <!-- Google Fonts -->
+	<link href="~/lib/bootstrap/dist/css/fonts.css" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/css/owl.carousel.css" />
+	<link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body>
+	<!-- Header section -->
+	<header class="header-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-3">
+					<div class="site-logo">
+						<h4>CourseHub</h4>
+						<p>Learn from the best</p>
+					</div>
+					<div class="nav-switch">
+						<i class="fa fa-bars"></i>
+					</div>
+				</div>
+				<div class="col-lg-9 col-md-9">
+					<a href="" class="site-btn header-btn">Login</a>
+					<nav class="main-menu">
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="#">About us</a></li>
+							<li><a href="courses.html">Courses</a></li>
+							<li><a href="blog.html">News</a></li>
+							<li><a href="contact.html">Contact</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</header>
+    <div>
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+
+	<!-- footer section -->
+	<footer class="footer-section spad pb-0">
+		<div class="footer-top">
+			<div class="footer-warp">
+				<div class="row">
+					<div class="widget-item">
+						<h4>Contact Info</h4>
+						<ul class="contact-list">
+							<li>1481 Creekside Lane <br>Avila Beach, CA 931</li>
+							<li>+53 345 7953 32453</li>
+							<li>yourmail@gmail.com</li>
+						</ul>
+					</div>
+					<div class="widget-item">
+						<h4>Engeneering</h4>
+						<ul>
+							<li><a href="">Applied Studies</a></li>
+							<li><a href="">Computer Engeneering</a></li>
+							<li><a href="">Software Engeneering</a></li>
+							<li><a href="">Informational Engeneering</a></li>
+							<li><a href="">System Engeneering</a></li>
+						</ul>
+					</div>
+					<div class="widget-item">
+						<h4>Graphic Design</h4>
+						<ul>
+							<li><a href="">Applied Studies</a></li>
+							<li><a href="">Computer Engeneering</a></li>
+							<li><a href="">Software Engeneering</a></li>
+							<li><a href="">Informational Engeneering</a></li>
+							<li><a href="">System Engeneering</a></li>
+						</ul>
+					</div>
+					<div class="widget-item">
+						<h4>Development</h4>
+						<ul>
+							<li><a href="">Applied Studies</a></li>
+							<li><a href="">Computer Engeneering</a></li>
+							<li><a href="">Software Engeneering</a></li>
+							<li><a href="">Informational Engeneering</a></li>
+							<li><a href="">System Engeneering</a></li>
+						</ul>
+					</div>
+					<div class="widget-item">
+						<h4>Newsletter</h4>
+						<form class="footer-newslatter">
+							<input type="email" placeholder="E-mail">
+							<button class="site-btn">Subscribe</button>
+							<p>*We don’t spam</p>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer-bottom">
+			<div class="footer-warp">
+				<ul class="footer-menu">
+					<li><a href="#">Terms & Conditions</a></li>
+					<li><a href="#">Register</a></li>
+					<li><a href="#">Privacy</a></li>
+				</ul>
+				<div class="copyright">
+					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+					Copyright &copy;<script>document.write(new Date().getFullYear());</script>  | CourseHub
+					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/js/jquery-3.2.1.min.js"></script>
+	<script src="~/js/bootstrap.min.js"></script>
+	<script src="~/js/mixitup.min.js"></script>
+	<script src="~/js/circle-progress.min.js"></script>
+	<script src="~/js/owl.carousel.min.js"></script>
+	<script src="~/js/main.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

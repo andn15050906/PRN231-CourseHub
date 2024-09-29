@@ -1,0 +1,50 @@
+﻿@*Element name, API*@
+@model (string, string)
+
+@{
+    string elementName = Model.Item1;
+    string API = Model.Item2;
+}
+
+<div class="modal fade" id="app-delete-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-uppercase text-danger">Confirm</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-primary">Are you sure you want to delete this @elementName?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="app-delete-btn" type="button" class="btn btn-outline-danger">Yes</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="module">
+    import { deleteWithCredentials } from '/js/apis/http.js';
+
+    window.showDeleteModal = (deleteItem) => {
+        $("#app-delete-modal").modal('toggle');
+        window.deleteItem = deleteItem;
+    }
+
+    window.postDelete = window.location.reload;
+
+    document.getElementById('app-delete-btn').onclick = () => {
+        deleteWithCredentials("@API" + '/' + window.deleteItem)
+            .then(res => {
+                if (res.ok) {
+                    $("#app-delete-modal").modal('toggle');
+                    window.postDelete();
+                }
+            });
+    }
+</script>
