@@ -30,6 +30,8 @@ jobs:
       - name: Run tests
         working-directory: ./CourseHub.Tests
         run: dotnet test
+        env:
+          CourseHub_DoNotUseStaticFiles: false
 
   build_UI:
 

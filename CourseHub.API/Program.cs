@@ -48,8 +48,11 @@ app
     .UseHttpsRedirection()
     .UseCors(POLICY)
     .UseAuthentication()
-    .UseAuthorization()
-    .UseStaticFiles(new StaticFileOptions
+    .UseAuthorization();
+
+if (Environment.GetEnvironmentVariable("CourseHub_DoNotUseStaticFiles") is null)
+{
+    app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
         RequestPath = "/api/courses/Resource/Media",
@@ -58,6 +61,7 @@ app
             System.Diagnostics.Debug.WriteLine(context.File);
         }
     });
+}
 
 app.MapControllers();
 app.MapHub<AppHub>("/hub");
