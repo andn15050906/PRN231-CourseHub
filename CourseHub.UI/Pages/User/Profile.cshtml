@@ -1,0 +1,279 @@
+﻿@page
+@using CourseHub.UI.Helpers.Utils;
+@model CourseHub.UI.Pages.User.ProfileModel
+@{
+    Layout = "_ProfileLayout";
+
+    ViewData[Global.TITLE] = "Profile";
+
+    Dictionary<string, string> text = new()
+    {
+        { "PersonalInfo", "Personal Info" /*Thông tin cá nhân*/ },
+        { "FullName", "Full Name" },
+        { "AddYourName", "Add your name" /*"Tên của bạn xuất hiện trên trang cá nhân và bên cạnh các bình luận của bạn."*/ },
+        { "NameDescription", "Your name appears on your profile and next to your comments" },
+        { "Edit", "Edit" },
+        { "Bio", "Bio" },
+        { "AddBio", "Add Bio" },
+        { "BioDescription", "Your bio appears on your profile" },
+        { "Avatar", "Avatar" },
+        { "UserName", "UserName" },
+        { "AddUserName", "Add username" },
+        { "Role", "Role" },
+        { "RequestInstructor", "Request to become an instructor" },
+        { "IsVerified", "Verification status" },
+        { "DateOfBirth", "Date of Birth" },
+        { "JoinDate", "Join Date" },
+        { "EnrollmentCount", "Enrollment Count"},
+        { "Save", "Save Changes" },
+        { "Confirm", "Confirm" },
+        { "ConfirmQuestion", "Update your profile?" }
+    };
+}
+
+<div class="Setting_pageWrapper__PM+M5">
+    <section class="index-module_row__-AHgh">
+        <section class="index-module_col__2EQm9 index-module_c-12__u7UXF index-module_m-12__2CxUL index-module_l-12__340Ve">
+            <div class="Setting_wrapper__TX8z0">
+                <div class="GroupField_wrapper__1-jfw">
+
+                @await Html.PartialAsync("Shared/_Alert")
+
+                    <form id="app-form" method="post" enctype="multipart/form-data">
+                        <h2 class="GroupField_heading__PIaoN">@text["PersonalInfo"]</h2>
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["FullName"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input asp-for="Dto.FullName" type="text" class="InputField_fieldContentInput__lO21W" maxlength="50"
+                                            placeholder="@text["AddYourName"]" value="@Model.Client?.FullName">
+                                        <div class="InputField_description__unJBo">
+                                            <p>@text["NameDescription"]</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="InputField_fieldBtn__OG6ZB"><button
+                                    class="Button_fieldButton__B93oZ Button_fieldButtonDefault__7a6UD">@text["Edit"]</button></div>-->
+                        </div>
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["Bio"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input asp-for="Dto.Bio" type="text" class="InputField_fieldContentInput__lO21W" maxlength="900"
+                                            placeholder="@text["AddBio"]" value="@Model.Client?.Bio">
+                                        <div class="InputField_description__unJBo">
+                                            <p>@text["BioDescription"]</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="InputField_fieldBtn__OG6ZB"><button
+                                    class="Button_fieldButton__B93oZ Button_fieldButtonDefault__7a6UD">@text["Edit"]</button></div>-->
+                        </div>
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="PhotoField_fieldContent__QiVzm">
+                                <h3 class="PhotoField_fieldContentLabel__rBtfX">@text["Avatar"]</h3>
+                                <div class="PhotoField_fieldContentEdit__8iE7p">
+                                    <div class="PhotoField_contentImage__zbcdo">
+                                        <div class="PhotoField_avatar__Qdo+k">
+                                            <div class="FallbackAvatar_avatar__gmj3S" style="--font-size: 8.9px;">
+                                                <img id="app-avatar-img" src="@Model.Avatar" alt="@Model.Client?.UserName">
+                                            </div>
+                                        </div>
+                                        <input id="app-avatar-inp" asp-for="Dto.Avatar.File" type="file" class="invisible" accept=".jpg, .jpeg, .png" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="PhotoField_fieldBtn__TSg2A">
+                                <div id="app-avatar-btn" class="Button_fieldButton__B93oZ Button_fieldButtonDefault__7a6UD">@text["Edit"]</div>
+                            </div>
+                        </div>
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">Email</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input type="text" name="email" class="InputField_fieldContentInput__lO21W" maxlength="50" disabled="" value="@Model.Client?.Email">
+                                        <div class="InputField_description__unJBo"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="InputField_fieldBtn__OG6ZB"></div>
+                        </div>
+
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["UserName"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input type="text" name="username" class="InputField_fieldContentInput__lO21W" maxlength="50" placeholder="@text["AddUserName"]" disabled="" value="@Model.Client?.UserName">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="InputField_fieldBtn__OG6ZB"></div>
+                        </div>
+
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["DateOfBirth"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input asp-for="Dto.DateOfBirth"  type="date" class="InputField_fieldContentInput__lO21W" value="@TextHelper.ToInputDate(Model.Client!.DateOfBirth)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="InputField_fieldBtn__OG6ZB"></div>
+                        </div>
+
+                        <!--Readonly-->
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["EnrollmentCount"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input type="text" class="InputField_fieldContentInput__lO21W" disabled value="@Model.Client?.EnrollmentCount">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Readonly-->
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["Role"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input type="text" class="InputField_fieldContentInput__lO21W" disabled
+                                            value="@Model.Client?.Role.ToString()">
+                                    </div>
+                                </div>
+                            </div>
+                            @*if (Model.Client?.Role == Core.Entities.UserDomain.Enums.Role.Learner)
+                            {
+                                <div class="InputField_fieldBtn__OG6ZB">
+                                    <div id="app-instructor-btn" class="Button_fieldButton__B93oZ Button_fieldButtonDefault__7a6UD">@text["RequestInstructor"]</div>
+                                </div>
+                            }*@
+                        </div>
+
+                        <!--Readonly-->
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["JoinDate"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input type="date" class="InputField_fieldContentInput__lO21W" disabled value="@TextHelper.ToInputDate(Model.Client!.CreationTime)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Readonly-->
+                        <!--<div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a" style="display: inline-block; margin-right: 20px">@text["IsVerified"]</h3>
+                                <input type="checkbox" class="InputField_fieldContentInput__lO21W" disabled style="width: unset"
+                                    checked="@(Model.Client?.Role == Core.Entities.UserDomain.Enums.Role.Admin
+                                    ? Model.Client.IsApproved : Model.Client?.IsVerified)">
+                            </div>
+                        </div>-->
+
+                        <!--
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">Số điện thoại</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF"><input type="text" name="phone" class="InputField_fieldContentInput__lO21W" maxlength="10"
+                                            placeholder="Thêm số điện thoại" disabled="" value="">
+                                        <div class="InputField_description__unJBo"><----
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="InputField_fieldBtn__OG6ZB"></div>-->
+
+
+                        <div class="row">
+                            <div id="app-open-confirm-btn" class="InputField_fieldBtn__OG6ZB">
+                                <div class="Button_fieldButton__B93oZ Button_fieldButtonDefault__7a6UD">@text["Save"]</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </section>
+</div>
+
+<!--using bootstrap v4.1.3-->
+<div class="modal fade" id="app-confirm-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-uppercase text-danger">@text["Confirm"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-primary">@text["ConfirmQuestion"]</p>
+            </div>
+            <div class="modal-footer">
+                <button id="app-confirm-btn" type="button" class="btn btn-outline-danger">Yes</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section ValidateScript {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+@section Scripts {
+    <script>
+        var avatarInp = document.getElementById('app-avatar-inp');
+        var avatarImg = document.getElementById('app-avatar-img');
+        var avatarBtn = document.getElementById('app-avatar-btn');
+        var avatarChanged = false;
+        avatarInp.onchange = () => {
+            let files = avatarInp.files;
+            if (files.length > 0) {
+                avatarImg.src = URL.createObjectURL(files[0]);
+                avatarChanged = true;
+            }
+        }
+        avatarBtn.onclick = () => {
+            avatarInp.click();
+        }
+
+
+
+        var openConfirmBtn = document.getElementById("app-open-confirm-btn");
+        var confirmBtn = document.getElementById("app-confirm-btn");
+        var form = document.getElementById("app-form");
+        openConfirmBtn.onclick = () => {
+            $("#app-confirm-modal").modal('show');
+        }
+        confirmBtn.onclick = (e) => {
+            form.submit();
+        }
+
+
+        /*var requestInstructorBtn = document.getElementById('app-instructor-btn');
+        if (requestInstructorBtn) {
+            requestInstructorBtn.onclick = () => {
+                fetch("@Model.InstructorRequestPath", {
+                    method: "POST",
+                    credentials: "include",
+                }).then(res => {
+                    if (res.ok) {
+                        requestInstructorBtn.innerHTML = "Pending...";
+                    }
+                });
+            }
+        }*/
+    </script>
+}

@@ -1,0 +1,13 @@
+._custom-text-inp {
+    color: white;
+    background: inherit;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    border: none;
+    padding-top: 15px;
+}
+
+.media-engine-video {
+    transform: scaleX(-1);
+}

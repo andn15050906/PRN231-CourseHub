@@ -1,0 +1,41 @@
+﻿@using CourseHub.UI.Helpers;
+@{
+    string? message = TempData[Global.ALERT_MESSAGE]?.ToString();
+    bool.TryParse(TempData[Global.ALERT_STATUS]?.ToString(), out bool status);
+}
+
+@if (message is not null)
+{
+    <!--Not dependent on bootstrap-->
+    <style>
+        #app-alert {
+            font-size: 18px;
+            border-radius: 100px;
+            margin-bottom: 5px;
+            padding: 24px;
+        }
+
+        #app-alert.alert-danger {
+            color: red;
+            background: pink;
+        }
+
+        #app-alert.alert-success{
+            color: #3c763d;
+            background-color: #dff0d8;
+        }
+
+    </style>
+
+    <div id="app-alert" class="alert @(status ? "alert-success" : "alert-danger") hide">
+        @message
+    </div>
+
+    <script>
+        var adAlert = document.getElementById('app-alert');
+        adAlert.classList.remove('hide');
+        setTimeout(function() {
+            adAlert.style.display = 'none';
+        }, 10000);
+    </script>
+}

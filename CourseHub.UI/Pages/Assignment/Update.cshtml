@@ -1,0 +1,105 @@
+﻿@page
+@model CourseHub.UI.Pages.Assignment.UpdateModel
+@{
+    ViewData[Global.TITLE] = "Update Assignment";
+}
+
+
+
+<link rel="stylesheet" href="~/css/Misc/dropzone.css" />
+<style>
+    .dropzone:hover {
+        cursor: pointer;
+    }
+
+    #app-delete-open-btn {
+        margin: 8px 12px;
+        font-size: 18px;
+    }
+</style>
+
+
+
+
+
+
+@await Html.PartialAsync("Shared/_Alert")
+
+
+
+<h2 style="text-align: center; font-size: 32px; margin-top: 24px;">Update assignment</h2>
+
+
+
+<div style="width: 50%; margin: 0 auto;">
+    <!--<div>
+        <h3 style="text-align: center; font-size: 24px">Model.Course?.Title</h3>
+    </div>-->
+    <div style="display: flex; justify-content: end;">
+        <button id="app-delete-open-btn" type="button" class="btn btn-danger">Delete Assignment</button>
+    </div>
+
+    <div class="dropzone needsclick">
+        <div id="dropzone">
+            <div class="dz-message needsclick">
+              <span class="text">
+                <object data="~/img/upload-icon.svg" type="image/svg+xml"></object>
+                <span id="dropzone-text">Drop files here or click to upload.</span>
+              </span>
+              <span class="plus">+</span>
+            </div>
+
+        </div>
+    </div>
+
+
+    <form method="post" enctype="multipart/form-data" id="app-form-create">
+        <input asp-for="Dto.Id" value="@Model.Assignment.Id" class="form-control" hidden />
+        <label asp-for="Dto.Name">Assignment Name</label>
+        <input asp-for="Dto.Name" type="text" class="form-control" value="@Model.Assignment.Name" />
+        <label asp-for="Dto.Duration">Duration</label>
+        <input asp-for="Dto.Duration" type="number" class="form-control" value="@Model.Assignment.Duration" />
+        <label asp-for="Dto.GradeToPass">Grade to pass ( / 10)</label>
+        <input asp-for="Dto.GradeToPass" type="number" class="form-control" value="@Model.Assignment.GradeToPass" />
+
+
+
+        <input asp-for="File" type="file" id="app-file-inp" hidden />
+        <div class="row" style="margin-top: 24px; justify-content: center;">
+            <button type="submit" class="btn btn-outline-success btn-lg">Submit</button>
+        </div>
+    </form>
+</div>
+
+
+
+@await Html.PartialAsync("_PartialDeleteModal", ("assignment", Model.DeleteSectionPath))
+
+
+
+@section Scripts {
+    <script>
+        var dropzone = document.getElementById('dropzone');
+        var dropzoneText = document.getElementById('dropzone-text');
+        var submitedFileInp = document.getElementById('app-file-inp');
+        
+
+
+        dropzone.onclick = () => {
+            submitedFileInp.click();
+            submitedFileInp.onchange = () => {
+                if (submitedFileInp.files.length > 0)
+                    dropzoneText.innerHTML = submitedFileInp.files[0].name;
+                else
+                    dropzoneText.innerHTML = 'Drop files here or click to upload.';
+            }
+        }
+
+        document.getElementById('app-delete-open-btn').onclick = () => {
+            window.showDeleteModal('@Model.Assignment?.Id');
+            window.postDelete = () => {
+                window.location.href = '@Global.PAGE_COURSE_MANAGE';
+            }
+        }
+    </script>
+}

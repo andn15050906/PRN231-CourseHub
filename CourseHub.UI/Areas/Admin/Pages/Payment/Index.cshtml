@@ -1,0 +1,112 @@
+﻿@page
+@model CourseHub.UI.Areas.Admin.Pages.Payment.IndexModel
+@{
+    ViewData[AdminGlobal.TITLE] = "Payments";
+}
+
+
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="app-bill-dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Creator</th>
+                            <th class="text-center">Type</th>
+                            <th class="text-center">Message</th>
+                            <th class="text-center">Amount</th>
+                            <th class="text-center">Gateway</th>
+                            <th class="text-center">Client TransactionId</th>
+                            <th class="text-center">Is Successful</th>
+                            <th class="text-center">Creation Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Bills.TotalCount == 0)
+                        {
+                            <tr class="error">Error</tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model.Bills.Items)
+                            {
+                                <tr>
+                                    <td>@item.Creator.FullName</td>
+                                    <td>@item.Action</td>
+                                    <td>@item.Note</td>
+                                    <td>@item.Amount</td>
+                                    <td>@item.Gateway</td>
+                                    <td>@item.ClientTransactionId</td>
+                                    <td>
+                                        <input type="checkbox" @(item.IsSuccessful ? "checked" : string.Empty) />
+                                    </td>
+                                    <td>@item.CreationTime</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="app-notification-dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Type</th>
+                            <th class="text-center">Creator Id</th>
+                            <th class="text-center">Creation Time</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Notifications.TotalCount == 0)
+                        {
+                            <tr>
+                                <th style="text-align: center; color: red" colspan="10">Empty</th>
+                            </tr>
+                        }
+                        else foreach (var notification in Model.Notifications.Items)
+                        {
+                            var message = Model.Notification_Withdrawal[notification.Id];
+
+                            <tr>
+                                <td>
+                                    <div>@message.Gateway</div>
+                                </td>
+                                <td>
+                                    <div>@message.AccountNumber</div>
+                                </td>
+                                <td>
+                                    <div>@message.AccountHolderName</div>
+                                </td>
+                                <td>
+                                    <div>@message.Amount</div>
+                                </td>
+
+
+
+                                <td>
+                                    <div>@notification.CreationTime</div>
+                                </td>
+                                <td>
+                                    <div>@notification.Status</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

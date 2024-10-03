@@ -1,0 +1,957 @@
+﻿@page
+@using System.Text.Json;
+@using CourseHub.Core.Entities.CommonDomain.Enums;
+@using CourseHub.Core.Helpers.Business;
+@using CourseHub.UI.Helpers.Utils;
+@model CourseHub.UI.Pages.Course.DetailModel
+@{
+    string avgRating = TextHelper.GetAverageRating(Model.Course.TotalRating, Model.Course.RatingCount);
+    int postDiscount = CourseBusinessHelper.GetPostDiscount(Model.Course.Price, Model.Course.Discount, Model.Course.DiscountExpiry);
+
+    ViewData[Global.TITLE] = Model.Course.Title;
+
+    string[] reportMessages = new string[]
+    {
+        "Quality concern",
+        "Unreliable content",
+        "Outdated content",
+        "Irrelevant material"
+    };
+}
+
+<link rel="stylesheet" href="~/css/common-app-css.5b914d85e01ba6db2ad0.css" />
+<link rel="stylesheet" href="~/css/ud-5b914d85e01ba6db2ad0.css" />
+<link rel="stylesheet" href="~/css/ud-entry-main.af4286be4d337c43f610.css" />
+<link rel="stylesheet" href="~/css/ud-482c888e04ea1d274a2e.css" />
+<link rel="stylesheet" href="~/css/search-main.css">
+
+<style>
+    body {
+        display: unset !important;
+    }
+
+    .tmp-main {
+        margin-top: 40px;
+    }
+
+    .app-container-course {
+        /*width: 90%;
+                max-width: 1800px;*/
+        width: 1280px;
+        margin: 0 auto;
+    }
+
+    .app-course-landing-page-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .app-course-landing-page {
+    }
+
+    .ud-btn-brand {
+        background-color: #d82a4e !important;
+    }
+
+    /*.ud-btn-brand :hover {
+                background-color: #d82a4e;
+            }*/
+
+    .paid-course-landing-page__body {
+        margin: 0 auto;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .paid-course-landing-page__body .course-landing-page__main-content {
+        width: 60%;
+    }
+
+    .paid-course-landing-page__body img {
+        width: 400px;
+        aspect-ratio: 1.5;
+    }
+
+    .app-component-margin {
+        max-width: 50%;
+    }
+
+    .app__review__item {
+        overflow: hidden;
+        margin-bottom: 15px;
+        display: flex;
+    }
+
+    .app__review__item__pic {
+        float: left;
+        margin-right: 20px;
+        position: relative;
+    }
+
+    .app__review__item__pic:before {
+        position: absolute;
+        right: -30px;
+        top: 15px;
+        border-top: 15px solid transparent;
+        border-left: 15px solid #1d1e39;
+        content: "";
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+
+    .app__review__item__pic img {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+    }
+
+    .app__review__item__text {
+        overflow: hidden;
+        background: #1d1e39;
+        padding: 18px 30px 16px 20px;
+        border-radius: 10px;
+        flex-grow: 1;
+    }
+
+    .app__review__item__text h6 {
+        color: #ffffff;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .app__review__item__text h6 span {
+        color: #b7b7b7;
+        font-weight: 400;
+    }
+
+    .app__review__item__text p {
+        color: #b7b7b7;
+        line-height: 23px;
+        margin-bottom: 0;
+    }
+
+    .app__review__item > a {
+        position: absolute;
+        right: -10px;
+    }
+
+    #app-form textarea {
+        width: 100%;
+        font-size: 15px;
+        padding-left: 20px;
+        padding-top: 12px;
+        height: 110px;
+        border: none;
+        border-radius: 5px;
+        resize: none;
+    }
+
+    .review__submit-button {
+        font-size: 11px;
+        color: #ffffff;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        background: #e53637;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 2px;
+        float: right;
+    }
+
+    .review__submit-button:hover {
+        cursor: pointer;
+    }
+
+    .report_btn {
+        left: 20px;
+        bottom: 20px;
+    }
+
+    .report_course button {
+        padding: 5px;
+        font-size: 18px;
+        background-color: #d82a4e; /* màu đỏ */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .popup-box {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        z-index: 1;
+    }
+
+    .popup-box.show {
+        display: block;
+    }
+
+    .box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+    }
+    .close-icon {
+        position: absolute;
+        right: 10px;
+        top: 5px;
+        width: 15px;
+        height: 15px;
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .box h2 {
+        margin: 0 0 20px;
+        border-bottom: 1px solid #ccc;
+        padding: 0 0 5px;
+        color: #333;
+    }
+
+    .box .content {
+        margin: 20px 0;
+        max-height: 150px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+
+        /**/
+        width: 250px;
+    }
+    
+    .box .content p {
+        margin: 0 0 5px;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .box .content button {
+        width: 100%;
+        margin: 0 auto 10px;
+    }
+
+    .greenBtn {
+        background: #5cb85c;
+        width: 100%;
+        color: #fff;
+        border: 0;
+        outline: none;
+        font-size: 15px;
+        height: 35px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .greenBtn:hover {
+        background-color: green;
+        color: white;
+    }
+
+    /*submit done css*/
+    .swal-modal {
+        font-family: sans-serif;
+    }
+
+    .swal-text {
+        text-align: center;
+    }
+
+    .complete-flag {
+        color: springgreen;
+    }
+</style>
+
+
+
+
+
+
+<div class="app-container-course">
+
+
+    <div class="app-course-landing-page-container">
+        <div class="course-landing-page__main-content dark-background-inner-text-container">
+            <div class="ud-text-sm clp-lead">
+                <h1 class="ud-heading-xl clp-lead__title clp-lead__title--small" data-purpose="lead-title">
+                    @Model.Course.Title
+                    @if (Model.Enrollment is not null && Model.Enrollment.Status == Core.Entities.CourseDomain.Enums.CourseStatus.Completed)
+                    {
+                        <i class="fa fa-flag-checkered complete-flag"></i>
+                        <a asp-page="@Global.PAGE_COURSE_CERTIFICATION" asp-route-courseId="@Model.Course.Id"
+                            class="btn btn-outline-info" style="font-size: 20px;">View certification</a>
+                    }
+                </h1>
+                <div class="clp-lead__badge-ratings-enrollment">
+                    <!--
+                    <div class="clp-lead__element-item">
+                        <div class="ud-badge ud-heading-xs course-badges-module--bestseller--2k308">Bestseller</div>
+                    </div>
+                    -->
+                    <div class="clp-lead__element-item clp-lead__element-item--row">
+                        <a href="#reviews" class="styles--rating-wrapper--ajCRv" data-purpose="rating">
+                            <span class="star-rating-module--star-wrapper--VHfnS star-rating-module--medium--3kDsb star-rating-module--dark-background--3p2UF">
+                                <span class="ud-sr-only">Rating: @avgRating out of 5</span>
+                                <span class="ud-heading-sm star-rating-module--rating-number--2xeHu" aria-hidden="true" data-purpose="rating-number">@avgRating</span>
+                                <svg aria-hidden="true" width="100%" height="100%" viewBox="0 0 70 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <mask id="u9-star-rating-mask--3" data-purpose="star-rating-mask">
+                                        <rect x="0" y="0" width="90%" height="100%" fill="white"></rect>
+                                    </mask>
+                                    <g class="star-rating-module--star-filled--3CnHc" mask="url(#u9-star-rating-mask--3)" data-purpose="star-filled">
+                                        <use xlink:href="#icon-rating-star" width="14" height="14" x="0"></use>
+                                        <use xlink:href="#icon-rating-star" width="14" height="14" x="14"></use>
+                                        <use xlink:href="#icon-rating-star" width="14" height="14" x="28"></use>
+                                        <use xlink:href="#icon-rating-star" width="14" height="14" x="42"></use>
+                                        <use xlink:href="#icon-rating-star" width="14" height="14" x="56"></use>
+                                    </g>
+                                    <g fill="transparent" class="star-rating-module--star-bordered--3WG_2" stroke-width="2" data-purpose="star-bordered">
+                                        <use xlink:href="#icon-rating-star" width="12" height="12" x="1" y="1"></use>
+                                        <use xlink:href="#icon-rating-star" width="12" height="12" x="15" y="1"></use>
+                                        <use xlink:href="#icon-rating-star" width="12" height="12" x="29" y="1"></use>
+                                        <use xlink:href="#icon-rating-star" width="12" height="12" x="43" y="1"></use>
+                                        <use xlink:href="#icon-rating-star" width="12" height="12" x="57" y="1"></use>
+                                    </g>
+                                </svg>
+                            </span>
+                            <span>(@Model.Course.RatingCount ratings)</span>
+                        </a>
+                        <div class="enrollment" data-purpose="enrollment">@Model.Course.LearnerCount learners</div>
+                    </div>
+                </div>
+                <div class="clp-lead__element-item">
+                    <div class="instructor-links--instructor-links--1NOgk"
+                         data-purpose="instructor-name-top">
+                        <span class="instructor-links--names--3U_NU">
+                            <span class="ud-text-sm">Created by</span>
+                            <a asp-page="@Global.PAGE_USER" asp-route-id="@Model.InstructorUser.Id"
+                               class="ud-btn ud-btn-large ud-btn-link ud-heading-md ud-text-sm ud-instructor-links" data-position="1">
+                                <span>@Model.InstructorUser!.FullName</span>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+
+
+                @*dev_reportButton*@
+                <div class="report_course">
+                    <button id="reportBtn">Report</button>
+                </div>
+                @*dev_reportPopup*@
+                <div class="popup-box" id="popupBox">
+                    <div class="box">
+                        <button type="button" class="close" id="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h2>Report this course</h2>
+                        <div class="content">
+                            @foreach (var message in reportMessages)
+                            {
+                                <button class="report-message greenBtn" data-message="@message">@message</button>
+                            }
+                        </div>
+                        <button class="greenBtn" type="submit" id="submit">Submit report</button>
+                    </div>
+                </div>
+
+
+
+                <div class="clp-lead__element-meta">
+                    <div class="clp-lead__element-item">
+                        <div class="last-update-date" data-purpose="last-update-date">
+                            <svg aria-hidden="true" focusable="false"
+                                 class="ud-icon ud-icon-xsmall ud-icon-color-neutral last-update-date__icon">
+                                <use xlink:href="#icon-new"></use>
+                            </svg><span>Last updated @Model.Course.LastModificationTime</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+        @if (!Model.IsEnrolled && !Model.IsCreator)
+        {
+            <div class="app-course-landing-page" @*class="course-landing-page_sidebar-container sidebar-container--fixed--8FX75"*@ data-purpose="sidebar-container">
+                <div class="smart-bar-spacer smart-bar-module--smart-bar-spacer--1bsoA" data-testid="smart-bar-spacer"></div>
+                <div class="sidebar-container--content--2KZyB">
+                    <div class="sidebar-container--content-group---xK4q">
+                        <div class="sidebar-container--purchase-section--2DONZ" data-client-side-render-only="CSR: purchase_section">
+                            <div class="purchase-section-container--purchase-section-container--1wStb">
+                                <div class="generic-purchase-section--main-cta-container--1hRUq" data-purpose="purchase-section">
+                                    <div class="generic-purchase-section--buy-box-main--2o6Au">
+                                        <div class="buy-box--buy-box--1j_Sf" data-purpose="buy-box">
+                                            <div class="buy-box--buy-box-item--2RETv"></div>
+                                            <div class="buy-box--buy-box-item--2RETv">
+                                                <div>
+                                                    <div class="price-text--container--103D9 ud-clp-price-text" data-purpose="price-text-container">
+                                                        <div class="price-text--price-part--2npPm ud-clp-discount-price ud-heading-xxl" data-purpose="course-price-text">
+                                                            <span class="ud-sr-only">Current price</span>
+                                                            <span><span>₫@postDiscount</span></span>
+                                                        </div>
+                                                    </div>
+                                                    @if (Model.Course.Discount > 0 && Model.Course.DiscountExpiry > DateTime.UtcNow)
+                                                    {
+                                                        <div class="price-text--price-part--2npPm ud-clp-percent-discount ud-text-sm" data-purpose="discount-percentage">
+                                                            <span class="ud-sr-only">Discount</span>
+                                                            <span>@(Model.Course.Discount * 100) % off</span>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="buy-box--buy-box-item--2RETv buy-box--discount-expiration--22scc">
+                                            </div>
+                                            <div class="buy-box--buy-box-item--2RETv buy-box--add-to-cart-button-wrapper--1C64H">
+                                                <div data-purpose="add-to-cart">
+                                                    <a asp-page="@Global.PAGE_PAYMENT" asp-route-courseId="@Model.Course?.Id" type="button"
+                                                       data-testid="add-to-cart-button" class="ud-btn ud-btn-large ud-btn-brand ud-heading-md add-to-cart"
+                                                       style="width: 100%;">Buy this course</a>
+                                                    <div role="status" class="ud-sr-only" data-purpose="screen-reader-message"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="generic-purchase-section--local-incentive--MC6kz">
+                                <div data-purpose="money-back-guarantee" class="dark-bg-text money-back-guarantee--money-back-guarantee--264ri">
+                                <span class="money-back">30-Day Money-Back Guarantee</span>
+                                </div>
+                                </div>*@
+                                    <div class="generic-purchase-section--available-coupons--3v8Ak">
+                                    </div>
+                                    <div class="generic-purchase-section--local-incentive--MC6kz"></div>
+                                    <div class="generic-purchase-section--ctas--3dxVF">
+                                        <div class="generic-purchase-section--cta---ZDRQ" data-client-side-render-only="CSR: course_actions">
+                                            <div class="generic-purchase-section--cta-multiple--29hf5">
+                                                @*<button type="button" data-purpose="social-share-button" class="ud-btn ud-btn-medium ud-btn-ghost ud-heading-sm ud-link-underline ud-link-neutral" aria-label="Share this course">
+                                            <span>Share</span>
+                                            </button>
+                                            <a aria-disabled="false" href="/gift/microsoft-excel-power-query-power-pivot-dax/?couponCode=KEEPLEARNING" data-purpose="gift-course" class="ud-btn ud-btn-medium ud-btn-ghost ud-heading-sm ud-link-underline ud-link-neutral">
+                                            <span>Gift this course</span>
+                                            </a>*@
+                                                @*<button type="submit" data-purpose="no-coupon-button" class="ud-btn ud-btn-medium ud-btn-ghost ud-heading-sm ud-link-underline ud-link-neutral">
+                                            <span>Apply Coupon</span>
+                                            </button>*@
+                                            </div>
+                                            <div>
+                                                <div class="redeem-coupon--add-coupon-button--gEFrS">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+
+
+
+
+
+
+    <div class="paid-course-landing-page__body">
+        <div class="course-landing-page__main-content">
+            <div class="component-margin what-you-will-learn--what-will-you-learn--1nBIT">
+                <h2 class="ud-heading-xl what-you-will-learn--title--2ztwE">What you'll learn</h2>
+                <div class="what-you-will-learn--content-spacing--3n5NU">
+                    <ul class="ud-unstyled-list ud-block-list what-you-will-learn--objectives-list--eiLce what-you-will-learn--objectives-list-two-column-layout--rZLJy">
+                        <li>
+                            <div data-purpose="objective" class="ud-block-list-item ud-block-list-item-small ud-block-list-item-tight ud-block-list-item-neutral ud-text-sm">
+                                <svg aria-hidden="true" focusable="false" class="ud-icon ud-icon-xsmall ud-icon-color-neutral ud-block-list-item-icon">
+                                    <use xlink:href="#icon-tick"></use>
+                                </svg>
+                                <div class="ud-block-list-item-content">
+                                    <span class="what-you-will-learn--objective-item--3b4zX">
+                                        @Html.Raw(Model.Course.Outcomes)
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div>
+            <img src="@Model.Course.ThumbUrl" alt="thumb">
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <div class="app-component-margin component-margin">
+        <div data-purpose="course-curriculum">
+            <!--<h2 class="ud-heading-xl curriculum--curriculum-header--3K2IZ" data-purpose="curriculum-header">Course content</h2>
+            <div class="curriculum--curriculum-sub-header--m_N_0">
+                <div class="ud-text-sm" data-purpose="curriculum-stats">
+                    <span class="curriculum--content-length--5Nict">@Model.Course.Sections.Count sections • @Model.Course.LectureCount lectures •
+                        !--<span><span>7h&nbsp;19m</span> total length</span>--
+                    </span>
+                </div>
+            </div>-->
+
+
+
+
+            <div>
+                @foreach (var courseSection in Model.Course!.Sections)
+                {
+                    var sectionAssignments = Model.Assignments.Where(_ => _.Section?.Id == courseSection.Id).ToList();
+
+                    if (courseSection.Lectures.Count > 0 || sectionAssignments.Count > 0)
+                    {
+                        <div class="accordion-panel-module--panel--3_kkG section--panel--1zoAn">
+                            <span id="u8-accordion-panel--@courseSection.Id" data-type="checkbox" data-checked @*="checked"*@ style="display: none;"></span>
+                            <div class="ud-btn ud-btn-large ud-btn-link ud-heading-md ud-accordion-panel-toggler accordion-panel-module--panel-toggler--1RjML accordion-panel-module--outer-panel-toggler--AgeEB" data-css-toggle-id="u8-accordion-panel--@courseSection.Id">
+                                <h3 class="ud-accordion-panel-heading section--section-title-container--2GvsG">
+                                    <button type="button" aria-disabled="false" aria-expanded="true"
+                                            class="ud-btn ud-btn-large ud-btn-link ud-heading-md js-panel-toggler accordion-panel-module--panel-toggler--1RjML"
+                                            id="u8-accordion-panel-title--74">
+                                        <span class="ud-accordion-panel-title">
+                                            <span class="section--section-title--wcp90">@courseSection.Title</span>
+                                            <!--<span class="ud-text-sm section--hidden-on-mobile--38HTe section--section-content--jXmra" data-purpose="section-content">
+                                            @courseSection.LectureCount lectures •
+                                                <--<span>11min</span>--
+                                            </span>-->
+                                        </span>
+                                    </button>
+                                </h3>
+                                <svg aria-hidden="true" focusable="false"
+                                     class="ud-icon ud-icon-small ud-icon-color-neutral accordion-panel-module--expand-icon--2DZax">
+                                    <use xlink:href="#icon-expand"></use>
+                                </svg>
+                            </div>
+                            <div class="accordion-panel-module--content-wrapper--DIUt_"
+                                 aria-labelledby="u8-accordion-panel-title--74" aria-hidden="false"
+                                 role="group">
+                                <div class="ud-accordion-panel-content accordion-panel-module--content--jkZai">
+                                    <ul class="ud-unstyled-list ud-block-list">
+                                        @foreach (var lecture in courseSection.Lectures)
+                                        {
+                                            <li>
+                                                <a asp-page="@Global.PAGE_LECTURE" asp-route-id="@lecture.Id">
+                                                    <div class="section--previewable-item--oiDYR ud-block-list-item ud-block-list-item-small ud-block-list-item-link ud-text-sm">
+                                                        <!--<svg aria-hidden="true" focusable="false"
+                                                            class="ud-icon ud-icon-xsmall ud-icon-color-neutral ud-block-list-item-icon">
+                                                            <use xlink:href="#icon-video"></use>
+                                                        </svg>-->
+                                                        <div class="ud-block-list-item-content">
+                                                            <div>
+                                                                <div class="section--row--3sLRB">
+                                                                    <div class="ud-btn ud-btn-large ud-btn-link ud-text-sm section--item-title--6gdc6">
+                                                                        <span>@lecture.Title</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <span class="section--hidden-on-mobile--38HTe" style="flex: 1 1 0%;"></span>
+                                                            @if (lecture.IsPreviewable)
+                                                            {
+                                                                <span class="section--hidden-on-mobile--38HTe section--preview-text--1zuA2">Preview</span>
+                                                            }
+                                                            <!--<span class="section--hidden-on-mobile--38HTe section--item-content-summary--1DW7L">01:47</span>-->
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        }
+                                        @foreach (var assignment in sectionAssignments)
+                                        {
+                                            <li>
+                                                <a asp-page="@Global.PAGE_ASSIGNMENT_OVERVIEW" asp-route-id="@assignment.Id">
+                                                    <div class="section--previewable-item--oiDYR ud-block-list-item ud-block-list-item-small ud-block-list-item-link ud-text-sm">
+                                                        <!--<svg aria-hidden="true" focusable="false"
+                                                            class="ud-icon ud-icon-xsmall ud-icon-color-neutral ud-block-list-item-icon">
+                                                            <use xlink:href="#icon-video"></use>
+                                                        </svg>-->
+                                                        <div class="ud-block-list-item-content">
+                                                            <div>
+                                                                <div class="section--row--3sLRB">
+                                                                    <div class="ud-btn ud-btn-large ud-btn-link ud-text-sm section--item-title--6gdc6">
+                                                                        <span>@assignment.Name</span>
+                                                                        @if (Model.AssignmentMilestones is not null && Model.AssignmentMilestones.Contains(assignment.Id))
+                                                                        {
+                                                                            <i class="fa fa-flag-checkered complete-flag"></i>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <span class="section--hidden-on-mobile--38HTe" style="flex: 1 1 0%;"></span>
+                                                            <!--<span class="section--hidden-on-mobile--38HTe section--item-content-summary--1DW7L">01:47</span>-->
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="component-margin">
+        <h2 data-purpose="requirements-title" class="ud-heading-xl requirements--title--2wsPe">Requirements</h2>
+        @Html.Raw(Model.Course.Requirements)
+    </div>
+
+
+
+
+    <div class="ud-text-sm component-margin styles--description--33-vq" data-purpose="course-description">
+        <h2 data-purpose="description-title" class="ud-heading-xl styles--description__header--2Z7Vb">Description</h2>
+        <div class="show-more-module--container--2QPRN">
+            <span id="u9-show-more--6" data-type="checkbox" data-checked="" style="display:none"></span>
+            <div class="show-more-module--content--cjTh0 show-more-module--with-gradient--1ZDrA" style="max-height:22.1rem">
+                <div tabindex="-1">
+                    <div data-purpose="safely-set-inner-html:description:description">
+                        @Model.Course.Description
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <div id="reviews" data-purpose="reviews" class="component-margin">
+        <div class="review-title--review-title--3kakg reviews--reviews-title--3Pqj_">
+            <svg aria-hidden="true" focusable="false"
+                 class="ud-icon ud-icon-medium ud-icon-color-neutral review-title--star-rating-icon--1jHuA">
+                <use xlink:href="#icon-rating-star"></use>
+            </svg>
+            <span class="ud-heading-lg">@avgRating</span>
+            <svg aria-hidden="true" focusable="false"
+                 class="ud-icon ud-icon-xsmall ud-icon-color-subdued review-title--bullet-separation--1h6Oq">
+                <use xlink:href="#icon-bullet"></use>
+            </svg>
+            <span class="ud-heading-lg">@Model.Course.RatingCount</span>
+        </div>
+
+
+
+
+        <div class="row">
+            <div class="col-lg-8 col-md-8">
+                <div class="app__details__review">
+                    <div class="section-title mb-4">
+                        <h5 style="font-size: 24px;">Reviews</h5>
+                    </div>
+                    @if (Model.Reviews.TotalCount == 0)
+                    {
+                        <div class="alert alert-danger fs-3" role="alert">
+                            No reviews yet
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var review in Model.Reviews.Items)
+                        {
+                            var user = Model.RelatedUsers.FirstOrDefault(_ => _.Id == review.CreatorId);
+                            if (user is null)
+                                continue;
+
+                            <div class="app__review__item">
+                                <div class="app__review__item__pic">
+                                    <a asp-page="@Global.PAGE_USER" asp-route-id="@user.Id">
+                                        <img src="@user.AvatarUrl" alt="">
+                                    </a>
+                                </div>
+                                <div class="app__review__item__text" id="app-review-text-@review.Id">
+                                    @for (int displayStar = 0; displayStar < review.Rating; displayStar++)
+                                    {
+                                        <i class="fa fa-star" style="color: gold"></i>
+                                    }
+                                    <h6 class="mt-3">
+                                        <a asp-page="@Global.PAGE_USER" asp-route-id="@user.Id"
+                                            style="color: #fff">@user.FullName</a> - <span>@review.LastModificationTime</span></h6>
+                                    <p>@review.Content</p>
+                                </div>
+
+                                @if (user.Id == Model.Client?.Id)
+                                {
+                                    <a class="text-muted opacity-60 ml-3" onclick="openEdit('@review.Id')"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="app__details__form">
+                    @if (Model.Reviews.Items.Any(_ => _.CreatorId == Model.Client?.Id))
+                    {
+                        <div class="alert alert-success fs-3" role="alert">You've already reviewed this course. Consider edit your review.</div>
+                    }
+                    else if (Model.Client is not null && Model.IsEnrolled)
+                    {
+                        <!-- See Script section -->
+                        <form id="app-form" method="post" asp-page-handler="CreateReview">
+                            <input asp-for="Id" hidden value="@Model.Course.Id" />
+                            <input asp-for="CreateCourseReviewDto.CourseId" value="@Model.Course.Id" readonly hidden />
+                            @await Html.PartialAsync("~/Pages/Shared/_PartialRating.cshtml")
+                            <textarea asp-for="CreateCourseReviewDto.Content" placeholder="Review here"></textarea>
+                            <input id="app-rating-inp" asp-for="CreateCourseReviewDto.Rating" hidden />
+                            <button type="submit" class="review__submit-button"><i class="fa fa-location-arrow"></i> Create</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger fs-3" role="alert">Enroll in the course to review</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+        @* //... Model.Course.Reviews*@
+
+
+
+
+
+
+
+    @if (Model.MoreCourses.Count > 0)
+    {
+        <style>
+            .img-course img {
+                min-height: 130px;
+                max-height: 130px;
+                width: 100%;
+                overflow: hidden;
+            }
+
+            .course-box-slider {
+                width: 100%;
+            }
+
+            .styles--desktop-container--29uOP {
+                width: 75%;
+            }
+        </style>
+
+        <div class="component-margin">
+            <div data-purpose="more-from-instructors-app">
+                <div class="styles--more-from-instructor--2avsV">
+                    <h2 class="ud-heading-xl"
+                        data-purpose="safely-set-inner-html:more-courses-by-instructor:more-courses-link">
+                        More Courses by <a href="#">@Model.InstructorUser.FullName</a>
+                    </h2>
+                    <section style="width: 85%" aria-label="Carousel" class="carousel-module--container--27wzs">
+                        <div class="styles--desktop-container--29uOP carousel-module--scroll-port--28Dow carousel-module--scroll-lock--1Ys-j"
+                             data-purpose="scroll-port" id="u8-scroll-port--114"
+                             aria-live="polite">
+                            @await Html.PartialAsync(Global.PARTIAL_COURSE_OVERVIEW, (Model.MoreCourses, 4))
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+
+    @{
+        await Html.RenderPartialAsync("_PartialDetailSvg");
+    }
+
+
+    <script nonce="vXQj7OudXUnfYaHdiAPT51fm69mCwankZ2wzZUA4fng=">
+        window.handleCSSToggleButtonClick = function (event) {
+            var target = event.currentTarget;
+            var cssToggleId = target && target.dataset && target.dataset.cssToggleId;
+            var input = cssToggleId && document.getElementById(cssToggleId);
+            if (input) {
+                if (input.dataset.type === 'checkbox') {
+                    input.dataset.checked = input.dataset.checked ? '' : 'checked';
+                } else {
+                    input.dataset.checked = input.dataset.allowToggle && input.dataset.checked ? '' : 'checked';
+                    var radios = document.querySelectorAll('[name="' + input.dataset.name + '"]');
+                    for (var i = 0; i < radios.length; i++) {
+                        if (radios[i] !== input) {
+                            radios[i].dataset.checked = '';
+                        }
+                    }
+                }
+            }
+        };
+        (function () {
+            var cssToggleButtons = document.querySelectorAll('[data-css-toggle-id');
+            for (var i = 0; i < cssToggleButtons.length; i++) {
+                cssToggleButtons[i].addEventListener('click', window.handleCSSToggleButtonClick);
+            }
+        })();
+    </script>
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-star-rating@4.1.2/js/star-rating.min.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="module">
+        import { patchJsonWithCredentials, postJsonWithCredentials } from '/js/apis/http.js';
+        window.patchJsonWithCredentials = patchJsonWithCredentials;
+        window.postJsonWithCredentials = postJsonWithCredentials;
+    </script>
+    <script>
+        // see _PartialRating
+        window.appPartialRating = 0;
+        $("#app-rating").on('rating:change', function (e, value) {
+            window.appPartialRating = value;
+        })
+
+        // page-centric
+        window.appPartialRating = 0;
+        var form = document.getElementById('app-form');
+        if (form) {
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                document.getElementById('app-rating-inp').value = window.appPartialRating;
+                form.submit();
+            }
+        }
+
+        const reportBtn = document.getElementById('reportBtn');
+        const popupBox = document.getElementById('popupBox');
+        const closeBtn = document.getElementById('close');
+        const submitbtn = document.getElementById('submit');
+
+        reportBtn.addEventListener('click', () => {
+            popupBox.classList.add('show');
+        });
+
+        var selectedReportMessage = '';
+        var reportMessageBtns = document.getElementsByClassName('report-message');
+        for (let btn of reportMessageBtns) {
+            btn.onclick = () => {
+                selectedReportMessage = btn.getAttribute('data-message');
+            }
+        }
+
+
+
+
+
+
+        function openEdit(reviewId) {
+            if (document.getElementById('input-' + reviewId)) {
+                return;
+            }
+            var textParent = document.getElementById('app-review-text-' + reviewId);
+            var text = textParent.lastElementChild.innerHTML;
+            textParent.lastElementChild.remove();
+            var newChild = document.createElement('input');
+            newChild.type = 'text';
+            newChild.value = text;
+            newChild.id = 'input-' + reviewId;
+            newChild.style = 'background: inherit; color: white; width: 90%;';
+            textParent.appendChild(newChild);
+            var newSubmit = document.createElement('button');
+            newSubmit.innerHTML = 'Save';
+            newSubmit.classList = 'btn';
+            newSubmit.style = 'background-color: red; color: white; margin: 10px; padding: 8px 12px;';
+            newSubmit.onclick = () => {
+                window.patchJsonWithCredentials("@Model.ReviewPath",
+                    {
+                        Id : reviewId,
+                        Content : document.getElementById('input-' + reviewId).value,
+                        //...
+                        Rating: 0,
+                    }).then(res => {
+                        if (res.ok) {
+                            window.location.reload();
+                        }
+                    });
+            }
+            textParent.appendChild(newSubmit);
+        }
+
+
+
+
+
+
+        function closePopup() {
+            popupBox.classList.remove('show');
+        }
+
+        closeBtn.addEventListener('click', closePopup);
+
+        submitbtn.addEventListener('click', () => {
+            event.preventDefault();
+            
+            /* CreateCourseReportDto */
+            var jsonMessage = {
+                "Message" : selectedReportMessage,
+                "Course": "@Model.Course.Id"
+            }
+
+
+            
+            window.postJsonWithCredentials("@Model.ReportPath", {
+                Message : JSON.stringify(jsonMessage),
+                Type: @((byte)NotificationType.ReportCourse)
+            }).then(res => {
+                swal({
+                    title: "Success",
+                    text: "",
+                    icon: "success",
+                    buttons: {
+                        confirm: "Okay"
+                    },
+                    closeOnClickOutside: false
+                });
+                closePopup();
+            });
+        });
+    </script>
+}

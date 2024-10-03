@@ -1,0 +1,55 @@
+﻿@using CourseHub.UI.Helpers;
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <li>
+        <a asp-page="@AdminGlobal.PAGE_INDEX" class="sidebar-brand d-flex align-items-center justify-content-center">
+            <div class="sidebar-brand-text mx-3">Admin</div>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item">
+        <a asp-page="@AdminGlobal.PAGE_USERS_INDEX" class="nav-link">
+            <i class="fas fa-user"></i>
+            <span>Users</span>
+        </a>
+
+        <a asp-page="@AdminGlobal.PAGE_NOTIFICATIONS_INDEX" class="nav-link">
+            <i class="fas fa-fw fa-envelope"></i>
+            <span>Notifications</span>
+        </a>
+
+        <a asp-page="@AdminGlobal.PAGE_CREATE_ADMIN_INDEX" class="nav-link">
+            <i class="fas fa-user-plus"></i>
+            <span>Create Admin</span>
+        </a>
+
+        <a asp-page="@AdminGlobal.PAGE_COURSES_REPORTED" class="nav-link">
+            <i class="fas fa-fw fa-book-open"></i>
+            <span>Reported Courses</span>
+        </a>
+
+        <a asp-page="@AdminGlobal.PAGE_GROUPS_REPORTED" class="nav-link">
+            <i class="fa fa-users"></i>
+            <span>Reported Groups</span>
+        </a>
+
+        <a href="/" class="nav-link">
+            <i class="fas fa-user"></i>
+            <span>Learner View</span>
+        </a>
+
+        <a asp-page="@Global.PAGE_SIGNOUT" class="nav-link">
+            <i class="fas fa-user"></i>
+            <span>Sign Out</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+</ul>

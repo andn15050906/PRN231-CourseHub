@@ -1,0 +1,157 @@
+﻿@page
+@model CourseHub.UI.Pages.Instructor.IndexModel
+@{
+    Layout = "_ProfileLayout";
+    ViewData[Global.TITLE] = "Instructor View";
+
+    Dictionary<string, string> text = new()
+    {
+        { "InstructorInfo", "Instructor Info" },
+        { "Intro", "Introduction" },
+        { "Exp", "Experience" },
+        { "Balance", "Balance" },
+        { "CourseCount", "Number of courses" },
+        { "AddIntro", "Add Intro" },
+        { "AddExp", "Add Experience" },
+        { "Save", "Save Changes" },
+        { "Confirm", "Confirm" },
+        { "ConfirmQuestion", "Update your profile?" },
+
+
+
+        { "ManageCourse", "Manage Courses" },
+        { "Withdraw", "Course withdrawals" }
+    };
+}
+
+@section SidebarLiItems {
+    <li>
+        <a href="@Global.PAGE_COURSE_MANAGE">
+            <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="book" class="svg-inline--fa fa-user Setting_icon__cYZ5C" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path fill="currentColor"
+                d="M272 304h-96C78.8 304 0 382.8 0 480c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32C448 382.8 369.2 304 272 304zM48.99 464C56.89 400.9 110.8 352 176 352h96c65.16 0 119.1 48.95 127 112H48.99zM224 256c70.69 0 128-57.31 128-128c0-70.69-57.31-128-128-128S96 57.31 96 128C96 198.7 153.3 256 224 256zM224 48c44.11 0 80 35.89 80 80c0 44.11-35.89 80-80 80S144 172.1 144 128C144 83.89 179.9 48 224 48z">
+                </path>
+            </svg>
+            <span>@text["ManageCourse"]</span>
+        </a>
+    </li>
+    <li>
+        <a href="@Global.PAGE_INSTRUCTOR_WITHDRAW">
+            <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="book" class="svg-inline--fa fa-user Setting_icon__cYZ5C" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path fill="currentColor"
+                d="M272 304h-96C78.8 304 0 382.8 0 480c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32C448 382.8 369.2 304 272 304zM48.99 464C56.89 400.9 110.8 352 176 352h96c65.16 0 119.1 48.95 127 112H48.99zM224 256c70.69 0 128-57.31 128-128c0-70.69-57.31-128-128-128S96 57.31 96 128C96 198.7 153.3 256 224 256zM224 48c44.11 0 80 35.89 80 80c0 44.11-35.89 80-80 80S144 172.1 144 128C144 83.89 179.9 48 224 48z">
+                </path>
+            </svg>
+            <span>@text["Withdraw"]</span>
+        </a>
+    </li>
+}
+
+<div class="Setting_pageWrapper__PM+M5">
+    <section class="index-module_row__-AHgh">
+        <section class="index-module_col__2EQm9 index-module_c-12__u7UXF index-module_m-12__2CxUL index-module_l-12__340Ve">
+            <div class="Setting_wrapper__TX8z0">
+                <div class="GroupField_wrapper__1-jfw">
+
+                    @await Html.PartialAsync("Shared/_Alert")
+
+                    <form id="app-form" method="post" enctype="multipart/form-data">
+                        <h2 class="GroupField_heading__PIaoN">@text["InstructorInfo"]</h2>
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["Intro"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input asp-for="Dto.Intro" type="text" class="InputField_fieldContentInput__lO21W" maxlength="500"
+                                            placeholder="@text["AddIntro"]" value="@Model.Instructor?.Intro">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["Exp"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input asp-for="Dto.Experience" type="text" class="InputField_fieldContentInput__lO21W" maxlength="900"
+                                            placeholder="@text["AddExp"]" value="@Model.Instructor?.Experience">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Readonly-->
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["Balance"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input type="text" class="InputField_fieldContentInput__lO21W" disabled
+                                            value="@Model.Instructor?.Balance">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Readonly-->
+                        <div class="FieldWrapper_wrapper__QcEfS">
+                            <div class="InputField_fieldContent__iWttQ">
+                                <h3 class="InputField_fieldContentLabel__wJO4a">@text["CourseCount"]</h3>
+                                <div>
+                                    <div class="InputField_fieldContentEdit__KYEiF">
+                                        <input type="text" class="InputField_fieldContentInput__lO21W" disabled
+                                            value="@Model.Instructor?.CourseCount">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div id="app-open-confirm-btn" class="InputField_fieldBtn__OG6ZB">
+                                <div class="Button_fieldButton__B93oZ Button_fieldButtonDefault__7a6UD">@text["Save"]</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </section>
+</div>
+
+<!--using bootstrap v4.1.3-->
+<div class="modal fade" id="app-confirm-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-uppercase text-danger">@text["Confirm"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-primary">@text["ConfirmQuestion"]</p>
+            </div>
+            <div class="modal-footer">
+                <button id="app-confirm-btn" type="button" class="btn btn-outline-danger">Yes</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section ValidateScript {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+@section Scripts {
+    <script>
+        var openConfirmBtn = document.getElementById("app-open-confirm-btn");
+        var confirmBtn = document.getElementById("app-confirm-btn");
+        var form = document.getElementById("app-form");
+        openConfirmBtn.onclick = () => {
+            $("#app-confirm-modal").modal('show');
+        }
+        confirmBtn.onclick = (e) => {
+            form.submit();
+        }
+    </script>
+}

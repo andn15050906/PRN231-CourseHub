@@ -1,0 +1,74 @@
+﻿@page
+@model CourseHub.UI.Pages.User.SignInModel
+
+@{
+    Layout = "_OuterAuthLayout";
+    ViewData[Global.TITLE] = "Sign In";
+}
+
+@section NavButton {
+    <button class="btn white-btn" onclick="register()">Register</button>
+}
+
+<!----------------------------- Form box ----------------------------------->
+<form method="post">
+    <div class="form-box">
+        <div class="login-container" id="login">
+            <header>Sign In</header>
+
+            @await Html.PartialAsync("Shared/_Alert")
+
+            <div asp-validation-summary="All" class="alert alert-danger mt-5 fs-4 pageError text-center"></div>
+
+            <div class="input-box">
+                <input asp-for="Dto.UserName" class="input-field" placeholder="Username or Email">
+                <i class="bx bx-user"></i>
+            </div>
+            <div class="input-box">
+                <input asp-for="Dto.Password" type="password" class="input-field" placeholder="Password">
+                <i class="bx bx-lock-alt"></i>
+            </div>
+            <div class="input-box">
+                <input type="submit" class="submit" value="Sign In">
+            </div>
+
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <p style="margin: 16px; color: #fff;"> Or </p>
+
+                <a class="btn btn-light" id="app-google-btn" href="#" role="button" style="text-transform:none">
+                    <img width="20" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                    Google Sign In
+                </a>
+            </div>
+
+
+
+            <div class="two-col">
+                <div class="one">
+                    <input asp-for="RememberMe" type="checkbox">
+                    <label asp-for="RememberMe">Remember Me</label>
+                </div>
+                <div class="two">
+                    <label><a href="@Global.PAGE_FORGOT_PASSWORD">Forgot password?</a></label>
+                </div>
+            </div>
+            <div class="top">
+                <span>Don't have an account? <a href="#" onclick="register()">Sign Up</a></span>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script>        
+    var googleHref = "@Model.GoogleOAuthBasePath" + "0";
+    document.getElementById('app-google-btn').href = googleHref;
+
+
+
+    function register() {
+        /**/
+        window.location.href = "@Global.PAGE_REGISTER";
+    }
+</script>

@@ -1,0 +1,36 @@
+﻿@using CourseHub.Core.Models.Course.CourseModels;
+
+@* List, DisplayCount *@
+@model (List<CourseOverviewModel>, int)
+
+@{
+    string detailPage = Global.PAGE_COURSE_DETAIL;
+    int displayCount = Model.Item2;
+
+    Dictionary<string, string> text = new()
+    {
+        { "View", "View Course" }
+    };
+}
+
+<style>
+    .owl-stage-outer {
+        width: 480px;
+        margin: 0 auto;
+    }
+</style>
+
+<div class="hero__slider owl-carousel">
+    @foreach (var item in Model.Item1.Take(displayCount))
+    {
+        <a asp-page="@detailPage" asp-route-id="@item.Id">
+            <div class="blur__large"></div>
+            <div style="height: 320px; width: 480px" class="hero__items set-bg" data-setbg="@item.ThumbUrl" style="background-image: url('@item.ThumbUrl')">
+                <div class="row">
+                    <div class="col-9 mt-5">
+                    </div>
+                </div>
+            </div>
+        </a>
+    }
+</div>

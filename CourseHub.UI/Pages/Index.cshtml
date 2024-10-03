@@ -1,0 +1,137 @@
+﻿@page
+@using CourseHub.Core.Helpers.Business;
+@using CourseHub.UI.Helpers.Http;
+@using CourseHub.UI.Helpers.Utils;
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<style>
+	.intro-newslatter .site-btn {
+		margin: auto;
+		display: block;
+		width: 30%;
+	}
+
+	.hero-section {
+		height: 600px;
+	}
+</style>
+<link rel="stylesheet" href="~/css/common-app-css.5b914d85e01ba6db2ad0.css">
+<link rel="stylesheet" href="~/css/search-main.css">
+<style>
+	body {
+		display: unset;
+	}
+
+	/*.u-all-course {
+		margin-top: 160px;
+	}*/
+
+	.list-course>div {
+		float: left;
+	}
+
+	.u-number-page a {
+		padding: 12px 24px;
+	}
+</style>
+
+
+<div id="preloder">
+	<div class="loader"></div>
+</div>
+
+
+<!-- Header section end -->
+<!-- Hero section -->
+<section class="hero-section set-bg" data-setbg="img/home.jpg">
+	<div class="container">
+		<div class="hero-text text-white">
+			<h2>Get The Best Online Courses</h2>
+		</div>
+
+		@{
+			var client = await HttpContext.GetClientData();
+
+			if (client is null)
+			{
+				<div class="row">
+					<div class="col-lg-10 offset-lg-1">
+						<form class="intro-newslatter">
+							<!--<input type="text" placeholder="Name">
+							<input type="text" class="last-s" placeholder="E-mail">-->
+							<a href="@Global.PAGE_REGISTER" class="site-btn">Sign Up Now</a>
+						</form>
+					</div>
+				</div>
+			}
+		}
+	</div>
+</section>
+<!-- Hero section end -->
+
+
+
+
+
+
+
+
+<body data-new-gr-c-s-check-loaded="14.1126.0" data-gr-ext-installed="">
+   <main>
+	  <input type="hidden" id="txtNumberPage" name="txtNumberPage" value="1">
+	  <div class="style-combo" style="padding:15px 0">
+			@*await Html.PartialAsync(Global.PARTIAL_COURSE_CAROUSEL, (Model.Courses.Items, 6))*@
+
+		  <div class="container">
+			  <div class="section-title mb-0" style="margin-top: 40px; margin-bottom: 40px !important;">
+				  <h2>Featured Courses</h2>
+			  </div>
+		  </div>
+
+		  <div class="container">
+			<div class="row">
+				<div class="main-content" style="width: 100%;">
+				  <div class="u-all-course">
+					 <br>
+					 <section class="style-search" style="margin-left: 18px;">
+						<div class="list-course a">
+							@await Html.PartialAsync(Global.PARTIAL_COURSE_OVERVIEW, (Model.Courses.Items, 12))
+						</div>
+					 </section>
+				  </div>
+			   </div>
+			</div>
+		 </div>
+	  </div>
+   </main>
+</body>
+
+
+
+@section Scripts {
+	<script src="js/jquery.slicknav.js"></script>
+	<script>
+		'use strict';
+
+	(function ($) {
+		var hero_s = $(".hero__slider");
+		hero_s.owlCarousel({
+			loop: true,
+			margin: 0,
+			items: 1,
+			dots: true,
+			nav: true,
+			navText: ["<span class='arrow_carrot-left'></span>", "<span class='arrow_carrot-right'></span>"],
+			animateOut: 'fadeOut',
+			animateIn: 'fadeIn',
+			smartSpeed: 1200,
+			autoHeight: false,
+			autoplay: true,
+			mouseDrag: false
+		});
+	})(jQuery);
+	</script>
+}

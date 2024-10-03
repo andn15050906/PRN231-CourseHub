@@ -1,0 +1,105 @@
+﻿@using CourseHub.UI.Helpers.Http;
+@using CourseHub.UI.Helpers.Utils;
+@{
+    Layout = "_Layout";
+    ViewData[Global.TITLE] = "Profile";
+
+    Dictionary<string, string> text = new()
+    {
+        { "Settings", "Settings" },
+        { "ProfileSettings", "Profile Settings" },
+        { "ChangePassword", "Change Password" },
+        { "ReturnIndex", "Return Home Page" },
+        { "Profile", "Profile" },
+        { "AdminView", "Admin View"},
+        { "SignOut", "Sign Out" },
+        { "RequestInstructor", "Become an Instructor"}
+    };
+}
+
+@section Style {
+    <link rel="stylesheet" href="~/css/Profile/style.css">
+    <link rel="stylesheet" href="~/css/Profile/styleProfile.css">
+    <link rel="stylesheet" href="~/css/Profile/main.16480feb.css">
+    <link rel="stylesheet" href="~/css/Profile/793.a40e2718.chunk.css">
+    <style>
+        .dropdown-menu {
+            font-size: unset !important;
+        }
+    </style>
+}
+
+<div class="Setting_setting-wrapper__FdLtc">
+    <div class="Setting_sidebar-wrapper__OR4mJ">
+        <h1 class="Setting_heading__pfRml">@text["Settings"]</h1>
+        <ul class="Setting_sidebar-list__7Yj-I">
+            <li>
+                <a href="@Global.PAGE_PROFILE">
+                    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="user" class="svg-inline--fa fa-user Setting_icon__cYZ5C" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <path fill="currentColor"
+                            d="M272 304h-96C78.8 304 0 382.8 0 480c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32C448 382.8 369.2 304 272 304zM48.99 464C56.89 400.9 110.8 352 176 352h96c65.16 0 119.1 48.95 127 112H48.99zM224 256c70.69 0 128-57.31 128-128c0-70.69-57.31-128-128-128S96 57.31 96 128C96 198.7 153.3 256 224 256zM224 48c44.11 0 80 35.89 80 80c0 44.11-35.89 80-80 80S144 172.1 144 128C144 83.89 179.9 48 224 48z">
+                        </path>
+                    </svg><span>@text["ProfileSettings"]</span></a>
+            </li>
+            <li>
+                <a href="@Global.PAGE_CHANGE_PASSWORD">
+                    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="user" class="svg-inline--fa fa-user Setting_icon__cYZ5C" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <path fill="currentColor"
+                            d="M272 304h-96C78.8 304 0 382.8 0 480c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32C448 382.8 369.2 304 272 304zM48.99 464C56.89 400.9 110.8 352 176 352h96c65.16 0 119.1 48.95 127 112H48.99zM224 256c70.69 0 128-57.31 128-128c0-70.69-57.31-128-128-128S96 57.31 96 128C96 198.7 153.3 256 224 256zM224 48c44.11 0 80 35.89 80 80c0 44.11-35.89 80-80 80S144 172.1 144 128C144 83.89 179.9 48 224 48z">
+                        </path>
+                    </svg>
+                    <span>@text["ChangePassword"]</span>
+                </a>
+            </li>
+            @await RenderSectionAsync("SidebarLiItems", required: false)
+            
+            @{
+                var client = await Context.GetClientData();
+                if (client?.Role == Core.Entities.UserDomain.Enums.Role.Learner)
+                {
+                    <li>
+                        <a href="@Global.PAGE_INSTRUCTOR_REQUEST">
+                            <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="user" class="svg-inline--fa fa-user Setting_icon__cYZ5C" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path fill="currentColor" d="M272 304h-96C78.8 304 0 382.8 0 480c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32C448 382.8 369.2 304 272 304zM48.99 464C56.89 400.9 110.8 352 176 352h96c65.16 0 119.1 48.95 127 112H48.99zM224 256c70.69 0 128-57.31 128-128c0-70.69-57.31-128-128-128S96 57.31 96 128C96 198.7 153.3 256 224 256zM224 48c44.11 0 80 35.89 80 80c0 44.11-35.89 80-80 80S144 172.1 144 128C144 83.89 179.9 48 224 48z">
+                                </path>
+                            </svg>
+                            <span>@text["RequestInstructor"]</span>
+                        </a>
+                    </li>
+                }
+            }
+
+
+            <li>
+                <a href="@Global.PAGE_INDEX">
+                    <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="shield" class="svg-inline--fa fa-shield Setting_icon__cYZ5C" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                            d="M466.5 83.71l-192-80C269.6 1.67 261.3 0 256 0C250.7 0 242.5 1.67 237.6 3.702l-192 80C27.7 91.1 16 108.6 16 127.1c0 257.2 189.2 384 239.1 384c51.1 0 240-128.2 240-384C496 108.6 484.3 91.1 466.5 83.71zM256 446.5l.0234-381.1c.0059-.0234 0 0 0 0l175.9 73.17C427.8 319.7 319 417.1 256 446.5z">
+                        </path>
+                    </svg>
+                    <span>@text["ReturnIndex"]</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Global.PAGE_SIGNOUT">
+                    <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                        data-icon="shield" class="svg-inline--fa fa-shield Setting_icon__cYZ5C" role="img"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="currentColor"
+                            d="M466.5 83.71l-192-80C269.6 1.67 261.3 0 256 0C250.7 0 242.5 1.67 237.6 3.702l-192 80C27.7 91.1 16 108.6 16 127.1c0 257.2 189.2 384 239.1 384c51.1 0 240-128.2 240-384C496 108.6 484.3 91.1 466.5 83.71zM256 446.5l.0234-381.1c.0059-.0234 0 0 0 0l175.9 73.17C427.8 319.7 319 417.1 256 446.5z">
+                        </path>
+                    </svg><span>@text["SignOut"]</span></a>
+            </li>
+        </ul>
+    </div>
+
+    @RenderBody()
+</div>
+
+@section ValidateScript {
+    @await RenderSectionAsync(name: "ValidateScript", required: false);
+}
+
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false);
+}

@@ -1,0 +1,851 @@
+﻿@page
+@using System.Text.Json;
+@using CourseHub.Core.Entities.CommonDomain.Enums;
+@using CourseHub.UI.Helpers.Http;
+@model CourseHub.UI.Pages.Group.ConversationModel
+@{
+    Layout = "_GroupLayout";
+
+    Core.Models.Social.ConversationModel? currentConversation = Model.CurrentConversation;
+    ViewData[Global.TITLE] = !string.IsNullOrEmpty(currentConversation.Title)
+        ? currentConversation.Title
+        : "Conversation";
+
+    string[] reportMessages = new string[]
+    {
+        "Reporting due to harassment",
+        "Flagging false information",
+        "Reporting spam content",
+        "Reporting unauthorized sales"
+    };
+
+    var defaultAvatar = "if(this.src!='/img/User_Empty.png')this.src='/img/User_Empty.png'";
+
+    bool IsInConversation()
+    {
+        return Model.Conversations.Any(_ => _.Id == currentConversation.Id);
+    }
+}
+
+@section Style {
+    <style>
+        .report_btn {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        .report_group button {
+            padding: 5px;
+            font-size: 18px;
+            background-color: #d82a4e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .popup-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1;
+        }
+
+        .popup-box.show {
+            display: block;
+        }
+
+        .box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .close-icon {
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .box h2 {
+            margin: 0 0 20px;
+            border-bottom: 1px solid #ccc;
+            padding: 0 0 5px;
+            color: #333;
+        }
+
+        .box .content {
+            margin: 20px 0;
+            max-height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+
+            /**/
+            width: 250px;
+        }
+
+        .box .content p {
+            margin: 0 0 5px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .box .content button {
+            width: 100%;
+            margin: 0 auto 10px;
+        }
+
+        .greenBtn {
+            background: #5cb85c;
+            width: 100%;
+            color: #fff;
+            border: 0;
+            outline: none;
+            font-size: 15px;
+            height: 35px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .greenBtn:hover {
+            background-color: green;
+            color: white;
+        }
+
+        .swal-modal {
+            font-family: sans-serif;
+        }
+
+        .swal-text {
+            text-align: center;
+        }
+    </style>
+    <style>
+        #app-members-nav {
+            margin-bottom: 1rem !important;
+        }
+
+        .app-member-modal .card {
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-member-modal .card-body {
+            padding: 0;
+        }
+    </style>
+}
+
+
+@section RelatedUsers {
+    @foreach (var user in Model.RelatedUsers.Take(3))
+    {
+        if (user.Key != Model.Client.Id)
+        {
+            <a href="#" class="d-block text-reset mr-7 mr-lg-6">
+                <div class="avatar avatar-sm avatar-online mb-3">
+                    <img class="avatar-img app-fallback-avatar" src="@user.Value.AvatarUrl" alt="Avatar" onerror="@defaultAvatar">
+                </div>
+                <div class="small">@user.Value.FullName</div>
+            </a>
+        }
+    }
+}
+
+@section Conversations {
+    @foreach (var conversation in Model.Conversations)
+    {
+        <a class="text-reset nav-link p-0 mb-6" asp-page="@Global.PAGE_GROUP_CONVERSATION" asp-route-id="@conversation.Id">
+            <div class="card card-active-listener">
+                <div class="card-body">
+                    <div class="media">
+                        <div class="avatar mr-5">
+                            <img class="avatar-img app-fallback-avatar" src="@conversation.AvatarUrl" alt="" onerror="@defaultAvatar">
+                        </div>
+                        <div class="media-body overflow-hidden">
+                            <div class="d-flex align-items-center mb-1">
+                                <h6 class="text-truncate mb-0 mr-auto">@conversation.Title</h6>
+                                <!--<p class="small text-muted text-nowrap ml-4">10:42 am</p>-->
+                            </div>
+                            <!--<div class="text-truncate">Anna Bridges: Hey, Maher! How are you? The weather is great isn't it?</div>-->
+                        </div>
+                    </div>
+                </div>
+
+                <!--<div class="badge badge-circle badge-primary badge-border-light badge-top-right">
+                    <span>3</span>
+                </div>-->
+            </div>
+        </a>
+    }
+}
+
+@section Main {
+    <div class="main main-visible" data-mobile-height="">
+
+        <!-- Chat -->
+        <div id="chat-2" class="chat dropzone-form-js" data-dz-url="some.php">
+
+            <!-- Chat: body -->
+            <div class="chat-body">
+
+                <!-- Chat: Header -->
+                <div class="chat-header border-bottom py-4 py-lg-6 px-lg-8">
+                    <div class="container-xxl">
+
+                        <div class="row align-items-center">
+
+                            <!-- Close chat(mobile) -->
+                            <div class="col-3 d-xl-none">
+                                <ul class="list-inline mb-0">
+                                    <li class="list-inline-item">
+                                        <a class="text-muted px-0" href="#" data-chat="open">
+                                            <i class="icon-md fe-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Chat photo -->
+                            <div class="col-6 col-xl-6">
+                                <div class="media text-center text-xl-left">
+                                    <div class="avatar avatar-sm d-none d-lg-inline-block mr-5">
+                                        <img src="@currentConversation.AvatarUrl" class="avatar-img" alt="" onerror="@defaultAvatar">
+                                    </div>
+
+                                    <div class="media-body align-self-center text-truncate">
+                                        <h6 class="text-truncate mb-n1">@currentConversation.Title</h6>
+                                        <!--<span class="badge badge-dot badge-success d-inline-block d-xl-none mr-1"></span>
+                                        <small class="text-muted">Online</small>-->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Chat toolbar -->
+                                    
+                            @if (IsInConversation())
+                            {
+                                <div class="col-3 col-xl-6 text-right">
+                                    <ul class="nav justify-content-end">
+                                        <li>
+                                            <a asp-page="@Global.PAGE_GROUP_CALL" asp-route-id="@Model.CurrentConversation?.Id" class="nav-link text-muted px-3" title="Join Group's Video Call">
+                                                <i class="fa fa-video-camera"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="app-member-list-btn" class="nav-link text-muted px-3" title="Conversation's Members">
+                                                <i class="fa fa-users"></i>
+                                            </a>
+                                        </li>
+                                        @if (Model.Admins.Contains(Model.Client.Id))
+                                        {
+                                            <li>
+                                                <a href="#" id="app-edit-btn" class="nav-link text-muted px-3" title="Edit Conversation">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (!Model.CurrentConversation.IsPrivate)
+                                        {
+                                            <li>
+                                                <a href="#" id="app-member-btn" class="nav-link text-muted px-3" title="Add Members">
+                                                    <i class="fa fa-user-plus"></i>
+                                                    <!--<i class="icon-md fe-user-plus"></i>-->
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (!Model.Admins.Contains(Model.Client.Id))
+                                        {
+                                            <li>
+                                                <a href="#" id="reportBtn" class="nav-link text-muted px-3" title="Report Conversation">
+                                                    Report
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+
+                            @*<div class="col-3 col-xl-6 text-right">
+                                <ul class="nav justify-content-end">
+                                    <li class="nav-item list-inline-item d-none d-xl-block mr-3">
+                                        <a class="nav-link text-muted px-3" data-toggle="collapse" data-target="#chat-2-search" href="#" title="Search this chat">
+                                            <i class="icon-md fe-search"></i>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item list-inline-item d-none d-xl-block mr-0">
+                                        <a class="nav-link text-muted px-3" href="#" data-chat-sidebar-toggle="#chat-2-info" title="Details">
+                                            <i class="icon-md fe-more-vertical"></i>
+                                        </a>
+                                    </li>
+
+                                    <!-- Mobile nav -->
+                                    <li class="nav-item list-inline-item d-block d-xl-none">
+                                        <div class="dropdown">
+                                            <a class="nav-link text-muted px-0" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="icon-md fe-more-vertical"></i>
+                                            </a>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item d-flex align-items-center" data-toggle="collapse" data-target="#chat-2-search" href="#">
+                                                    Search <span class="ml-auto pl-5 fe-search"></span>
+                                                </a>
+
+                                                <a class="dropdown-item d-flex align-items-center" href="#" data-chat-sidebar-toggle="#chat-2-info">
+                                                    Chat Info <span class="ml-auto pl-5 fe-more-horizontal"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!-- Mobile nav -->
+                                </ul>
+                            </div>*@
+
+                        </div><!-- .row -->
+
+                    </div>
+                </div>
+                <!-- Chat: Header -->
+
+                @if (IsInConversation())
+                {
+                    <!-- Chat: Content-->
+                    <div class="chat-content px-lg-8">
+                        <div id="app-message-lst" class="container-xxl py-6 py-lg-10">
+                        </div>
+                        <!-- Scroll to end -->
+                        <div class="end-of-chat"></div>
+                    </div>
+                    <!-- Chat: Content -->
+
+                    <!-- Chat: DropzoneJS container -->
+                    <div class="chat-files hide-scrollbar px-lg-8">
+                        <div class="container-xxl">
+                            <div class="dropzone-previews-js form-row py-4"></div>
+                        </div>
+                    </div>
+                    <!-- Chat: DropzoneJS container -->
+
+                    <!-- Chat: Footer -->
+                    <div class="chat-footer border-top py-4 py-lg-6 px-lg-8">
+                        <div class="container-xxl">
+
+                            <form id="chat-id-2-form" data-emoji-form="">
+                                <div class="form-row align-items-center">
+                                    <div class="col">
+                                        <div class="input-group">
+
+                                            <!-- Textarea -->
+                                            <textarea id="app-chat-input" class="form-control bg-transparent border-0" placeholder="Type your message..." rows="1" data-emoji-input="" data-autosize="true" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 46px;"></textarea>
+
+                                            <!-- Emoji button -->
+                                            <div class="input-group-append">
+                                                <button class="btn btn-ico btn-secondary btn-minimal bg-transparent border-0" type="button" data-emoji-btn="">
+                                                    <img src="" data-inject-svg="" alt="">
+                                                </button>
+                                            </div>
+
+                                            <!-- Upload button -->
+                                            <div class="input-group-append">
+                                                <button id="chat-upload-btn-2" class="btn btn-ico btn-secondary btn-minimal bg-transparent border-0 dropzone-button-js dz-clickable" type="button">
+                                                    <img src="" data-inject-svg="" alt="">
+                                                </button>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Submit button -->
+                                    <div class="col-auto">
+                                        <button id="app-send-btn" class="btn btn-ico btn-primary rounded-circle" type="button">
+                                            <span class="fe-send"></span>
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                    <!-- Chat: Footer -->
+                }
+                else {
+                    <!-- Chat: Content-->
+                    <div class="chat-content px-lg-8" style="display: flex; justify-content: center; align-items: center;">
+                        <h1>You are not in this conversation</h1>
+                    </div>
+                    <!-- Chat: Content -->
+                }
+                <!-- Chat: Footer -->
+            </div>
+            <!-- Chat: body -->
+
+            <!-- Chat Details -->
+            <div id="chat-2-info" class="chat-sidebar">
+                <div class="d-flex h-100 flex-column">
+
+                    <!-- Header -->
+                    <div class="border-bottom py-4 py-lg-6">
+                        <div class="container-fluid">
+
+                            <ul class="nav justify-content-between align-items-center">
+                                <!-- Close sidebar -->
+                                <li class="nav-item list-inline-item">
+                                    <a class="nav-link text-muted px-0" href="#" data-chat-sidebar-close="">
+                                        <i class="icon-md fe-chevron-left"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Title(mobile) -->
+                                <li class="text-center d-block d-lg-none">
+                                    <h6 class="mb-n2">Anna Bridges</h6>
+                                    <small class="text-muted">Chat Details</small>
+                                </li>
+
+                                <!-- Dropdown -->
+                                <li class="nav-item list-inline-item">
+                                    <div class="dropdown">
+                                        <a class="nav-link text-muted px-0" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="icon-md fe-sliders"></i>
+                                        </a>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item d-flex align-items-center" href="#">
+                                                Mute
+                                                <span class="ml-auto fe-bell"></span>
+                                            </a>
+                                            <a class="dropdown-item d-flex align-items-center" href="#">
+                                                Delete
+                                                <span class="ml-auto fe-trash-2"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <!-- Header -->
+
+                    <!-- Body -->
+                    <div class="hide-scrollbar flex-fill">
+                    </div>
+                    <!-- Body -->
+                </div>
+            </div>
+            <!-- Chat Details -->
+        </div>
+        <!-- Chat -->
+    </div>
+
+
+
+
+
+    
+    <!--Modal - Invite -->
+    <div class="modal fade" id="app-invite-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header pb-1">
+                    <div class="modal-title d-flex">
+                        <i class="fas fa-user-friends"></i><h5 class="ml-2">Invite new members</h5>
+                    </div>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body px-0">
+                    <form>
+                        <div class="d-flex justify-content-around">
+                            <div class="form-group">
+                                <input id="app-invite-autocomplete-input" type="text" class="form-control form-control-lg" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
+                                <div class="input-group-append">
+                                    <a class="btn btn-lg btn-ico btn-secondary btn-minimal" href="#">
+                                        <i class="fe-search"></i>
+                                    </a>
+                                </div>
+                                <ul id="app-invite-autocomplete-ul" class="app-autocomplete-ul">
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="d-flex px-4">
+                            <span>+ Add another person</span>
+                            <span class="pl-4"><i class="fas fa-envelope mr-2"></i>Add custom message</span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer mt-1">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Invite</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="popup-box" id="popupBox">
+        <div class="box">
+            <button type="button" class="close" id="close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h2>Report this group</h2>
+            <div class="content">
+                @foreach (var message in reportMessages)
+                {
+                    <button class="report-message greenBtn" data-message="@message">@message</button>
+                }
+            </div>
+            <button class="greenBtn" type="submit" id="submit">Submit report</button>
+        </div>
+    </div>
+
+
+
+    @await Html.PartialAsync("_PartialDeleteModal", ("message", Model.DeleteMessagePath))
+
+
+
+    <!-- Member List Modal -->
+    <div class="modal fade app-member-modal" id="app-members-lst-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-uppercase text-danger">Conversation members</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @foreach (var member in Model.RelatedUsers.Values.Where(_ => Model.MemberIds.Contains(_.Id)))
+                    {
+                        <div class="card mb-6">
+                            <div class="card-body">
+                                <div class="media">
+                                    <div class="avatar mr-5">
+                                        <img class="avatar-img" src="@member.AvatarUrl" alt="@member.FullName" onerror="@defaultAvatar">
+                                    </div>
+                                    <div class="media-body align-self-center mr-6">
+                                        <h6 class="mb-0">@member.FullName</h6>
+                                        <!--<small class="text-muted">Online</small>-->
+                                    </div>
+                                    @if (Model.Admins.Contains(member.Id))
+                                    {
+                                        <div class="align-self-center ml-auto">
+                                            Admin <i class="fa fa-star" style="color: yellow"></i>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <label class="stretched-label" for="id-user-@member.Id"></label>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Edit Modal -->
+    <div class="modal fade app-member-modal" id="app-edit-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-uppercase text-danger">Edit conversation</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form asp-page-handler="Edit" id="app-edit-form" method="post" enctype="multipart/form-data">
+                        <input asp-for="UpdateDto.Id" value="@Model.CurrentConversation.Id" hidden />
+
+                        <div class="form-group">
+                            <label class="small">Photo</label>
+                            <div class="position-relative text-center bg-secondary rounded p-6">
+                                <div class="avatar bg-primary text-white mb-5">
+                                    <i class="icon-md fe-image"></i>
+                                </div>
+
+                                <p class="small text-muted mb-0">You can upload jpg, gif or png files. <!--<br> Max file size 3mb.--></p>
+                                    <input asp-for="UpdateDto.Avatar.File" id="upload-chat-photo" class="d-none" type="file" accept="image/png, image/gif, image/jpeg">
+                                <label class="stretched-label mb-0" for="upload-chat-photo"></label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="small" for="new-chat-title">Title</label>
+                                <input asp-for="UpdateDto.Title" class="form-control form-control-lg" id="new-chat-title"
+                                    type="text" value="@Model.CurrentConversation.Title" required>
+                        </div>
+
+                        <div class="pb-6">
+                            <div class="container-fluid">
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Update conversation</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Add Members Modal -->
+        <div class="modal fade app-member-modal" id="app-members-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-uppercase text-danger">Add Members to the Group</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @foreach (var member in Model.RelatedUsers.Values.Where(_ => !Model.MemberIds.Contains(_.Id)).Take(6))
+                    {
+                        <div class="card mb-6">
+                            <div class="card-body">
+                                <div class="media">
+                                    <div class="avatar mr-5">
+                                        <img class="avatar-img" src="@member.AvatarUrl" alt="@member.FullName" onerror="@defaultAvatar">
+                                    </div>
+                                    <div class="media-body align-self-center mr-6">
+                                        <h6 class="mb-0">@member.FullName</h6>
+                                        <!--<small class="text-muted">Online</small>-->
+                                    </div>
+
+                                    <div class="align-self-center ml-auto">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="app-add-member custom-control-input" data-val="@member.Id" id="id-user-@member.Id" type="checkbox">
+                                            <label class="custom-control-label" for="id-user-@member.Id"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <label class="stretched-label" for="id-user-@member.Id"></label>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="app-invite-btn" class="btn btn-outline-primary" data-bs-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Script {
+    <script type="module">
+        import { createMessage } from '/js/pages/conversationElements.js';
+        import { getClientData, setClientData, setUserInfo } from '/js/common/storage.js';
+        import { ChatHandler } from '/js/chat/chatHandler.js';
+
+        @if (Model.CurrentConversation != null)
+        {
+            @Html.Raw("window.conversationId = '" + Model.CurrentConversation.Id + "'");
+        }
+
+        var client = @Html.Raw(JsonSerializer.Serialize(Model.Client, SerializeOptions.JsonCamelCaseOptions));
+        /*var currentClient = getClientData();
+        if (!currentClient || currentClient.id != client.id) {
+            setClientData(client);
+        }*/
+        setClientData(client);
+
+        var relatedUsers = @Html.Raw(JsonSerializer.Serialize(Model.RelatedUsers.Values, SerializeOptions.JsonCamelCaseOptions));
+        for (var user of relatedUsers) {
+            setUserInfo(user.id, user);
+        }
+
+        @if (Model.Messages.Count > 0)
+        {
+            @Html.Raw("let tempChatHandler = new ChatHandler(document.getElementById('app-message-lst'), createMessage, []);");
+
+            @Html.Raw("var messageJson;")
+            @foreach (var message in Model.Messages)
+            {
+                @Html.Raw("messageJson =" + JsonSerializer.Serialize(message, SerializeOptions.JsonCamelCaseOptions) + ";");
+                @Html.Raw("tempChatHandler.addMessage(messageJson);");
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="module">
+        import { postJsonWithCredentials } from '/js/apis/http.js';
+
+        window.postJsonWithCredentials = postJsonWithCredentials;
+    </script>
+
+    <script>
+
+        /*var inviteAutocomplete = document.getElementById('app-invite-autocomplete-input');
+        var inviteAutocompleteUl = document.getElementById('app-invite-autocomplete-ul');
+        inviteAutocomplete.addEventListener('input', function() {
+            var inputVal = inviteAutocomplete.value;
+            if (inputVal.length >= 2) {
+                //...
+            }
+        });*/
+        
+        var memberListEle = document.getElementById('app-member-list-btn');
+        memberListEle.onclick = () => {
+            $("#app-members-lst-modal").modal('toggle');
+        }
+
+
+
+        var editEle = document.getElementById('app-edit-btn');
+        if (editEle) {
+            editEle.onclick = () => {
+                $("#app-edit-modal").modal('toggle');
+            }
+        }
+
+
+
+        var addMemberEle = document.getElementById('app-member-btn');        
+        addMemberEle.onclick = () => {
+            $("#app-members-modal").modal('toggle');
+        }
+        
+        var inviteBtn = document.getElementById('app-invite-btn');
+        inviteBtn.onclick = () => {
+            var receivers = [];
+            var receiverInputs = document.getElementsByClassName('app-add-member');
+            for (var input of receiverInputs) {
+                if (input.checked)
+                    receivers.push(input.getAttribute('data-val'));
+            }
+                
+            console.log(receivers);
+
+            if (receivers.length == 0) {
+                swal({
+                    title: "Error",
+                    text: "No one has been invited",
+                    icon: "info",
+                    buttons: {
+                        confirm: "Okay"
+                    },
+                    closeOnClickOutside: false
+                });
+
+                return;
+            }
+
+            /* CreateInvitationDto */
+            var jsonMessage = {
+                "Conversation": "@Model.CurrentConversation?.Id"
+            }
+
+            window.postJsonWithCredentials("@Model.InviteMemberPath", {
+                Message: JSON.stringify(jsonMessage),
+                Type: @((byte)NotificationType.InviteMember),
+                ReceiverIds: receivers
+            }).then(res => {
+                if (res.ok) {
+                    swal({
+                        title: "Success",
+                        text: "",
+                        icon: "success",
+                        buttons: {
+                            confirm: "Okay"
+                        },
+                        closeOnClickOutside: false
+                    });
+                    closePopup();
+                }
+            });
+        }
+
+        
+        
+        const reportBtn = document.getElementById('reportBtn');
+        const popupBox = document.getElementById('popupBox');
+        const closeBtn = document.getElementById('close');
+        const submitbtn = document.getElementById('submit');
+
+        if (reportBtn) {
+            reportBtn.addEventListener('click', () => {
+                popupBox.classList.add('show');
+            });
+        }
+
+        var selectedReportMessage = '';
+        var reportMessageBtns = document.getElementsByClassName('report-message');
+        for (let btn of reportMessageBtns) {
+            btn.onclick = () => {
+                selectedReportMessage = btn.getAttribute('data-message');
+            }
+        }
+
+        //...
+        function openDelete(messageId) {
+            window.showDeleteModal(messageId);
+            window.postDelete = () => {
+                var removed = document.getElementById(`app-msg-${messageId}`);
+                removed.remove();
+            }
+        }
+
+        function closePopup() {
+            popupBox.classList.remove('show');
+        }
+
+        closeBtn.addEventListener('click', closePopup);
+
+        submitbtn.addEventListener('click', () => {
+            event.preventDefault();
+
+            /* CreateConversationReportDto */
+            var jsonMessage = {
+                "Message" : selectedReportMessage,
+                "Conversation": "@Model.CurrentConversation?.Id"
+            }
+
+            window.postJsonWithCredentials("@Model.ReportPath", {
+                Message : JSON.stringify(jsonMessage),
+                Type: @((byte)NotificationType.ReportGroup)
+            }).then(res => {
+                swal({
+                    title: "Success",
+                    text: "",
+                    icon: "success",
+                    buttons: {
+                        confirm: "Okay"
+                    },
+                    closeOnClickOutside: false
+                });
+                closePopup();
+            });
+        });
+    </script>
+
+    <script src="~/vendor/@@microsoft/signalr/signalr.min.js"></script>
+    <script type="module" src="/js/apis/hubGateway.js"></script>
+    <script type="module" src="/js/pages/conversation.js"></script>
+}

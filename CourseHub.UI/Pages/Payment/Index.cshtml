@@ -1,0 +1,380 @@
+﻿@page
+@using CourseHub.Core.Helpers.Business;
+@model CourseHub.UI.Pages.Payment.IndexModel
+@{
+    Guid courseId = Model.Course.Id;
+    ViewData[Global.TITLE] = "Checkout";
+}
+
+
+@*
+        <link rel="stylesheet" href="./css/common.css">
+        <link rel="stylesheet" href="./css/reset.css">
+        <link rel="stylesheet" href="./css/cart.css">
+        *@
+
+<style>
+    main {
+        margin-top: 100px;
+    }
+
+    span {
+        font-size: 18px;
+    }
+
+    /*.app-checkout-container {
+        display: flex;
+        margin-top: 100px;
+        margin-bottom: 200px;
+    }*/
+
+    .cart-lst {
+        width: 100%;
+    }
+
+    .cart-container {
+        display: flex;
+        margin-bottom: 40px;
+    }
+
+    .cart-products-container {
+        padding: 20px 32px;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px;
+        margin-right: 20px;
+        margin-left: 32px;
+        height: 300px;
+        width: 80%;
+    }
+
+    .container-header {
+        font-weight: 600;
+        padding: 0px;
+        text-align: center;
+    }
+
+    .container-body {
+        margin-top: 16px;
+        padding: 16px 0px;
+        border-top: 2px solid var(--background-3);
+    }
+
+
+
+
+
+    .product-lst-header {
+        display: flex;
+    }
+
+    .product-lst-header>:first-child,
+    .cart-item-product {
+        flex-basis: 60%;
+    }
+
+    .product-lst-header>:nth-child(2),
+    .product-lst-header>:nth-child(3),
+    .cart-item-unit-price,
+    .cart-item-total {
+        flex-basis: 20%;
+    }
+
+    .cart-item {
+        display: flex;
+    }
+
+    .cart-item>div {
+        padding: 20px 0 20px 0;
+    }
+
+    .cart-item-product {
+        display: flex;
+    }
+
+    .cart-item-product>:first-child {
+        flex-basis: 40%;
+        box-sizing: border-box;
+        margin-right: 40px;
+    }
+
+    .cart-item-product>:first-child>:first-child>img {
+/*        width: 100%;
+        aspect-ratio: 1;*/
+        height: 70%;
+    }
+
+    .cart-item-product>:last-child {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-right: 40px;
+        flex-basis: 100%;
+    }
+
+    .cart-item-product>:last-child>:first-child {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .cart-item-product>:last-child>:last-child {
+        display: flex;
+    }
+
+    .quantity-bar {
+        display: flex;
+        width: 160px;
+        text-align: center;
+        margin-left: 12px;
+    }
+
+    .quantity-bar>button {
+        flex-basis: 30%;
+        border: 1px solid var(--background-3);
+    }
+
+    .quantity-bar>div {
+        flex-basis: 40%;
+        border-top: 1px solid var(--background-3);
+        border-bottom: 1px solid var(--background-3);
+    }
+
+    .cart-item-unit-price>:first-child {
+        /*text-decoration: line-through;*/
+        text-decoration-thickness: 2px;
+    }
+
+    .cart-item-total {
+        color: var(--contrast-1);
+    }
+
+    .right-side-bar {
+        width: 30%;
+    }
+
+    .cart-checkout-container
+
+    /*,ads-container*/
+        {
+        padding: 20px 30px;
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 3px 8px;
+        height: 300px;
+    }
+
+    .cart-checkout-container>.container-body>div {
+        display: flex;
+        justify-content: space-between;
+        margin: 12px 0 12px 0;
+    }
+
+    .cart-checkout-container>.container-body>div:nth-child(3) {
+        padding-top: 16px;
+        border-top: 2px solid var(--background-3);
+    }
+
+    .cart-checkout-container>.container-body>:last-child>button {
+        margin: 0 auto;
+        padding: 12px;
+        background-color: var(--primary-1);
+        color: var(--text-2)
+    }
+
+    /*.table-cell-col-2>div {
+        margin-left: 8px;
+    }
+
+    .table-cell-right-text {
+        width: 30%;
+    }*/
+
+    .address-input-group label {
+        margin: 0;
+        flex-basis: 30%;
+    }
+
+    .address-input-group input {
+        border: 1px solid #000;
+        width: 100%;
+    }
+
+    .address-input-group>div {
+        display: flex;
+        align-items: center;
+    }
+
+    .address-input-group>div>div {
+        flex-basis: 50%;
+    }
+
+    .address-input-group>div>div {
+        padding: 4px;
+    }
+
+    .checkout-product {
+        display: flex;
+    }
+
+    .checkout-product:first-child {
+        margin-top: 16px;
+    }
+
+    .checkout-product:not(:first-child) {
+        border-top: 1px solid rgba(0, 0, 0, 0.25);
+        margin-top: 8px;
+    }
+
+    .checkout-product>:first-child {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+
+        flex-basis: 70%;
+    }
+
+    .checkout-product>:last-child {
+        flex-grow: 1;
+        text-align: end;
+    }
+
+    /*.ads-container {
+        margin-top: 20px;
+    }*/
+
+
+
+
+
+
+
+    /*for bootstrap*/
+
+    .modal-dialog {
+        transform: translateX(-50%) !important;
+    }
+
+    .modal-content {
+        /*width: 200%;*/
+    }
+
+    /*h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-size: initial;
+    }
+
+    .modal-open {
+        overflow: initial;
+        padding-right: unset !important;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+    p {
+        margin: unset !important;
+    }*/
+
+    #app-alert {
+        margin-bottom: 40px !important;
+        padding: 12px !important;
+    }
+</style>
+
+
+
+
+
+
+@await Html.PartialAsync("Shared/_Alert")
+
+<div style="display: flex; width: 70%; margin: 0 auto;">
+    <div class="main" style="width: 60%; flex-grow: 1;">
+        <div class="app-checkout-container">
+            <div id="cart-lst" class="cart-lst">
+                <div class="cart-container">
+                    <div class='cart-products-container'>
+                        <div class="container-header">
+                            <h1>Course</h1>
+                        </div>
+                        <div class="container-body">
+                            <div class="product-lst-header">
+                                <h3>Thumb</h3>
+                                <h3>Title</h3>
+                                <h3>Price</h3>
+                                <h3>Discount</h3>
+                            </div>
+                            <div class="cart-lst-body">
+                                <div class="cart-item">
+                                    <div class="cart-item-product">
+                                        <div>
+                                            <div>
+                                                <img src="@Model.Course.ThumbUrl" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="cart-item-unit-price">
+                                        <span>@Model.Course.Title</span>
+                                    </div>
+                                    <div class="cart-item-unit-price">
+                                        <span>@Model.Course.Price</span>
+                                    </div>
+                                    <div class="cart-item-unit-price">
+                                        <span>@Model.Course.Discount %</span>
+                                    </div>
+                                    <!--<div class="cart-item-total">
+                                        <h5>
+                                            <span>@CourseBusinessHelper.GetPostDiscount(Model.Course.Price, Model.Course.Discount, Model.Course.DiscountExpiry)</span>
+                                            <span>₫</span>
+                                        </h5>
+                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+
+
+
+
+
+    <div class="right-side-bar">
+        <div class="cart-checkout-container">
+            <div class="container-header">
+                <h1>Checkout</h1>
+            </div>
+
+            <div class="container-body">
+                <div>
+                    <h3>Saved:</h3>
+                    <span>
+                        <span>@((int)(Model.Course.Price * Model.Course.Discount))</span>
+                        <span>₫</span>
+                    </span>
+                </div>
+
+                <div>
+                    <h3>Total: </h3>
+                    <span>
+                        <span>@CourseBusinessHelper.GetPostDiscount(Model.Course.Price, Model.Course.Discount, Model.Course.DiscountExpiry)</span>
+                        <span>₫</span>
+                    </span>
+                </div>
+
+                <div style="justify-content: center">
+                    <form method="post">
+                        <input type="submit" class="btn" style="padding: 12px 24px;" value="Buy course" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

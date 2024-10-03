@@ -1,0 +1,354 @@
+﻿@page
+@model CourseHub.UI.Pages.Instructor.WithdrawModel
+@{
+    ViewData[Global.TITLE] = "Course withdrawal";
+}
+
+
+
+<link rel="stylesheet" href="~/css/Misc/withdraw.css" />
+<style>
+    .app-withdrawals-container {
+        width: 40%;
+        margin: 0 auto;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+    -moz-appearance: textfield;
+    }
+</style>
+<style>
+    #dataTable th, #dataTable td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    #dataTable tr {
+        height: 60px;
+    }
+</style>
+
+
+
+<div style="margin: 10px;">
+    <div>
+        <h1>Hi @Model.Client.FullName,</h1>
+    </div>
+    <div style="display: flex; justify-content: center;">
+        <h2>Balance: @Model.Balance đ</h2>
+        <br />
+    </div>
+
+
+
+    <form method="post" id="app-form">
+        <input asp-for="Balance" value="@Model.Balance" type="hidden" />
+
+        <div class="list-mb24 list-last-mb app-withdrawals-container">
+                                                <div class="tab-content">
+                                                    <div class="tab-pane fade show tab1 active">
+                                                        <div class="row list-mb16 list-crop">
+
+                                                            <div style="width: 100%; display: flex; justify-content: center;">
+                                                                @await Html.PartialAsync("Shared/_Alert")
+                                                            </div>
+
+                                                            <div class="col-12">
+                                                                <div class="form-group">
+                                                                    <div class="input-group-wrap input-default input-size-default input-group-vertical"
+                                                                        style="justify-content: space-between">
+                                                                        <label class="input-label">
+                                                                            <div class="inner">Gateway</div>
+                                                                        </label>
+                                                                        <select asp-for="Dto.Gateway" class="form-control" style="width: 30%">
+                                                                            <option value="VNPay">VNPay</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="errorBlock"></div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-12">
+                                                                <div class="form-group">
+                                                                    <div class="input-group-wrap input-default input-size-default input-group-vertical">
+                                                                        <label class="input-inner-wrap">
+                                                                            @*  //...
+                                                                                maxlength="19" minlength="14"
+                                                                            *@
+                                                                            <input asp-for="Dto.AccountNumber" type="text"
+                                                                                pattern="[0-9]{14,19}" title="Account number must be between 14 and 19 digits."
+                                                                                class="input input-label-change input-has-clear" placeholder="Card Number"
+                                                                                id="card_number_mask" autocorrect="off" required="required"
+                                                                                inputmode="numeric" data-parsley-errors-container="#err-card">
+                                                                            <input type="hidden" id="cardNumber" name="cardNumber" placeholder="Nhập số thẻ" required="required" minlength="14" maxlength="19" autocorrect="off" data-parsley-errors-container="#err-card">
+                                                                            <label class="input-label">
+                                                                                <div class="inner">
+                                                                                    @*Số thẻ*@
+                                                                                    Card Number
+                                                                                </div>
+                                                                            </label>
+                                                                            <!--
+                                                                            <div class="input-extend input-extend-right">
+                                                                                <div class="input-box input-ic-clear"></div>
+                                                                                <div class="input-box input-extend-inner">
+                                                                                    <div class="logo-brands-small">
+                                                                                        <img src="/paymentv2/images/img/logos/bank/big/ncb.svg">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>-->
+                                                                            <div class="input-frame"></div>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="errorBlock" id="err-card"></div>
+                                                                </div>
+                                                                <!-- end form.input -->
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="form-group">
+                                                                    <div class="input-group-wrap input-default input-size-default input-group-vertical">
+                                                                        <label class="input-inner-wrap">
+                                @*placeholder="Nhập tên chủ thẻ (không dấu)"*@
+                                @*data-parsley-required-message="Quý khách vui lòng nhập Tên chủ thẻ" data-parsley-pattern-message="Tên chủ thẻ không hợp lệ"*@
+                                                                            <input asp-for="Dto.AccountHolderName" type="text"
+                                                                                class="input input-label-change input-has-clear" id="cardHolder"
+                                                                                placeholder="Card holder's name"
+                                                                                required="required" maxlength="35"
+                                                                                pattern="^\s*[a-zA-Z,\s]+\s*$" title="Account holder name must be alphabetic characters"
+                                                                                autocorrect="off">
+                                                                            <label class="input-label">
+                                                                                <div class="inner">
+                                                                                    @*Tên chủ thẻ*@Card holder's name
+                                                                                </div>
+                                                                            </label>
+                                                                            <div class="input-extend input-extend-right">
+                                                                                <div class="input-box input-ic-clear"></div>
+                                                                            </div>
+                                                                            <div class="input-frame"></div>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="errorBlock"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="form-group">
+                                                                    <div class="input-group-wrap input-default input-size-default input-group-vertical">
+                                                                        <label class="input-inner-wrap">
+                                                                            <input asp-for="Dto.Amount" id="app-input-amount" type="number" min="15000"
+                                                                                class="input input-label-change input-has-clear" required autocorrect="off">
+                                                                            <label class="input-label">
+                                                                                <div class="inner">Amount</div>
+                                                                            </label>
+                                                                            <div class="input-extend input-extend-right">
+                                                                                <div class="input-box input-ic-clear"></div>
+                                                                            </div>
+                                                                            <div class="input-frame"></div>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="errorBlock"></div>
+                                                                </div>
+                                                            </div>
+                                                            <!--<div class="col-6">
+                                                                <div class="form-group">
+                                                                    <div class="input-group-wrap input-default input-size-default input-group-vertical">
+                                                                        <label class="input-inner-wrap">
+                                                                            <input name="cardDate" id="cardDate" class="input input-label-change input-has-clear cleave-mm-yy" required="required" pattern="^(01|02|03|04|05|06|07|08|09|10|11|12)\/[0-9]{2,2}$" maxlength="5" placeholder="MM/YY" autocorrect="off" data-parsley-required-message="Quý khách vui lòng nhập Ngày phát hành" data-parsley-pattern-message="Tháng/năm không hợp lệ, vui lòng kiểm tra lại!" inputmode="numeric">
+                                                                            <label class="input-label">
+                                                                                <div class="inner">
+                                                                                    Ngày phát hành
+                                                                                    <div class="inline-block v-text-bottom">
+                                                                                        <div data-bs-tooltip="tooltip" title="" class="ubg-transparent ubox-size-ic-xxs ubox-square ubox-rounded ubox ubox-ic" data-bs-original-title="<img src='/Images/img/card-demo/date-release.svg' alt='' width='149' height='96'> <div class='p3 mt8'>Ngày phát hành được in trên mặt trước của thẻ. Ví dụ: 12/20</div>">
+                                                                                            <img src="/paymentv2/Images/icons-color/default/default/24x24-information-circle.svg" alt="" class="ic-default">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </label>
+                                                                            <div class="input-extend input-extend-right">
+                                                                                <div class="input-box input-ic-clear"></div>
+                                                                            </div>
+                                                                            <div class="input-frame"></div>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="errorBlock"></div>
+                                                                </div>
+                                                            </div>-->
+
+                                                                <!--<div class="col-12">
+        <div class="promo-section">
+            <div class="promo-inner">
+                <div class="list-mb12 list-crop">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="h3">
+                                Mã khuyến mại
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="promo-variable hidden">
+                                <span id="queryPromotionUrl">/paymentv2/Transaction/QueryPromotion.html</span>
+                                <span id="checkPromotionUrl">/paymentv2/Transaction/CheckPromotion.html</span>
+                            </div>
+                            <div class="promo-unselected">
+                                <div class="p1">
+                                    <a href="#" id="btnShowPromoModal" class="ubg-secondary ubox-size-button-sm ubg-hover ubg-active ubtn">
+                                        <div class="ubtn-inner">
+                                            <span class="ubtn-ic ubtn-ic-left">
+                                                <img src="/paymentv2/Images/icons-color/default2/default/24x24-promocode.svg" alt="" class="ic-default">
+                                            </span>
+                                            <span class="ubtn-text color-sub-default">Chọn hoặc nhập mã</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="promo-selected" style="display: none">
+                                <div class="ubg-success ubox-size-button-sm ubg-hover ubg-active ubtn ubtn-title-border position-relative">
+                                    <a href="#" id="btnPromoCodeSelected" class="ubox-size-default ubox-abs"></a>
+                                    <div class="ubtn-inner">
+                                        <input type="hidden" id="promoCode" name="promoCode">
+                                        <span id="promoCodeSelected" class="ubtn-text"></span>
+                                        <div class="order-2 position-relative">
+                                            <button id="removePromo" class="ubg-transparent ubox-size-button-xxs ubox-square ubg-hover ubg-active ubtn">
+                                                <div class="ubtn-inner">
+                                                    <span class="ubtn-ic ubtn-ic-left">
+                                                        <img src="/paymentv2/Images/icons-color/invert/default/24x24-close-circle.svg" alt="" class="ic-sm">
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row promo-selected" style="display: none">
+                        <div class="col">
+                            <div class="p1 color-sub-default">
+                                Số tiền khuyến mại
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="h3"><span id="promoDiscountAmount"></span><sup>VND</sup></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+                                                            <!--<input type="hidden" value="a68da1bb8f4f4140874927159ed8694a" name="ordertoken" id="ordertoken">-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="hide-on-qr-show list-mb24 list-last-mb ">
+                                                    <!--<a href="#" data-bs-toggle="modal" data-bs-target="#modalDKDKBIDV" class="link weight5 link-style-default">
+                                                        <img src="/paymentv2/images/icons-color/info/default/24x24-document.svg" alt="" class="ic-default">
+                                                        Điều kiện sử dụng dịch vụ
+                                                    </a>-->
+                                                    <div class="col-12 display_error" style="margin-top: 5% ; display: none">
+                                                        <div class="alert-box alert-box-danger ubg-sub-danger list-crop">
+                                                            <div class="alert-box-title">
+                                                                <div class="row row-8">
+                                                                    <!--<div class="col-auto ic">
+                                                                        <img src="/paymentv2/Images/icons-color/danger/default/24x24-alert.svg" alt="" class="ic-default">
+                                                                    </div>-->
+                                                                    <label class="col title weight5" id="lb_message_error">
+
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- button.btnGroup -->
+                                                    <div class="ubtn-group list-mb16 list-crop row row-16 justify-content-center group-col-2">
+                                                        @*<div class="group-col-item">
+                                                            <!-- button.button -->
+                                                            <a data-bs-toggle="modal" data-bs-target="#modalCancelPayment" class="ubg-secondary ubox-size-button-default ubg-hover ubg-active ubtn">
+                                                                <div class="ubtn-inner">
+                                                                    <span class="ubtn-text">Hủy thanh toán</span>
+                                                                </div>
+                                                            </a>
+                                                            <!-- end button.button -->
+                                                        </div>*@
+                                                        <div class="group-col-item">
+                                                            <!--<button type="submit" class="ubg-primary ubox-size-button-default ubg-hover ubg-active ubtn" id="btnContinue">
+                                                                <div class="ubtn-inner">
+                                                                    <span class="ubtn-text">Request withdrawal</span>
+                                                                </div>
+                                                            </button>-->
+
+                                                            <button type="submit" class="btn btn-outline-warning btn-lg" style="width: 100%;">Request withdrawal</button>
+                                                        </div>
+                                                    </div>
+                                                    <!-- end button.btnGroup -->
+                                                </div>
+                                            </div>
+    </form>
+</div>
+
+
+
+<div class="container-fluid" style="margin-top: 40px;">
+
+    <h1 style="font-size: 36px; text-align: center; margin-bottom: 12px">Withdrawal History</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Gateway</th>
+                            <th class="text-center">Account Number</th>
+                            <th class="text-center">Account Holder Name</th>
+                            <th class="text-center">Amount</th>
+                            <th class="text-center">Creation Time</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Notifications.TotalCount == 0)
+                        {
+                            <tr>
+                                <th style="text-align: center; color: red" colspan="10">Empty</th>
+                            </tr>
+                        }
+                        else foreach (var notification in Model.Notifications.Items)
+                        {
+                            var message = Model.Notification_Withdrawal[notification.Id];
+
+                            <tr>
+                                <td>
+                                    <div>@message.Gateway</div>
+                                </td>
+                                <td>
+                                    <div>@message.AccountNumber</div>
+                                </td>
+                                <td>
+                                    <div>@message.AccountHolderName</div>
+                                </td>
+                                <td>
+                                    <div>@message.Amount</div>
+                                </td>
+
+
+
+                                <td>
+                                    <div>@notification.CreationTime</div>
+                                </td>
+                                <td>
+                                    <div>@notification.Status</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
