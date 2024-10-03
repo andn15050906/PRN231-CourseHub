@@ -23,7 +23,8 @@ internal class CommentConfig : SqlServerEntityConfiguration<Comment>
             .ToTable(RelationsConfig.COMMENT)
             .SetColumnsTypes(Columns)
             .SetEnumParsing(_ => _.Status).SetEnumParsing(_ => _.SourceType)
-            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE);
+            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE)
+            .SetDefaultSQL(_ => _.LastModificationTime, SQL_GETDATE);
 
         builder.OwnsMany(_ => _.Medias, media =>
         {

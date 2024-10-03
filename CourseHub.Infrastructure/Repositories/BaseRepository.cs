@@ -42,6 +42,6 @@ public abstract class BaseRepository<T> : IRepository<T> where T : DomainObject
         short pageIndex, byte pageSize,
         bool asSplitQuery = false, params Expression<Func<T, object?>>[] includeExpressions)
     {
-        return new(DbSet, mappingConfig, whereExpression, pageIndex, pageSize, asSplitQuery, includeExpressions);
+        return new(Context, mappingConfig, whereExpression, pageIndex, pageSize, asSplitQuery, includeExpressions);
     }
 }

@@ -33,16 +33,15 @@ namespace CourseHub.Infrastructure.AccessContext
                 .ApplyConfiguration(new CategoryConfig())
                 .ApplyConfiguration(new EnrollmentConfig())
                 .ApplyConfiguration(new CourseReviewConfig())
-                .ApplyConfiguration(new CourseCouponConfig())
+                //.ApplyConfiguration(new CourseCouponConfig())
 
                 .ApplyConfiguration(new BillConfig())
-                .ApplyConfiguration(new PaymentAccountConfig())
 
                 .ApplyConfiguration(new AssignmentConfig())
                 .ApplyConfiguration(new McqQuestionConfig())
                 .ApplyConfiguration(new McqChoiceConfig())
                 .ApplyConfiguration(new SubmissionConfig())
-                
+
                 .ApplyConfiguration(new ConversationConfig())
                 .ApplyConfiguration(new ConversationMemberConfig())
                 .ApplyConfiguration(new ChatMessageConfig())

@@ -1,135 +1,254 @@
-﻿<!DOCTYPE html>
+﻿@using CourseHub.Core.Entities.CommonDomain.Enums;
+@using CourseHub.UI.Helpers.AppStart;
+@using CourseHub.UI.Helpers.Http;
+@using CourseHub.UI.Helpers.Utils;
+
+@{
+	Dictionary<string, string> text = new()
+	{
+		{ "SignIn", "Sign In" },
+		{ "Profile", "Profile" },
+		{ "Enrolled", "Enrolled Courses" },
+		{ "SignOut", "Sign Out" },
+		{ "AdminView", "Admin View" },
+		{ "InstructorView", "Instructor View" }
+	};
+
+	var client = await Context.GetClientData();
+	string notificationPath = Configurer.GetApiClientOptions().ApiServerPath + "/api/notifications";
+	string notificationGetPath = notificationPath + $"?ReceiverId={client?.Id}";
+	string conversationGetPath = "api/conversations";
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="WebUni Education Template">
-    <meta name="keywords" content="webuni, education, creative, html">
-    <title>@ViewData["Title"] - @Global.APP_NAME</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    @* <link rel="stylesheet" href="~/CourseHub.UI.styles.css" asp-append-version="true" /> *@
-    <!-- Favicon -->
-    <link href="~/img/favicon.ico" rel="shortcut icon" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="@Global.APP_NAME">
+	<meta name="keywords" content="@Global.APP_NAME, education, creative, course, learn">
+	<title>@ViewData[Global.TITLE]</title>
+	<link href="@Global.FAVICON" rel="icon" />
 
-    <!-- Google Fonts -->
-	<link href="~/lib/bootstrap/dist/css/fonts.css" rel="stylesheet">
-
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="~/css/owl.carousel.css" />
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/font-awesome.min.css" />
+	<link rel="stylesheet" href="~/css/owl.carousel.css" />
 	<link rel="stylesheet" href="~/css/style.css" />
+
+	<link rel="stylesheet" href="~/css/common-app-css.5b914d85e01ba6db2ad0.css" />
+	<link rel="stylesheet" href="~/css/ud-entry-main.af4286be4d337c43f610.css" />
+
+	@await RenderSectionAsync(name: "Style", required: false)
+
+	<style>
+		body {
+			display: unset;
+		}
+
+		@@supports (-moz-transform: translate(0, 0)) {
+		  body {
+			display: block !important;
+		  }
+		}
+
+		.app-dropdown {
+			padding-left: 0px;
+			padding-right: 0px;
+		}
+
+		.app-dropdown .dropdown-menu{
+			width: 100%;
+			margin-top: 20px !important;
+		}
+
+		.app-dropdown .dropdown-menu li{
+			text-align: center;
+		}
+
+		.app-dropdown .dropdown-menu a{
+			display: block;
+			padding: 16px;
+		}
+
+		.dropdown-menu {
+			font-size: unset;
+			padding: 0;
+			border: 0;
+		}
+
+		.icon-dropdown .dropdown-menu {
+			transform: translate(-120px, 38px) !important;
+			width: 300px;
+		}
+
+		.icon-dropdown .dropdown-menu li {
+			height: 100px;
+			padding: 4%;
+		}
+
+		.notification-btn-lst {
+			display: flex;
+			justify-content: space-evenly;
+			margin-top: 4px;
+		}
+
+		.notification-btn-lst button {
+			width: 30%;
+		}
+
+		.ud-search-form-autocomplete .ud-search-form-autocomplete-suggestions-with-image {
+			overflow: unset !important;
+			padding: 0 !important;
+			border: 0 !important
+		}
+
+		p, h1, h2, h3, h4, h5, h6, ul, ol {
+			max-width: unset;
+		}
+
+		.app-display-none {
+			display: none;
+		}
+
+		.ud-search-form-autocomplete-suggestion-block-list-item a {
+			margin: 0;
+		}
+
+		.ud-btn-icon-large {
+			transform: translateY(10px);
+		}
+
+		.app-menu-btn {
+			height: 50px;
+			float: right;
+			text-align: center;
+			vertical-align: middle;
+			padding: 10px;
+			margin-left: 10px;
+
+			border-radius: 50%;
+			background-color: dodgerblue;
+		}
+
+		.app-menu-btn i {
+			color: #fff;
+			float: right;
+			font-size: 32px;
+		}
+
+		.app-menu-btn:hover {
+			cursor: pointer;
+		}
+	</style>
 </head>
 <body>
 	<!-- Header section -->
-	<header class="header-section">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-3 col-md-3">
-					<div class="site-logo">
-						<h4>CourseHub</h4>
-						<p>Learn from the best</p>
-					</div>
-					<div class="nav-switch">
-						<i class="fa fa-bars"></i>
-					</div>
+	@if (TempData[Global.DATA_IGNORE_NAV] is null)
+	{
+		<header class="header-section">
+			<div class="container">
+				<div class="row main-menu" style="margin-bottom: 0;">
+					<ul style="margin: 0 auto;">
+						<li><a href="@Global.PAGE_INDEX">Home</a></li>
+						<!--<li><a href="#">About us</a></li>-->
+						<li><a href="@Global.PAGE_COURSE">Courses</a></li>
+						<li><a href="@Global.PAGE_GROUP" target = "_blank">Learning Groups</a></li>
+						<!--<li><a href="#">News</a></li>-->
+						<!--<li><a href="#">Contact</a></li>-->
+					</ul>
 				</div>
-				<div class="col-lg-9 col-md-9">
-					<a href="" class="site-btn header-btn">Login</a>
-					<nav class="main-menu">
-						<ul>
-							<li><a href="index.html">Home</a></li>
-							<li><a href="#">About us</a></li>
-							<li><a href="courses.html">Courses</a></li>
-							<li><a href="blog.html">News</a></li>
-							<li><a href="contact.html">Contact</a></li>
-						</ul>
-					</nav>
+				<div class="row" style="align-items: center;">
+					<div class="col-lg-3 col-md-3">
+						<a href="@Global.PAGE_INDEX" style="display: block; height: 100%">
+							<img src="~/img/Logo.png" alt="" style="pointer-events: none; user-select: none;">
+						</a>
+						<div class="nav-switch">
+							<i class="fa fa-bars"></i>
+						</div>
+					</div>
+					<div class="col-lg-9 col-md-9">
+					@{
+						if (client is null)
+						{
+							<a href="@Global.PAGE_SIGNIN" class="site-btn header-btn">@text["SignIn"]</a>
+						}
+						else
+						{
+							<div id="app-notification-btn" class="app-menu-btn dropdown app-dropdown icon-dropdown" style="float: right">
+								<i class="fa fa-bell" data-bs-toggle="dropdown"></i>
+								<ul id="app-notification-dropdown" class="dropdown-menu"></ul>
+							</div>
+							<div class="dropdown site-btn header-btn app-dropdown" style="padding: 0">
+								<div data-bs-toggle="dropdown" aria-expanded="false" style="padding: 15px">@client?.FullName</div>
+								<ul class="dropdown-menu" style="border: 1px solid #999">
+									@if (client!.Role >= Core.Entities.UserDomain.Enums.Role.Admin)
+									{
+										<li><a href="@Global.PAGE_ADMIN">@text["AdminView"]</a></li>
+									}
+									else if (client!.Role == Core.Entities.UserDomain.Enums.Role.Instructor)
+									{
+										<li><a href="@Global.PAGE_INSTRUCTOR">@text["InstructorView"]</a></li>
+									}
+									<li><a href="@Global.PAGE_PROFILE">@text["Profile"]</a></li>
+									<li><a href="@Global.PAGE_COURSE_ENROLLED">@text["Enrolled"]</a></li>
+									<li><a href="@Global.PAGE_SIGNOUT">@text["SignOut"]</a></li>
+								</ul>
+							</div>
+						}
+					}
+						<nav class="main-menu" style="max-width: 70%;">
+							<div locale="en_US" lang="en"
+							class="ud-search-form-autocomplete desktop-header-module--search-bar--2V17S ud-form-group"><label
+							class="ud-sr-only ud-form-label ud-heading-sm" for="u22-search-form-autocomplete--3">Search for anything</label>
+								<form class="ud-search-form-autocomplete-input-group ud-search-form-autocomplete-input-group-reversed" id="app-header-search-form">
+									<input type="hidden" name="src" value="ukw">
+									<input type="text" aria-invalid="false" name="q"
+										data-testid="search-input" placeholder="Search" autocomplete="off" role="combobox"
+										aria-autocomplete="both" aria-haspopup="true" aria-expanded="true" id="u22-search-form-autocomplete--3"
+										aria-controls="u22-search-form-autocomplete--3-menu-content-items"
+										class="ud-text-input ud-text-input-small ud-text-sm ud-search-form-autocomplete-input js-header-search-field">
+									<ul id="u22-search-form-autocomplete--3-menu-content-items" data-testid="menu-content-items"
+										class="app-display-none ud-unstyled-list ud-block-list js-suggestions ud-search-form-autocomplete-suggestions-with-image"
+										role="listbox"><li></li>
+									</ul>
+									<div class="ud-btn-large ud-btn-ghost ud-heading-md ud-btn-icon ud-btn-icon-large">
+										<svg
+									aria-label="Submit search" role="img" focusable="false"
+									class="ud-icon ud-icon-medium ud-icon-color-neutral">
+											<use xlink:href="#icon-search"></use>
+										</svg>
+									</div>
+								</form>
+							</div>
+						</nav>
+					</div>
 				</div>
 			</div>
-		</div>
-	</header>
-    <div>
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+		</header>
+	}
 
 
-	<!-- footer section -->
-	<footer class="footer-section spad pb-0">
-		<div class="footer-top">
-			<div class="footer-warp">
-				<div class="row">
-					<div class="widget-item">
-						<h4>Contact Info</h4>
-						<ul class="contact-list">
-							<li>1481 Creekside Lane <br>Avila Beach, CA 931</li>
-							<li>+53 345 7953 32453</li>
-							<li>yourmail@gmail.com</li>
-						</ul>
-					</div>
-					<div class="widget-item">
-						<h4>Engeneering</h4>
-						<ul>
-							<li><a href="">Applied Studies</a></li>
-							<li><a href="">Computer Engeneering</a></li>
-							<li><a href="">Software Engeneering</a></li>
-							<li><a href="">Informational Engeneering</a></li>
-							<li><a href="">System Engeneering</a></li>
-						</ul>
-					</div>
-					<div class="widget-item">
-						<h4>Graphic Design</h4>
-						<ul>
-							<li><a href="">Applied Studies</a></li>
-							<li><a href="">Computer Engeneering</a></li>
-							<li><a href="">Software Engeneering</a></li>
-							<li><a href="">Informational Engeneering</a></li>
-							<li><a href="">System Engeneering</a></li>
-						</ul>
-					</div>
-					<div class="widget-item">
-						<h4>Development</h4>
-						<ul>
-							<li><a href="">Applied Studies</a></li>
-							<li><a href="">Computer Engeneering</a></li>
-							<li><a href="">Software Engeneering</a></li>
-							<li><a href="">Informational Engeneering</a></li>
-							<li><a href="">System Engeneering</a></li>
-						</ul>
-					</div>
-					<div class="widget-item">
-						<h4>Newsletter</h4>
-						<form class="footer-newslatter">
-							<input type="email" placeholder="E-mail">
-							<button class="site-btn">Subscribe</button>
-							<p>*We don’t spam</p>
-						</form>
-					</div>
-				</div>
+
+	@if (TempData[Global.DATA_USE_BACKGROUND] is not null)
+	{
+		<div class="page-info-section set-bg" data-setbg="/img/page-bg/2.jpg"
+			style="background-image: url(&quot;/img/page-bg/2.jpg&quot;); height: 200px">
+			<div class="container">
 			</div>
 		</div>
-		<div class="footer-bottom">
-			<div class="footer-warp">
-				<ul class="footer-menu">
-					<li><a href="#">Terms & Conditions</a></li>
-					<li><a href="#">Register</a></li>
-					<li><a href="#">Privacy</a></li>
-				</ul>
-				<div class="copyright">
-					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-					Copyright &copy;<script>document.write(new Date().getFullYear());</script>  | CourseHub
-					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-				</div>
-			</div>
-		</div>
-	</footer>
+	}
+
+	<div>
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
 	<script src="~/js/jquery-3.2.1.min.js"></script>
 	<script src="~/js/bootstrap.min.js"></script>
 	<script src="~/js/mixitup.min.js"></script>
@@ -137,6 +256,251 @@
 	<script src="~/js/owl.carousel.min.js"></script>
 	<script src="~/js/main.js"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+	@await RenderSectionAsync(name: "ValidateScript", required: false)
+	@await RenderSectionAsync("Scripts", required: false)
+
+
+	<script type="module">
+		import { baseAddress } from '/js/constants.js';
+		import { getNonParsed, getParsedJson, patchJsonWithCredentials } from '/js/apis/http.js';
+		import { getMinGroupsAsync, getCoursesAsync } from '/js/common/storageService.js';
+
+		window.baseAddress = baseAddress;
+		window.getNonParsed = getNonParsed;
+		window.getParsedJson = getParsedJson;
+		window.patchJsonWithCredentials = patchJsonWithCredentials;
+		window.getMinGroupsAsync = getMinGroupsAsync;
+		window.getCoursesAsync = getCoursesAsync;
+	</script>
+	<script>
+		var autocomplete = document.getElementById('u22-search-form-autocomplete--3');
+		var autocompleteUl = document.getElementById('u22-search-form-autocomplete--3-menu-content-items');
+		var autocompleteLi = autocompleteUl.childNodes[0];
+
+		var notificationBtn = document.getElementById('app-notification-btn');
+		var notificationEle = document.getElementById('app-notification-dropdown');
+
+		var baseDetailUrl = "@UIHelper.GetBaseCourseDetailPage()";
+
+		var headerSearchForm = document.getElementById('app-header-search-form');
+		headerSearchForm.onsubmit = (e) => {
+			e.preventDefault();
+			window.location.href = "/Course/Search?q=" + e.target.elements.q.value;
+		}
+
+
+
+
+
+
+		autocomplete.addEventListener('input', function() {
+			var inputVal = autocomplete.value;
+			if (inputVal.length >= 2) {
+				window.getParsedJson(window.baseAddress + "/api/courses?Title=" + inputVal)
+					.then(arr => {
+						autocompleteUl.classList.remove('app-display-none');
+						autocompleteLi.innerHTML = '';
+
+						console.log(arr);
+
+						let innerHTML = '';
+						if (!arr.items)
+							return;
+
+						for (var item of arr.items) {
+							innerHTML += `<div data-testid="result-with-image" class="ud-search-form-autocomplete-suggestion-block-list-item">
+								<a id="u22-search-form-autocomplete--3-0" aria-label="Search: python" aria-selected="false" role="option" href="${(baseDetailUrl + item.id)}"
+								class="ud-btn ud-btn-large ud-btn-ghost ud-text-sm ud-search-form-autocomplete-suggestion ud-block-list-item ud-block-list-item-small ud-block-list-item-neutral">
+									<div class="ud-block-list-item-content">
+										<div aria-hidden="true" class="ud-search-form-autocomplete-group ud-search-form-autocomplete-group-search" data-testid="group-search">
+											<!--<div data-testid="menu-content-icon" data-type="search_log" class="ud-search-form-autocomplete-group-icon">
+												<svg aria-hidden="true" focusable="false" data-testid="search" class="ud-icon ud-icon-medium ud-icon-color-neutral">
+													<use xlink:href="#icon-search"></use>
+												</svg>
+											</div>-->
+											<div class="ud-search-form-autocomplete-suggestion-content">
+												<div data-purpose="label" data-testid="label" class="ud-search-form-autocomplete-suggestion-content ud-heading-md">${item.title}</div>
+											</div>
+										</div>
+									</div>
+								</a>
+							</div>`
+						}
+
+						autocompleteLi.innerHTML = innerHTML;
+					})
+			}
+			else {
+				autocompleteUl.classList.add('app-display-none');
+			}
+		})
+
+		var notifications = [];
+		if (notificationBtn) {
+			notificationBtn.addEventListener('click', () => {
+			var innerHTML = '';
+			notificationEle.innerHTML = '<li>...</li>';
+
+			window.getNonParsed("@notificationGetPath")
+				.then(res => {
+					if (res.ok) {
+						console.log(res);
+						return res.json();
+					}
+					else {
+						notificationEle.innerHTML = `<li>You don't have any notification</li>`;
+						console.log('empty');
+						return Promise.resolve();
+					}
+				})
+				.then(async (paged) => {
+					if (paged) {
+						var notification_conversation = {};
+						var notification_course = {};
+						var groupIds = [];
+						var courseIds = [];
+
+						for (var item of paged.items) {
+							var message = JSON.parse(item.message);
+							if (message.Conversation) {
+								notification_conversation[item.id] = message.Conversation;
+								groupIds.push(message.Conversation);
+							}
+							if (message.Course) {
+								notification_course[item.id] = message.Course;
+								courseIds.push(message.Course);
+							}
+						}
+
+						var groups = groupIds.length > 0
+							? await window.getMinGroupsAsync(groupIds)
+							: [];
+						var courses = courseIds.length > 0
+							? await window.getCoursesAsync(courseIds)
+							: [];
+
+						for (var item of paged.items) {
+							notifications.push(item);
+
+							var li = '';
+							switch (item.type) {
+								case @((byte)NotificationType.InstructorResponse):
+									var isApproved = JSON.parse(item.message).IsApproved;
+
+									switch (isApproved) {
+										case true:
+											li =
+											`
+											<li>
+												<div>You have became an instructor</div>
+											</li>
+											`;
+											break;
+										case false:
+											li =
+											`
+											<li>
+												<div>Your request to become an instructor has been dismissed</div>
+											</li>
+											`;
+											break;
+									}
+									break;
+								
+
+
+								case @((byte)NotificationType.InviteMember):
+									var conversation = groups.find(_ => _.id == notification_conversation[item.id]);
+
+									switch (item.status) {
+										case @((byte)NotificationStatus.None):
+											li =
+											`<li>
+												<div>You are invited to the group "${conversation.title}"</div>
+												<div class="notification-btn-lst">
+													<button onclick="approveGroupNotification('${item.id}', '${conversation.id}')" class="btn btn-outline-success" type="button">Accept</button>
+													<button onclick="dismissNotification('${item.id}')" class="btn btn-outline-danger" type="button">Dismiss</button>
+												</div>
+											</li>`;
+											break;
+										case @((byte)NotificationStatus.Approved):
+											li =
+											`<li>
+												<div>You are invited to the group "${conversation.title}"</div>
+												<div>You approved the request</div>
+											</li>`;
+											break;
+										case @((byte)NotificationStatus.Dismissed):
+											li =
+											`<li>
+												<div>You are invited to the group "${conversation.title}"</div>
+												<div>You dismissed the request</div>
+											</li>`;
+											break;
+									}
+									break;
+
+
+
+								case @((byte)NotificationType.InstructorReportedCourse):
+									var course = courses.find(_ => _.id == notification_course[item.id]);
+									console.log(course);
+									var reportMessage = JSON.parse(item.message).Message;
+
+									li =
+									`<li>
+										<div>Your course ${course.title} has been reported for "${reportMessage}"</div>
+										<a href="/Course/Detail?id=${course.id}" class="btn btn-outline-success"
+											style="display: unset; padding: 0.5rem 2rem">View course</a>
+									</li>
+									`;
+									break;
+
+
+
+								case @((byte)NotificationType.GroupAdminReportedGroup):
+									var conversation = groups.find(_ => _.id == notification_conversation[item.id]);
+									console.log(conversation);
+									var reportMessage = JSON.parse(item.message).Message;
+
+									li =
+									`<li>
+										<div>The group ${conversation.title} has been reported for "${reportMessage}"</div>
+										<a href="/Group/Conversation?id=${conversation.id}" class="btn btn-outline-success"
+											style="display: unset; padding: 0.5rem 2rem">View group</a>
+									</li>
+									`;
+									break;
+							}
+							innerHTML += li;
+						}
+						notificationEle.innerHTML = innerHTML;
+					}
+				})
+			});
+		}
+
+		function approveGroupNotification(id, groupId) {
+			window.patchJsonWithCredentials("@notificationPath", {
+				Id : id,
+				Status: @((byte)NotificationStatus.Approved)
+			}).then(res => {
+				if (res.ok) {
+					window.location.href = '/group/conversation?id=' + groupId;
+				}
+			});
+		}
+
+		function dismissNotification(id) {
+			window.patchJsonWithCredentials("@notificationPath", {
+				Id : id,
+				Status: @((byte)NotificationStatus.Dismissed)
+			}).then(res => {
+				if (res.ok) {
+					window.location.reload();
+				}
+			});
+		}
+	</script>
 </body>
 </html>

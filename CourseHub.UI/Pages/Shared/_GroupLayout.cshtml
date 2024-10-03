@@ -1,0 +1,613 @@
+﻿@{
+    Layout = null;
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="@Global.APP_NAME">
+    <meta name="keywords" content="@Global.APP_NAME, education, creative, course, learn">
+    <title>@ViewData[Global.TITLE]</title>
+    <link href="@Global.FAVICON" rel="icon" />
+    <link rel="stylesheet" href="~/css/chat.min.css" />
+    <link rel="stylesheet" href="~/css/font-awesome.min.css" />
+
+    <style>
+        .app-autocomplete-ul {
+            background: #fff;
+            margin-top: 0.4rem;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 100%;
+            transform-origin: top;
+            z-index: 10;
+
+            overflow: unset;
+            margin: 0;
+            padding: 0;
+            border: 0;
+
+            list-style: none;
+        }
+
+        .app-autocomplete-ul > li {
+            padding: 8px;
+        }
+
+        .app-autocomplete-ul > li:hover {
+            cursor: pointer;
+            color: dodgerblue;
+        }
+    </style>
+
+    @await RenderSectionAsync("Style", required: false)
+</head>
+<body>
+    <div class="layout">
+
+        <!-- Navbar -->
+        <div class="navigation navbar navbar-light justify-content-center py-xl-7">
+
+            @*@<!-- Brand -->
+            <a href="#" class="d-none d-xl-block mb-6">
+                <img src="assets\images\brand.svg" class="mx-auto fill-primary" data-inject-svg="" alt="" style="height: 46px;">
+            </a>*@
+
+            <!-- Menu -->
+            <ul class="nav navbar-nav flex-row flex-xl-column flex-grow-1 justify-content-between justify-content-xl-center py-3 py-lg-0" role="tablist">
+
+                <!-- Invisible item to center nav vertically -->
+                <li class="nav-item d-none d-xl-block invisible flex-xl-grow-1">
+                    <a class="nav-link position-relative p-0 py-xl-3" href="#" title="">
+                        <i class="icon-lg fe-x"></i>
+                    </a>
+                </li>
+
+                <!-- Create group -->
+                <li class="nav-item">
+                    <!-- removed data-toggle -->
+                    <a class="nav-link position-relative p-0 py-xl-3" href="@Global.PAGE_GROUP_CREATE" title="Create conversation" role="tab">
+                        <i class="icon-lg fe-edit"></i>
+                    </a>
+                </li>
+
+                <!-- Friend -->
+                <!--<li class="nav-item mt-xl-9">
+                    <a class="nav-link position-relative p-0 py-xl-3" data-toggle="tab" href="#tab-content-friends" title="Friends" role="tab">
+                        <i class="icon-lg fe-users"></i>
+                    </a>
+                </li>-->
+
+                <!-- Chats -->
+                <!-- d-none d-xl-block flex-xl-grow-1 -->
+                <li class="nav-item mt-xl-9 d-none d-xl-block flex-xl-grow-1">
+                    <!-- removed active & data-toggle -->
+                    <a class="nav-link position-relative p-0 py-xl-3" href="@Global.PAGE_GROUP" title="Chats" role="tab">
+                        <i class="icon-lg fe-message-square"></i>
+                        <!--<div class="badge badge-dot badge-primary badge-bottom-center"></div>-->
+                    </a>
+                </li>
+
+                <!-- Profile -->
+                <!--<li class="nav-item mt-xl-9">
+                    <a class="nav-link position-relative p-0 py-xl-3" data-toggle="tab" href="#tab-content-user" title="User" role="tab">
+                        <i class="icon-lg fe-user"></i>
+                    </a>
+                </li>-->
+
+                <!-- Demo only: Documentation -->
+                <!--<li class="nav-item mt-xl-9 d-none d-xl-block flex-xl-grow-1">
+                    <a class="nav-link position-relative p-0 py-xl-3" data-toggle="tab" href="#tab-content-demos" title="Demos" role="tab">
+                        <i class="icon-lg fe-layers"></i>
+                    </a>
+                </li>-->
+
+                <!-- Settings -->
+                <li class="nav-item mt-xl-9">
+                    <a class="nav-link position-relative p-0 py-xl-3" href="@Global.PAGE_INDEX" title="Settings">
+                        <i class="icon-lg fe-settings"></i>
+                    </a>
+                </li>
+
+            </ul>
+            <!-- Menu -->
+
+        </div>
+        <!-- Navbar -->
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="tab-content h-100" role="tablist">
+                <div class="tab-pane fade h-100" id="tab-content-create-chat" role="tabpanel">
+                    <div class="d-flex flex-column h-100">
+
+                        <div class="hide-scrollbar">
+                            <div class="container-fluid py-6">
+
+                                <!-- Title -->
+                                <h2 class="font-bold mb-6">Create group</h2>
+                                <!-- Title -->
+
+                                <!-- Search -->
+                                <!--<form class="mb-6">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control form-control-lg" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-lg btn-ico btn-secondary btn-minimal" type="submit">
+                                                <i class="fe-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>-->
+                                <!-- Search -->
+
+                            </div>
+                        </div>
+
+                        <!-- Button -->
+                        <div class="pb-6">
+                            <div class="container-fluid">
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Create group</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+                <div class="tab-pane fade h-100 show active" id="tab-content-dialogs" role="tabpanel">
+                    <div class="d-flex flex-column h-100">
+
+                        <!-- Removed hide-scrollbar-->
+                        <div>
+                            <div class="container-fluid py-6">
+
+                                <!-- Title -->
+                                <h2 class="font-bold mb-6">Chats</h2>
+                                <!-- Title -->
+
+                                <!-- Search -->
+                                <form class="mb-6">
+                                    <div class="input-group">
+                                        <input id="app-autocomplete-input" type="text" class="form-control form-control-lg" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
+                                        <div class="input-group-append">
+                                            <!-- Removed btn-secondary -->
+                                            <a class="btn btn-lg btn-ico btn-minimal" href="#">
+                                                <i class="fe-search"></i>
+                                            </a>
+                                        </div>
+                                        <ul id="app-autocomplete-ul" class="app-autocomplete-ul">
+                                        </ul>
+                                    </div>
+                                </form>
+                                <!-- Search -->
+
+                                <div class="text-center hide-scrollbar d-flex my-7" data-horizontal-scroll="">
+                                    @await RenderSectionAsync("RelatedUsers", required: false)
+                                </div>
+
+                                <!-- Chats -->
+                                <nav class="nav d-block list-discussions-js mb-n6">
+                                    @await RenderSectionAsync("Conversations", required: false)
+                                </nav>
+                                <!-- Chats -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="tab-pane fade h-100" id="tab-content-demos" role="tabpanel">
+                    <div class="d-flex flex-column h-100">
+                        <div class="hide-scrollbar">
+                            <div class="container-fluid py-6">
+                                <h2 class="font-bold mb-6">Demos</h2>
+                                <form class="mb-6">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control form-control-lg" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-lg btn-ico btn-secondary btn-minimal" type="submit">
+                                                <i class="fe-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <h5 class="my-6">Chat Pages:</h5>
+
+                                @*
+                                <!-- Card -->
+                                <div class="card mb-6">
+                                    <img class="card-img-top" alt="" src="assets\images\demos\chat.jpg">
+                                    <div class="card-body border-top">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <h5 class="mb-0">Light mode</h5>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <a href="demo-light\index.htm" class="text-muted stretched-link">
+                                                    <i class="fe-link"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card -->
+
+                                <!-- Card -->
+                                <div class="card mb-6">
+                                    <img class="card-img-top" alt="" src="assets\images\demos\chat-dark.jpg">
+                                    <div class="card-body border-top">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <h5 class="mb-0">Dark mode</h5>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <a href="demo-dark\index.htm" class="text-muted stretched-link">
+                                                    <i class="fe-link"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card -->
+
+                                <h5 class="my-6">Account Pages:</h5>
+
+                                <!-- Card -->
+                                <div class="card mb-6">
+                                    <img class="card-img-top" alt="" src="assets\images\demos\sign-in-dark.jpg">
+                                    <div class="card-body border-top">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <h5 class="mb-0">Sign In</h5>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <a href="signin.html" class="text-muted stretched-link">
+                                                    <i class="fe-link"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card -->
+
+                                <!-- Card -->
+                                <div class="card mb-6">
+                                    <img class="card-img-top" alt="" src="assets\images\demos\sign-up-dark.jpg">
+                                    <div class="card-body border-top">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <h5 class="mb-0">Sign Up</h5>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <a href="signup.html" class="text-muted stretched-link">
+                                                    <i class="fe-link"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card -->
+
+                                <!-- Card -->
+                                <div class="card mb-6">
+                                    <img class="card-img-top" alt="" src="assets\images\demos\password-reset-dark.jpg">
+                                    <div class="card-body border-top">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <h5 class="mb-0">Password Reset</h5>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <a href="password-reset.html" class="text-muted stretched-link">
+                                                    <i class="fe-link"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card -->*@
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade h-100" id="tab-content-user" role="tabpanel">
+                    <div class="d-flex flex-column h-100">
+
+                        <div class="hide-scrollbar">
+                            <div class="container-fluid py-6">
+
+                                <!-- Title -->
+                                <h2 class="font-bold mb-6">Profile</h2>
+                                <!-- Title -->
+
+                                <!-- Search -->
+                                <form class="mb-6">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control form-control-lg" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-lg btn-ico btn-secondary btn-minimal" type="submit">
+                                                <i class="fe-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!-- Search -->
+
+                                @*
+                                <!-- Card -->
+                                <div class="card mb-6">
+                                    <div class="card-body">
+                                        <div class="text-center py-6">
+                                            <!-- Photo -->
+                                            <div class="avatar avatar-xl mb-5">
+                                                <img class="avatar-img" src="assets\images\avatars\12.jpg" alt="">
+                                            </div>
+
+                                            <h5>Matthew Wiggins</h5>
+                                            <p class="text-muted">Bootstrap is an open source toolkit for developing web with HTML.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card -->
+
+                                <!-- Card -->
+                                <div class="card mb-6">
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item px-0 py-6">
+                                                <div class="media align-items-center">
+                                                    <div class="media-body">
+                                                        <p class="small text-muted mb-0">Country</p>
+                                                        <p>Warsaw, Poland</p>
+                                                    </div>
+                                                    <i class="text-muted icon-sm fe-globe"></i>
+                                                </div>
+                                            </li>
+
+                                            <li class="list-group-item px-0 py-6">
+                                                <div class="media align-items-center">
+                                                    <div class="media-body">
+                                                        <p class="small text-muted mb-0">Phone</p>
+                                                        <p>+39 02 87 21 43 19</p>
+                                                    </div>
+                                                    <i class="text-muted icon-sm fe-mic"></i>
+                                                </div>
+                                            </li>
+
+                                            <li class="list-group-item px-0 py-6">
+                                                <div class="media align-items-center">
+                                                    <div class="media-body">
+                                                        <p class="small text-muted mb-0">Email</p>
+                                                        <p>anna@gmail.com</p>
+                                                    </div>
+                                                    <i class="text-muted icon-sm fe-mail"></i>
+                                                </div>
+                                            </li>
+
+                                            <li class="list-group-item px-0 py-6">
+                                                <div class="media align-items-center">
+                                                    <div class="media-body">
+                                                        <p class="small text-muted mb-0">Time</p>
+                                                        <p>10:03 am</p>
+                                                    </div>
+                                                    <i class="text-muted icon-sm fe-clock"></i>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- Card -->
+
+                                <!-- Card -->
+                                <div class="card mb-6">
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item px-0 py-6">
+                                                <a href="#" class="media text-muted">
+                                                    <div class="media-body align-self-center">
+                                                        Twitter
+                                                    </div>
+                                                    <i class="icon-sm fe-twitter"></i>
+                                                </a>
+                                            </li>
+
+                                            <li class="list-group-item px-0 py-6">
+                                                <a href="#" class="media text-muted">
+                                                    <div class="media-body align-self-center">
+                                                    Facebook
+                                                    </div>
+                                                    <i class="icon-sm fe-facebook"></i>
+                                                </a>
+                                            </li>
+
+                                            <li class="list-group-item px-0 py-6">
+                                                <a href="#" class="media text-muted">
+                                                    <div class="media-body align-self-center">
+                                                        Github
+                                                    </div>
+                                                    <i class="icon-sm fe-github"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- Card -->
+
+                                <div class="form-row">
+                                    <div class="col">
+                                        <!-- Button -->
+                                        <button type="button" class="btn btn-lg btn-block btn-basic d-flex align-items-center">
+                                            Settings
+                                            <span class="fe-settings ml-auto"></span>
+                                        </button>
+                                    </div>
+
+                                    <div class="col">
+                                        <!-- Button -->
+                                        <button type="button" class="btn btn-lg btn-block btn-basic d-flex align-items-center">
+                                            Logout
+                                            <span class="fe-log-out ml-auto"></span>
+                                        </button>
+                                    </div>
+                                </div>*@
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+
+                </div>
+            </div>
+        </div>
+        <!-- Sidebar -->
+
+        <!-- Main Content -->
+        @await RenderSectionAsync("Main", required: false)
+        <!-- Main Content -->
+
+    </div>
+    <!-- Layout -->
+
+    <!-- DropzoneJS: Template -->
+    @*<div id="dropzone-template-js">
+        <div class="col-lg-4 my-3">
+            <div class="card bg-light">
+                <div class="card-body p-3">
+                    <div class="media align-items-center">
+
+                        <div class="dropzone-file-preview">
+                            <div class="avatar avatar rounded bg-secondary text-basic-inverse d-block mr-5">
+                                <i class="fe-paperclip"></i>
+                            </div>
+                        </div>
+
+                        <div class="dropzone-image-preview">
+                            <div class="avatar avatar mr-5">
+                                <img src="#" class="avatar-img rounded" data-dz-thumbnail="" alt="">
+                            </div>
+                        </div>
+
+                        <div class="media-body overflow-hidden">
+                            <h6 class="text-truncate small mb-0" data-dz-name=""></h6>
+                            <p class="extra-small" data-dz-size="">
+                        </div>
+
+                        <div class="ml-5">
+                            <a href="#" class="btn btn-sm btn-link text-decoration-none text-muted" data-dz-remove="">
+                                <i class="fe-x"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- DropzoneJS: Template -->*@
+
+    <!-- Modal: Invite friends -->
+    <div class="modal fade" id="invite-friends" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <div class="media flex-fill">
+                        <div class="icon-shape rounded-lg bg-primary text-white mr-5">
+                            <i class="fe-users"></i>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <h5 class="modal-title">Invite friends</h5>
+                            <p class="small">Invite colleagues, clients and friends.</p>
+                        </div>
+                    </div>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <form action="#">
+                        <div class="form-group">
+                            <label for="invite-email" class="small">Email</label>
+                            <input type="text" class="form-control form-control-lg" id="invite-email">
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label for="invite-message" class="small">Invitation message</label>
+                            <textarea class="form-control form-control-lg" id="invite-message" data-autosize="true"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-lg btn-block btn-primary d-flex align-items-center">
+                        Invite friend
+                        <i class="fe-user-plus ml-auto"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Modal: Invite friends -->
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        import { baseAddress } from '/js/constants.js';
+        import { getParsedJson } from '/js/apis/http.js';
+
+        var autocomplete = document.getElementById('app-autocomplete-input');
+        var autocompleteUl = document.getElementById('app-autocomplete-ul');
+
+        autocomplete.addEventListener('input', function() {
+            var inputVal = autocomplete.value;
+            if (inputVal.length >= 2) {
+                getParsedJson(baseAddress + "/api/conversations/targets?PageSize=5&Title=" + inputVal)
+                    .then(arr => {
+                        autocompleteUl.classList.remove('app-display-none');
+
+                        let innerHTML = '';
+                        if (!arr.items)
+                            return;
+
+                        for (var item of arr.items) {
+                            if (item.id != '00000000-0000-0000-0000-000000000000') {
+                                innerHTML +=
+                                    `<li>
+                                        <a href="/group/conversation?id=${item.id}">${item.title}</a>
+                                    </li>`;
+                            }
+                            else {
+                                innerHTML +=
+                                    `<li>
+                                        <a href="/group/conversation?newTarget=${item.creatorId}">${item.title}</a>
+                                    </li>`;
+                            }
+                        }
+
+                        autocompleteUl.innerHTML = innerHTML;
+                    })
+            }
+            else {
+                autocompleteUl.classList.add('app-display-none');
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Script", required: false)
+</body>
+</html>

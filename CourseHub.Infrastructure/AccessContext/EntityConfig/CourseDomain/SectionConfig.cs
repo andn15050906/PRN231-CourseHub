@@ -21,7 +21,7 @@ internal class SectionConfig : SqlServerEntityConfiguration<Section>
         builder
             .ToTable(RelationsConfig.SECTION)
             .SetColumnsTypes(Columns)
-            .SetUnique(_ => _.Index)
-            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE);
+            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE)
+            .SetDefaultSQL(_ => _.LastModificationTime, SQL_GETDATE);
     }
 }

@@ -12,4 +12,17 @@ public class CourseReview : AuditedEntity
     // Navigations
     public User? Creator { get; set; }
     public Course? Course { get; set; }
+
+    public CourseReview()
+    {
+
+    }
+
+    public CourseReview(string content, byte rating, Guid courseId, User creator)
+    {
+        Content = content;
+        Rating = rating;
+        CourseId = courseId;
+        Creator = creator;
+    }
 }

@@ -1,0 +1,60 @@
+﻿@page
+@model CourseHub.UI.Pages.Instructor.RequestModel
+
+@{
+    Layout = "_OuterAuthLayout";
+    ViewData[Global.TITLE] = "Request to be Instructor";
+}
+
+<!----------------------------- Form box ----------------------------------->
+<style>
+    .app-radio-input {
+        display: flex;
+        justify-content: space-between;
+    }
+    .app-radio-label {
+        color: #fff;
+    }
+
+    .form-box {
+        display: initial;
+    }
+
+    label {
+        color: #fff;
+    }
+
+    textarea {
+        display: block;
+        height: 100px !important;
+        resize: none !important;
+        margin-bottom: 20px !important;
+        padding: 20px !important;
+    }
+</style>
+
+
+
+<form method="post">
+    <div class="form-box">
+        <header>Request to be Instructor</header>
+
+        @await Html.PartialAsync("Shared/_Alert")
+
+        <div asp-validation-summary="All" class="alert alert-danger mt-5 fs-4 pageError text-center"></div>
+
+        <div class="input-box">
+            <label asp-for="Dto.Intro">Introduction</label>
+            <textarea asp-for="Dto.Intro" class="input-field"></textarea>
+        </div>
+
+        <div class="input-box">
+            <label asp-for="Dto.Intro">Experience</label>
+            <textarea asp-for="Dto.Experience" class="input-field"></textarea>
+        </div>
+
+        <div class="input-box">
+            <input type="submit" class="submit" value="Request">
+        </div>
+    </div>
+</form>

@@ -13,4 +13,6 @@ public static class RoleConstants {
     public const string INSTRUCTOR = nameof(Role.Instructor);
     public const string ADMIN = nameof(Role.Admin);
     public const string SYSADMIN = nameof(Role.SysAdmin);
+
+    public const string ADMIN_OR_SYSADMIN = "Admin,SysAdmin";
 }

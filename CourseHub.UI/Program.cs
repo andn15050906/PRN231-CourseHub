@@ -1,7 +1,8 @@
 using CourseHub.UI.Helpers.AppStart;
+using CourseHub.UI.Middlewares;
 using CourseHub.UI.Services;
+using CourseHub.UI.Services.Cache;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 OneTimeRunner.InitConfig(builder);
@@ -17,6 +18,7 @@ builder.Services
     })
     .AddHttpContextAccessor()
     .AddSession()
+    .AddCacheService()
     .AddApiServices()
     .AddRazorPages()
     .AddRazorPagesOptions(options =>
@@ -25,12 +27,16 @@ builder.Services
             .AddPageRoute("/User/VerifyEmail", "verify-email/{email}/{token}")
             .AddPageRoute("/User/SignIn", "signin")
             .AddPageRoute("/User/ExternalLogin", "external")
+            .AddPageRoute("/User/Register", "register")
             .AddPageRoute("/User/Profile", "profile")
+            .AddPageRoute("/User/ForgotPassword", "forgot-password")
             .AddPageRoute("/User/ResetPassword", "reset-password/{email}/{token}");
     })
     .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNameCaseInsensitive = true);
 
 var app = builder.Build();
+
+await OneTimeRunner.PrepareFirstUse(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -40,10 +46,9 @@ app
     .UseHttpsRedirection()
     .UseResponseCompression()
     .UseStaticFiles()
-    .UseAuthentication()
     .UseRouting()
-    .UseAuthorization()
-    .UseSession();
+    .UseSession()
+    .UseAdminViewMiddleware();
 
 app.MapRazorPages();
 app.MapFallbackToPage("/Shared/404");

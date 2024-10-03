@@ -1,0 +1,92 @@
+﻿@page
+@model CourseHub.UI.Pages.Section.UpdateModel
+@{
+    ViewData[Global.TITLE] = "Section";
+}
+
+<style>
+    .container form {
+        font-size: 2.4rem;
+    }
+
+    .container form .form-control {
+        height: calc(3.5rem + 2px);
+        font-size: 1.5rem;
+    }
+
+    .container form textarea {
+        height: 120px !important;
+    }
+
+    .container form .btn {
+        font-size: 18px;
+    }
+
+    h2 {
+        margin-top: 40px;
+        font-size: 32px;
+    }
+</style>
+
+<div class="container">
+    <h2>Add Lecture</h2>
+
+    @await Html.PartialAsync("Shared/_Alert")
+    <div class="row" style="justify-content: center">
+
+        <form method="post" asp-page-handler="CreateLecture" enctype="multipart/form-data" style="width: 30%">
+            <div class="form-group">
+                <input asp-for="CreateLectureDto.SectionId" hidden class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="CreateLectureDto.Title">Title</label>
+                <input asp-for="CreateLectureDto.Title" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="CreateLectureDto.Content">Content</label>
+                <textarea asp-for="CreateLectureDto.Content" class="form-control"></textarea>
+            </div>
+            <!--<div class="form-check">
+                <input asp-for="CreateLectureDto.IsPreviewable" class="form-check-input" />
+                <label asp-for="CreateLectureDto.IsPreviewable" class="form-check-label">Is Previewable</label>
+            </div>-->
+
+            <label asp-for="CreateLectureDto.Materials">Materials</label>
+            @*for (var i = 0; i < Model.Materials.Count; i++)
+            {
+                    <div class="form-group">
+                        <label asp-for="Materials[i].Type">Material Type</label>
+                        <select asp-for="Materials[i].Type" class="form-control">
+                            <option value="Video">Video</option>
+                            <option value="Document">Document</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Materials[i].File">Material File</label>
+                        <input asp-for="Materials[i].File" type="file" class="form-control-file" />
+                    </div>
+            }*@
+            <div class="form-group">
+                <input id="app-inp-file" asp-for="Files" type="file" class="form-control-file" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Lecture</button>
+        </form>
+    </div>
+
+    <!--
+    <h2>Add Assignment</h2>
+    <a href="@Global.PAGE_ASSIGNMENT_CREATE" class="btn btn-primary">Add Assignment</a>-->
+</div>
+
+<!--<script>
+    var fileInp = document.getElementById('app-inp-file');
+
+    fileInp.onchange = () => {
+        // prevent > 50MB
+        if(this.files[0].size > 50000000){
+           alert("File is too big!");
+           this.value = "";
+        }
+    }
+</script>-->

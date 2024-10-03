@@ -1,0 +1,406 @@
+﻿@page
+@using CourseHub.Core.Entities.CommonDomain.Enums;
+@using CourseHub.Core.Models.Course.CourseModels;
+@using CourseHub.UI.Helpers.Utils;
+@model CourseHub.UI.Pages.Lecture.DetailModel
+@{
+    string avgRating = TextHelper.GetAverageRating(Model.Course.TotalRating, Model.Course.RatingCount);
+
+    ViewData[Global.TITLE] = Model.Course.Title;
+
+    var defaultAvatar = "if(this.src!='/img/User_Empty.png')this.src='/img/User_Empty.png'";
+    var fallbackUrl = "/5f87e53d-f9a2-4c14-bd27-3622848b38dd.mp4";
+}
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.plyr.io/3.6.7/plyr.css" />
+<link rel="stylesheet" href="https://unica.vn/media/styles_v2018/main.css?v=1695802896">
+<link rel="stylesheet" href="https://unica.vn/media/styles_v2018/font-awesome.css?v=1685849702">
+<style>
+    .u-detail-block-title span {
+        color: #fff !important;
+    }
+
+    .embed-responsive {
+        overflow: unset;
+        /*padding-bottom: 0 !important;*/
+    }
+
+    .embed-responsive-16by9::before{
+        padding-top: 0 !important;
+    }
+
+    .app-video-wrapper {
+        width: 600px;
+        height: 600px;
+    }
+
+    /*dynamic*/
+    .app-video-wrapper .plyr {
+        height: 60%;
+    }
+
+    .u-course-highlight {
+        margin-top: 20px;
+    }
+
+
+
+
+
+    .app__review__item {
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .app__review__item__pic {
+      float: left;
+      margin-right: 20px;
+      position: relative;
+    }
+
+    .app__review__item__pic:before {
+      position: absolute;
+      right: -30px;
+      top: 15px;
+      border-top: 15px solid transparent;
+      border-left: 15px solid #1d1e39;
+      content: "";
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+
+    .app__review__item__pic img {
+      height: 50px;
+      width: 50px;
+      border-radius: 50%;
+    }
+
+    .app__review__item__text {
+      overflow: hidden;
+      background: #1d1e39;
+      padding: 18px 30px 16px 20px;
+      border-radius: 10px;
+    }
+
+    .app__review__item__text h6 {
+      color: #ffffff;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .app__review__item__text h6 span {
+      color: #b7b7b7;
+      font-weight: 400;
+    }
+
+    .app__review__item__text p {
+      color: #b7b7b7;
+      line-height: 23px;
+      margin-bottom: 0;
+    }
+
+    #app-form textarea {
+        width: 100%;
+        font-size: 15px;
+        padding-left: 20px;
+        padding-top: 12px;
+        height: 110px;
+        border: none;
+        border-radius: 5px;
+        resize: none;
+    }
+
+    .review__submit-button {
+        font-size: 11px;
+        color: #ffffff;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        background: dodgerblue;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 2px;
+        float: right;
+    }
+
+    .review__submit-button:hover {
+        cursor: pointer;
+    }
+
+    .app__review__item {
+        display: flex;
+    }
+
+
+
+
+    .app__review__item__text {
+        flex-grow: 1;
+    }
+
+    .app__review__item .dropdown {
+        position: absolute;
+        right: -10px;
+        width: 30px;
+        text-align: center;
+    }
+
+    .app__review__item .dropdown li {
+        display: block;
+    }
+
+    .app__review__item .dropdown li a {
+        display: block;
+        text-align: center;
+    }
+
+    .app__review__item .dropdown li a:hover{
+        cursor: pointer;
+    }
+
+    .fa-ellipsis-v::after {
+        display: none;
+    }
+</style>
+
+
+
+
+<main>
+    <div class="u-course-highlight">
+        <div class="container">
+            <div class="u-detail-block-title">
+                <h1 itemprop="itemReviewed">
+                    <span itemprop="name">@Model.Course.Title</span>
+                </h1>
+                <div class="u-detail-desc" itemprop="description">@Model.Lecture.Title</div>
+
+                <div class="u-detail-tea" itemprop="author">
+                    <img class="picture-teacher-circle" src="@Model.Course.Creator.AvatarUrl" loading="lazy" onerror="@defaultAvatar">
+                    <a asp-page="@Global.PAGE_INSTRUCTOR" asp-route-id="@Model.Course.Creator.Id">
+                        <span itemprop="name">@Model.Course.Creator.FullName</span>
+                    </a>
+                </div>
+                <!--<div class="u-detail-rate">
+                    <span class="star-rate">
+                        <i class="fa fa-star co-or" aria-hidden="true"></i>
+                        <i class="fa fa-star co-or" aria-hidden="true"></i>
+                        <i class="fa fa-star co-or" aria-hidden="true"></i>
+                        <i class="fa fa-star co-or" aria-hidden="true"></i>
+                        <i class="fa fa-star co-or" aria-hidden="true"></i>
+                    </span>
+                    <span>@Model.Course.RatingCount</span> Đánh giá
+                </div>
+                <div class="u-detail-students">
+                    <span><i class="fa fa-users" aria-hidden="true"></i> @Model.Course.LearnerCount Học viên </span>
+                </div>-->
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div>
+                <div class="scroll-bar-detail" style="display: none">
+                    <div class="container">
+                        <div class="u-detail-rate">
+                            <span class="star-rate">
+                                <i class="fa fa-star co-or" aria-hidden="true"></i>
+                                <i class="fa fa-star co-or" aria-hidden="true"></i>
+                                <i class="fa fa-star co-or" aria-hidden="true"></i>
+                                <i class="fa fa-star co-or" aria-hidden="true"></i>
+                                <i class="fa fa-star co-or" aria-hidden="true"></i>
+                            </span>
+                            <span>@Model.Course.RatingCount</span>
+                            Đánh giá                        </div>
+                        <div class="u-detail-students">
+                            <span>
+                                &nbsp;<i class="fa fa-users" aria-hidden="true"></i> @Model.Course.LearnerCount Học viên                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-detail-course">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                    <div class="u-detail-block-left">
+                        <div class="u-video">
+                            <div class="embed-responsive embed-responsive-16by9" style="">
+                                @foreach (var item in Model.Lecture.Materials)
+                                {
+                                    @if (item.Type == Core.Entities.CourseDomain.Enums.LectureMaterialType.Video)
+                                    {
+                                        <div class="app-video-wrapper">
+                                            <video width="800" height="600" id="player" playsinline controls data-poster="/img/video-thumb.gif">
+                                                @* //publishing problem - might use cloud alternatives *@
+                                                <!--<source src="@fallbackUrl" type="video/mp4" />-->
+                                                <source src="@item.Url" type="video/mp4" />
+                                                <!--<track kind="captions" label="English captions" src="/path/to/captions.vtt" srclang="en" default />-->
+                                            </video>
+                                        </div>
+                                    }
+                                }
+
+                                @foreach (var item in Model.Lecture.Materials)
+                                {
+                                    @if (item.Type == Core.Entities.CourseDomain.Enums.LectureMaterialType.Document)
+                                    {
+                                        <img id="app-material-@item.Url" />
+                                        <script>
+                                            //iframe
+                                            //document.getElementById('app-material-@item.Url').src = URL.createObjectURL(new Blob(["@item.Url"]));
+
+                                            document.getElementById('app-material-@item.Url').src = "@item.Url";
+                                        </script>
+                                        @*<a href="@item.Url">View resource</a>*@
+                                    }
+                                }
+                            </div>
+                        </div>
+
+
+
+                        <!-- Some css diff compared with reviews -->
+
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12">
+                                <div class="app__details__review">
+                                    <div class="section-title mb-4">
+                                        <h5 style="font-size: 24px;">Comments</h5>
+                                    </div>
+                                    @if (Model.Comments.TotalCount == 0)
+                                    {
+                                        <div class="alert alert-danger fs-3" role="alert">
+                                            No comments yet
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var comment in Model.Comments.Items)
+                                        {
+                                            var user = comment.Creator;
+                                            if (user is null)
+                                                continue;
+
+                                            <div class="app__review__item">
+                                                <div class="app__review__item__pic">
+                                                    <img src="@user.AvatarUrl" alt="" onerror="@defaultAvatar">
+                                                </div>
+                                                <div class="app__review__item__text" id="app-comment-text-@comment.Id">
+                                                    <h6 class="mt-3">@user.FullName - <span>@comment.LastModificationTime</span></h6>
+                                                    <p>@comment.Content</p>
+                                                </div>
+                                            @if (Model.Client.Id == user.Id)
+                                            {
+                                                <div class="dropdown">
+                                                    <div data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa fa fa-ellipsis-v dropdown-toggle"></i>
+                                                    </div>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a onclick="openEdit('@comment.Id')">Edit</a>
+                                                        </li>
+                                                        <li>
+                                                            <a onclick="deleteComment('@comment.Id')">Delete</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            }
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                <div class="app__details__form">
+                                <!-- See Script section -->
+                                <form id="app-form" method="post" asp-page-handler="CreateComment">
+                                    <input asp-for="Id" value="@Model.Lecture.Id" hidden />
+                                    <input asp-for="CreateCommentDto.SourceType" value="@((byte)CommentSourceEntityType.Lecture)" hidden />
+                                    <input asp-for="CreateCommentDto.SourceId" value="@Model.Lecture.Id" hidden />
+                                    <textarea asp-for="CreateCommentDto.Content" placeholder="Comment here"></textarea>
+                                    <!-- //... Medias -->
+                                    <button type="submit" class="review__submit-button"><i class="fa fa-location-arrow"></i> Create</button>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width: 30%;">
+                    <!-- See PARTIAL_COURSE_OVERVIEW -->
+                    @{
+                        var course = Model.Course;
+                        
+                        <div>
+                            <a style="max-height: 300px" href="@UIHelper.GetCourseDetailPage(course.Id)" class="course-box-slider pop" data-original-title="" title="">
+                                <div class="img-course">
+                                    <img class="img-responsive" src="@course.ThumbUrl" alt="thumb" loading="lazy"></div>
+                                <div class="content-course">
+                                    <h3 class="title-course">
+                                        <span>@course.Title</span>
+                                    </h3>
+                                    <div class="name-gv">
+                                        <b>@course.Creator.FullName</b>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PartialDeleteModal", ("comment", Model.CommentApiPath))
+</main>
+
+<script src="https://cdn.plyr.io/3.6.7/plyr.js"></script>
+<script>
+    const player = new Plyr('#player');
+
+    function deleteComment(id) {
+        window.postDelete = () => { window.location.reload(); }
+        window.showDeleteModal(id);
+    }
+</script>
+<script type="module">
+    import { patchFormDataWithCredentials } from '/js/apis/http.js';
+    window.patchFormDataWithCredentials = patchFormDataWithCredentials;
+</script>
+<script type="text/javascript">
+    function openEdit(commentId) {
+        var textParent = document.getElementById('app-comment-text-' + commentId);
+        var text = textParent.lastElementChild.innerHTML;
+        textParent.lastElementChild.remove();
+        var newChild = document.createElement('input');
+        newChild.type = 'text';
+        newChild.value = text;
+        newChild.id = 'input-' + commentId;
+        newChild.style = 'background: inherit; color: white; width: 85%;';
+        textParent.appendChild(newChild);
+        var newSubmit = document.createElement('button');
+        newSubmit.innerHTML = 'Save';
+        newSubmit.classList = 'btn';
+        newSubmit.style = 'background-color: dodgerblue; color: white; margin: 10px; padding: 8px 12px;';
+        newSubmit.onclick = () => {
+            var formData = new FormData();
+            formData.append('Id', commentId);
+            formData.append('Content', document.getElementById('input-' + commentId).value)
+
+            window.patchFormDataWithCredentials("@Model.CommentApiPath", formData)
+                .then(res => {
+                    if (res.ok) {
+                        window.location.reload();
+                    }
+                });
+        }
+        textParent.appendChild(newSubmit);
+    }
+</script>

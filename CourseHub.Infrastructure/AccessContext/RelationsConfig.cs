@@ -31,8 +31,8 @@ internal static class RelationsConfig
 
 
     internal const string ASSIGNMENT = "Assignments";
-    internal const string MCQ_QUESTION = "MCQQuestions";
-    internal const string MCQ_CHOICE = "MCQChoices";
+    internal const string MCQ_QUESTION = "McqQuestions";
+    internal const string MCQ_CHOICE = "McqChoices";
     internal const string SUBMISSION = "Submissions";
 
 
@@ -41,4 +41,11 @@ internal static class RelationsConfig
     internal const string CONVERSATION_MEMBER = "ConversationMembers";
     internal const string CHAT_MESSAGE = "ChatMessages";
     internal const string ARTICLE = "Articles";
+
+
+
+    internal const string TRIGGER_onCourseInsertDelete = "onCourseInsertDelete";
+    internal const string TRIGGER_onLectureInsertDelete = "onLectureInsertDelete";
+    internal const string TRIGGER_onEnrollmentInsertDelete = "onEnrollmentInsertDelete";
+    internal const string TRIGGER_onCourseReviewInsertDelete = "onCourseReviewInsertDelete";
 }

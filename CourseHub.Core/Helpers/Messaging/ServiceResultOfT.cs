@@ -24,6 +24,9 @@ public class ServiceResult<T> : ServiceResult
 
     public override IActionResult AsResponse()
     {
-        return new JsonResult(Data != null ? Data : Message) { StatusCode = Status };
+        if (Data is null || Data is Guid guid && guid == default)
+            return new JsonResult(Message) { StatusCode = Status };
+
+        return new JsonResult(Data) { StatusCode = Status };
     }
 }

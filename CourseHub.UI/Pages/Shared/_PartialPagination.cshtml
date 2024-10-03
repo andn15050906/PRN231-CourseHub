@@ -1,0 +1,71 @@
+﻿@* PageIndex, PageSize, PageCount, UrlPattern*@
+@model (short, byte, int, string)
+
+@{
+    short pageIndex = Model.Item1;
+    byte pageSize = Model.Item2;
+    int pageCount = Model.Item3;
+    string urlPattern = Model.Item4;
+
+    string GetUrl(int index)
+    {
+        // see Global
+        //return ".../1";
+        return urlPattern.Replace(Global.PATTERN_PAGE_INDEX, index.ToString());
+    }
+
+    // Index, Link, Text
+    List<(int, string, string)> items = new();
+    int i;
+    for (i = pageIndex - 2; i <= pageIndex + 2; i++)
+        if (i >= 0 && i < pageCount)
+            items.Add((i, GetUrl(i), (i + 1).ToString()));
+
+    if (items.Count > 0)
+    {
+        // If items retrieved are not the first ones
+        if (items[0].Item1 > 0)
+        {
+            if (items[0].Item1 > 1)
+                // Model.Item1 = 1 is decorative
+                items.Insert(0, (1, "#", "..."));
+            items.Insert(0, (0, GetUrl(0), "1"));
+        }
+
+        // If items retrieved are not the last ones
+        if (items[items.Count - 1].Item1 < pageCount - 1)
+        {
+            if (pageIndex < pageCount - 2)
+                // Model.Item1 = pageCount - 2 is decorative
+                items.Add((pageCount - 2, "#", "..."));
+            items.Add((pageCount - 1, GetUrl(pageCount - 1), pageCount.ToString()));
+        }
+    }
+}
+
+
+<style>
+    .product__pagination {
+        width: 100%;
+        text-align: center;
+        font-size: 28px;
+    }
+
+    .product__pagination > a {
+        margin: 12px;
+    }
+
+    .current-page {
+        border: 1px solid black;
+        border-radius: 50%;
+        height: 50px;
+        width: 50px;
+        display: inline-block;
+    }
+</style>
+<div class="product__pagination">
+    @foreach (var item in items)
+    {
+        <a href="@item.Item2" @(item.Item1 == pageIndex ? "class=current-page" : string.Empty)>@item.Item3</a>
+    }
+</div>

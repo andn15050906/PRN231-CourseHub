@@ -1,8 +1,18 @@
 ﻿using CourseHub.API.Helpers.AppStart;
 using CourseHub.Core.Entities.UserDomain;
 using CourseHub.Core.Interfaces.Repositories;
+using CourseHub.Core.Services.Domain.AssignmentServices;
+using CourseHub.Core.Services.Domain.AssignmentServices.Contracts;
+using CourseHub.Core.Services.Domain.CommonServices;
+using CourseHub.Core.Services.Domain.CommonServices.Contracts;
 using CourseHub.Core.Services.Domain.CourseServices;
+using CourseHub.Core.Services.Domain.CourseServices.Contracts;
+using CourseHub.Core.Services.Domain.PaymentServices;
+using CourseHub.Core.Services.Domain.PaymentServices.Contracts;
+using CourseHub.Core.Services.Domain.SocialServices;
+using CourseHub.Core.Services.Domain.SocialServices.Contracts;
 using CourseHub.Core.Services.Domain.UserServices;
+using CourseHub.Core.Services.Domain.UserServices.Contracts;
 using CourseHub.Infrastructure;
 using CourseHub.Infrastructure.AccessContext;
 using Microsoft.EntityFrameworkCore;
@@ -30,10 +40,29 @@ public static class DomainServiceExtensions
         services
             .AddScoped<IUserService, UserService>()
 
-            .AddScoped<ICategoryService, CategoryService>();
+            .AddScoped<ICategoryService, CategoryService>()
+            .AddScoped<IInstructorService, InstructorService>()
+            .AddScoped<ICourseService, CourseService>()
+            .AddScoped<ILectureService, LectureService>()
+            .AddScoped<IEnrollmentService, EnrollmentService>()
+            .AddScoped<ICourseCouponService, CourseCouponService>()
+            .AddScoped<ICourseReviewService, CourseReviewService>()
+
+            .AddScoped<INotificationService, NotificationService>()
+            .AddScoped<ICommentService, CommentService>()
+            
+            .AddScoped<IBillService, BillService>()
+            
+            .AddScoped<IAssignmentService, AssignmentService>()
+            .AddScoped<IMcqQuestionService, McqQuestionService>()
+            .AddScoped<ISubmissionService, SubmissionService>()
+            
+            .AddScoped<IChatMessageService, ChatMessageService>()
+            .AddScoped<IConversationService, ConversationService>();
 
 
 
+        ExecuteColdQuery(connectionString);
         ExecuteColdQuery(connectionString);
 
         return services;

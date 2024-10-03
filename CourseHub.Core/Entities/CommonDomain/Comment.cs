@@ -28,14 +28,34 @@ public class Comment : AuditedEntity
 
 #pragma warning restore CS8618
 
-
-
-    public void SetPath(Guid sourceEntityId, CommentSourceEntityType type)
+    public Comment()
     {
-        switch (type)
-        {
 
+    }
+
+    public Comment(Guid id, User creator, string content, CommentSourceEntityType sourceType, Guid sourceId, ICollection<CommentMedia>? medias = null)
+    {
+        Id = id;
+        Creator = creator;
+        SourceType = sourceType;
+        switch (SourceType)
+        {
+            case CommentSourceEntityType.Comment:
+                ParentId = sourceId;
+                break;
+            case CommentSourceEntityType.Lecture:
+                LectureId = sourceId;
+                break;
+            case CommentSourceEntityType.Article:
+                ArticleId = sourceId;
+                break;
         }
+
+        Content = content;
+        Status = CommentStatus.None;
+
+        if (medias is not null)
+            Medias = medias;
     }
 
     public void SetParent(Comment parent)

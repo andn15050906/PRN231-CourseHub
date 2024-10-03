@@ -13,6 +13,7 @@ internal abstract class SqlServerEntityConfiguration<T> : IEntityTypeConfigurati
     public const string VARCHAR45 = "VARCHAR(45)";
     public const string VARCHAR100 = "VARCHAR(100)";
     public const string VARCHAR255 = "VARCHAR(255)";
+    public const string VARCHAR1000 = "VARCHAR(1000)";
 
     public const string NVARCHAR45 = "NVARCHAR(45)";
     public const string NVARCHAR100 = "NVARCHAR(100)";

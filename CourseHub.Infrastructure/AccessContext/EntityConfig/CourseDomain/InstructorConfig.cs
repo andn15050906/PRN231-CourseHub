@@ -1,4 +1,5 @@
 ﻿using CourseHub.Core.Entities.CourseDomain;
+using CourseHub.Core.Entities.UserDomain;
 using CourseHub.Infrastructure.AccessContext.Shared;
 using CourseHub.Infrastructure.AccessContext.Shared.DbSupport;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ internal class InstructorConfig : SqlServerEntityConfiguration<Instructor>
     {
         { _ => _.Intro, NVARCHAR500 },
         { _ => _.Experience, NVARCHAR1000 }
+        // Balance
     };
 
     public override void Configure(EntityTypeBuilder<Instructor> builder)
@@ -20,6 +22,7 @@ internal class InstructorConfig : SqlServerEntityConfiguration<Instructor>
         builder
             .ToTable(RelationsConfig.INSTRUCTOR)
             .SetColumnsTypes(Columns)
-            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE);
+            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE)
+            .SetDefaultSQL(_ => _.LastModificationTime, SQL_GETDATE);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper.QueryableExtensions;
 using CourseHub.Core.Entities.UserDomain;
+using CourseHub.Core.Entities.UserDomain.Enums;
 using CourseHub.Core.Interfaces.Repositories.Shared;
 using CourseHub.Core.Interfaces.Repositories.UserRepos;
 using CourseHub.Core.Models.User.UserModels;
@@ -45,6 +46,14 @@ internal class UserRepository : BaseRepository<User>, IUserRepository
         return GetPagingQuery<UserModel>(UserMapperProfile.ModelConfig, whereExpression, pageIndex, pageSize);
     }
 
+    public async Task<List<UserMinModel>> GetMinAsync(List<Guid> ids)
+    {
+        return await DbSet
+            .Where(_ => ids.Contains(_.Id))
+            .ProjectTo<UserMinModel>(UserMapperProfile.MinModelConfig)
+            .ToListAsync();
+    }
+
     public async Task<Guid> GetIdByProviderKey(string key)
     {
         return await DbSet.Where(_ => _.ProviderKey == key).Take(1).Select(_ => _.Id).FirstOrDefaultAsync();
@@ -59,4 +68,35 @@ internal class UserRepository : BaseRepository<User>, IUserRepository
     public async Task<User?> FindByEmail(string email) => await DbSet.FirstOrDefaultAsync(_ => _.Email == email);
 
     public async Task<User?> FindByUserName(string userName) => await DbSet.FirstOrDefaultAsync(_ => _.UserName == userName);
+
+
+
+    public async Task<bool> UpdateAsInstructor(Guid id, Guid instructorId)
+    {
+        var entity = await DbSet.FindAsync(id);
+        if (entity is null)
+            return false;
+        entity.Role = Role.Instructor;
+        entity.InstructorId = instructorId;
+        return true;
+    }
+
+
+
+
+
+
+    public async Task<List<UserModel>> GetAllAsync()
+    {
+        return await DbSet
+            .ProjectTo<UserModel>(UserMapperProfile.ModelConfig)
+            .ToListAsync();
+    }
+
+    public async Task<List<UserMinModel>> GetAllMinAsync()
+    {
+        return await DbSet
+            .ProjectTo<UserMinModel>(UserMapperProfile.MinModelConfig)
+            .ToListAsync();
+    }
 }

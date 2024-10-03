@@ -3,8 +3,10 @@ using System.Text.RegularExpressions;
 
 namespace CourseHub.Core.Helpers.Text;
 
-internal class TextHelper
+public class TextHelper
 {
+    private const string PATTERN_GUID = @"\b[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\b";
+
     internal static string Normalize(string original)
     {
         string normalized = original.Trim();
@@ -36,5 +38,37 @@ internal class TextHelper
         for (i = 0; i < 6; i++)
             builder.Append(charList[rd.Next(charList.Length)]);
         return builder.ToString();
+    }
+
+
+
+
+
+
+    public static List<Guid> GetGuidsFromString(string input, int count)
+    {
+        List<Guid> guids = new();
+
+        MatchCollection matches = Regex.Matches(input, PATTERN_GUID);
+
+        foreach (Match match in matches.Cast<Match>())
+        {
+            if (Guid.TryParse(match.Value, out Guid result))
+            {
+                guids.Add(result);
+                if (guids.Count == count)
+                    break;
+            }
+        }
+        return guids;
+    }
+
+    public static Guid? GetFirstGuidFromString(string input)
+    {
+        Match match = Regex.Match(input, PATTERN_GUID);
+
+        if (match.Success && Guid.TryParse(match.Value, out Guid result))
+            return result;
+        return null;
     }
 }

@@ -26,7 +26,8 @@ internal class ArticleConfig : SqlServerEntityConfiguration<Article>
             .ToTable(RelationsConfig.ARTICLE)
             .SetColumnsTypes(Columns)
             .SetUnique(_ => _.Title)
-            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE);
+            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE)
+            .SetDefaultSQL(_ => _.LastModificationTime, SQL_GETDATE);
 
         builder.OwnsMany(_ => _.Tags, tag =>
         {

@@ -7,6 +7,10 @@ internal class FileConverter
     // using SixLabors.ImageSharp
     // System.Drawing.Common is only supported on Windows
 
+    public const string EXTENSION_JPG = ".jpg";
+
+
+
     public async Task<Stream> ToJpg(IFormFile file)
     {
         if (file.ContentType == "image/jpeg")

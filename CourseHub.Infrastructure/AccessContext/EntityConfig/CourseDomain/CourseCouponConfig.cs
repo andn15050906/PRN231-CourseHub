@@ -22,6 +22,7 @@ internal class CourseCouponConfig : SqlServerEntityConfiguration<CourseCoupon>
         builder
             .ToTable(RelationsConfig.COURSE_COUPON)
             .SetColumnsTypes(Columns)
-            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE);
+            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE)
+            .SetDefaultSQL(_ => _.LastModificationTime, SQL_GETDATE);
     }
 }

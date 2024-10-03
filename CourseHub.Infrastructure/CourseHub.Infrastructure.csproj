@@ -20,9 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\AssignmentRepos\" />
-    <Folder Include="Repositories\CommonRepos\" />
-    <Folder Include="Repositories\SocialRepos\" />
     <Folder Include="Repositories\PaymentRepos\" />
   </ItemGroup>
 

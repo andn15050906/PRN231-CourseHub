@@ -13,7 +13,7 @@ public class CourseCoupon : TimeAuditedEntity
     public bool IsGlobalGenerated { get; set; }
 
     // FKs
-    public Guid CourseId { get; set; }
+    public Guid? CourseId { get; set; }
 
     // Navigations
     public Course? Course { get; set; }

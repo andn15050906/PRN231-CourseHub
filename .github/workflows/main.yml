@@ -1,0 +1,53 @@
+name: dotnet package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_test_API:
+
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '6.0.x' ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      
+      - name: Restore and build API
+        working-directory: ./CourseHub.API
+        run: |
+          dotnet restore
+          dotnet build
+
+      - name: Run tests
+        working-directory: ./CourseHub.Tests
+        run: dotnet test
+
+  build_UI:
+
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '6.0.x' ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      
+      - name: Restore and build UI
+        working-directory: ./CourseHub.UI
+        run: |
+          dotnet restore
+          dotnet build

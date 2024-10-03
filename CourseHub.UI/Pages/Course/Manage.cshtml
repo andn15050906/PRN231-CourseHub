@@ -1,0 +1,98 @@
+﻿@page
+@using CourseHub.Core.Helpers.Business;
+@using CourseHub.UI.Helpers.Utils;
+@model CourseHub.UI.Pages.Course.ManageModel
+@{
+    ViewData[Global.TITLE] = "Manage courses";
+}
+
+<style>
+    .app-btn-container {
+        display: flex;
+        flex-direction: row-reverse;
+        margin-bottom: 20px;
+    }
+
+    .app-btn-container a {
+        width: 200px;
+        height: 50px;
+        text-align: center;
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    #dataTable th, #dataTable td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+
+<div class="container-fluid" style="margin-top: 40px;">
+
+    <h1 style="font-size: 48px; text-align: center;">Manage Courses</h1>
+
+    <div class="app-btn-container">
+        <a asp-page="@Global.PAGE_COURSE_CREATE" class="btn btn-primary">Create a new course</a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Image</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Price</th>
+                            <th class="text-center">Discount</th>
+                            <th class="text-center">Discount Expiry</th>
+                            <th class="text-center">Level</th>
+                            <th class="text-center">LearnerCount</th>
+                            <th class="text-center">Average Rating</th>
+                            <th class="text-center">Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Courses.TotalCount == 0)
+                        {
+                            <tr>
+                                <th style="text-align: center; color: red" colspan="10">Empty</th>
+                            </tr>
+                        }
+                        else foreach (var course in Model.Courses.Items)
+                        {
+                            string avgRating = TextHelper.GetAverageRating(course.TotalRating, course.RatingCount);
+
+                            <tr>
+                                <td><a asp-page="@Global.PAGE_COURSE_UPDATE" asp-route-courseId="@course.Id">@course.Title</a></td>
+                                <td style="width: 300px">
+                                    <a asp-page="@Global.PAGE_COURSE_DETAIL" asp-route-id="@course.Id">
+                                        <img src="@course.ThumbUrl" alt="thumb" style="aspect-ratio: 1.5" />
+                                    </a>
+                                </td>
+                                <td>@course.Status.ToString()</td>
+                                <td>@course.Price</td>
+                                @if (CourseBusinessHelper.IsOnDiscount(course.Discount, course.DiscountExpiry))
+                                {
+                                    <td>@(course.Discount * 100) %</td>
+                                    <td>@course.DiscountExpiry.ToString("dd/MM/yyyy")</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                    <td></td>
+                                }
+                                <td>@course.Level.ToString()</td>
+                                <td>@course.LearnerCount</td>
+                                <td>@avgRating</td>
+                                <td>@Model.Categories.FirstOrDefault(_ => _.Id == course.LeafCategoryId)?.Title</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

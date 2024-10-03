@@ -1,0 +1,104 @@
+﻿@page
+@using CourseHub.Core.Entities.CommonDomain.Enums;
+@model CourseHub.UI.Areas.Admin.Pages.Notifications.IndexModel
+
+
+@{
+    ViewData[AdminGlobal.TITLE] = "Notification Management";
+}
+
+
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Type</th>
+                            <th class="text-center">Creator Id</th>
+                            <th class="text-center">Creation Time</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Data is null)
+                        {
+                            <tr class="error">Error</tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model.Data.Items
+                                .Where(_ =>
+                                    _.Type == NotificationType.AdminMessage ||
+                                    _.Type == NotificationType.RequestToBecomeInstructor ||
+                                    _.Type == NotificationType.RequestWithdrawal
+                                ))
+                            {
+                                <tr>
+                                    <td>@item.Type.ToString()</td>
+                                    <td>@item.CreatorId</td>
+                                    <td>@item.CreationTime</td>
+                                    <td>@item.Status.ToString()</td>
+                                    <td>
+                                        @if (item.Status == Core.Entities.CommonDomain.Enums.NotificationStatus.None)
+                                        {
+                                            <div class="app-approve-btn btn btn-primary" data-id="@item.Id">Approve</div>
+                                            <div class="app-dismiss-btn btn btn-danger" data-id="@item.Id">Dismiss</div>
+                                        }
+                                    </td>
+
+                                    <!--
+                                    <td class="d-flex justify-content-center">
+                                        <a asp-page="user-details" asp-route-userId="@item.Id"
+                                            asp-page-handler="userdetails"
+                                            class="btn btn-outline-primary">
+                                            Detail
+                                        </a>
+                                    </td>-->
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- No exposed js func here, using module -->
+<script type="module">
+    import { patchJsonWithCredentials } from '/js/apis/http.js';
+
+    var approveBtns = document.getElementsByClassName("app-approve-btn");
+    for (var i = 0; i < approveBtns.length; i++) {
+        let btn = approveBtns[i];
+        btn.onclick = () => {
+            patchJsonWithCredentials("@Model.NotificationRequestPath", {
+                Id : btn.getAttribute('data-id'),
+                Status: @((int)NotificationStatus.Approved)
+            }).then(res => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            });
+        }
+    }
+
+    var dismissBtns = document.getElementsByClassName('app-dismiss-btn');
+    for (var i = 0; i < dismissBtns.length; i++) {
+        let btn = dismissBtns[i];
+        btn.onclick = () => {
+            patchJsonWithCredentials("@Model.NotificationRequestPath", {
+                Id : btn.getAttribute('data-id'),
+                Status: @((int)NotificationStatus.Dismissed)
+            }).then(res => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            });
+        }
+    }
+</script>

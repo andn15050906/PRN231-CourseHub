@@ -1,4 +1,83 @@
 ﻿@page
 @model CourseHub.UI.Pages.User.RegisterModel
+
 @{
+    Layout = "_OuterAuthLayout";
+    ViewData[Global.TITLE] = "Register";
 }
+
+@section NavButton {
+    <button class="btn white-btn" onclick="signin()">Sign In</button>
+}
+
+<!----------------------------- Form box ----------------------------------->
+<style>
+    .app-radio-input {
+        display: flex;
+        justify-content: space-between;
+    }
+    .app-radio-label {
+        color: #fff;
+    }
+</style>
+
+<form method="post">
+    <div class="form-box">
+        <div class="register-container" id="register">
+            <header>Register</header>
+
+            @await Html.PartialAsync("Shared/_Alert")
+
+            <div asp-validation-summary="All" class="alert alert-danger mt-5 fs-4 pageError text-center"></div>
+
+            <!--<div class="input-box app-radio-input">
+                <div>
+                    <label class="app-radio-label">
+                        <input asp-for="Dto.Role" type="radio" value="0">Learner
+                    </label>
+                </div>
+                <div>
+                    <label class="app-radio-label">
+                        <input asp-for="Dto.Role" type="radio" value="1">Instructor
+                    </label>
+                </div>
+            </div>-->
+
+            <div class="input-box">
+                <input asp-for="Dto.UserName" type="text" class="input-field" placeholder="Username">
+                <i class="bx bx-user"></i>
+            </div>
+
+            <div class="input-box">
+                <input asp-for="Dto.Email" type="text" class="input-field" placeholder="Email">
+                <i class="bx bx-envelope"></i>
+            </div>
+
+            <div class="input-box">
+                <input asp-for="Dto.Password" type="password" class="input-field" placeholder="Password">
+                <i class="bx bx-lock-alt"></i>
+            </div>
+
+            <div class="input-box">
+                <input asp-for="RePassword" type="password" class="input-field" placeholder="Retype Password">
+                <i class="bx bx-lock-alt"></i>
+            </div>
+
+            <div class="input-box">
+                <input type="submit" class="submit" value="Register">
+            </div>
+
+            <div class="top">
+                <span>Have an account? <a href="#" onclick="signin()">Sign In</a></span>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script>
+    function signin() {
+        /**/
+        window.location.href = "@Global.PAGE_SIGNIN";
+    }
+</script>

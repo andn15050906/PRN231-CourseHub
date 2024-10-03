@@ -1,6 +1,6 @@
 ﻿namespace CourseHub.Core.Entities.CourseDomain.Enums;
 
-public enum CourseLevel
+public enum CourseLevel : byte
 {
     Beginner,
     Intermediate,

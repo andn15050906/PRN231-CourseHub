@@ -12,6 +12,7 @@ public static class AppInfoExtensions
         {
             options.AppName = config.AppName;
             options.MainFrontendApp = config.MainFrontendApp;
+            options.MainBackendApp = config.MainBackendApp;
         });
 
         return services;

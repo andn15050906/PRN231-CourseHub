@@ -1,0 +1,151 @@
+﻿@page
+@model CourseHub.UI.Pages.Assignment.ReviewModel
+@{
+    ViewData[Global.TITLE] = "Review";
+}
+
+<link rel="stylesheet" href="~/css/Assignment/yui.css" />
+
+<style>
+    #page-header .card:before{
+        width: 0 !important;
+    }
+
+    * {
+        border-top-color: #2f6473;
+    }
+
+    #responseform, .qtext, .othernav {
+        font-size: 18px !important;
+    }
+
+    #region-main {
+        overflow-x: unset;
+    }
+
+    #page-header {
+        font-size: 16px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .info {
+        margin: 2rem 0;
+    }
+
+    .othernav {
+        margin: .5em 0;
+    }
+
+    .breadcrumb {
+        background-color: unset;
+    }
+</style>
+
+<body id="page-mod-quiz-attempt" class="format-topics  path-mod path-mod-quiz chrome dir-ltr lang-en yui-skin-sam yui3-skin-sam cmshn-fpt-edu-vn pagelayout-incourse course-3929 context-280099 cmid-142960 category-391 drawer-open-left">
+    <div id="page-wrapper">
+        <div id="page" class="container-fluid">
+            <header id="page-header" class="row">
+                <div class="col-12 pt-3 pb-3">
+                    <div class="card">
+                        <div class="card-body ">
+                            <div class="d-flex">
+                                <div class="mr-auto">
+                                    <div class="page-context-header">
+                                        <div class="page-header-headings">
+                                            <h1>Python Bootcamp 2023</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap">
+                                <div id="page-navbar">
+                                    <nav role="navigation" aria-label="Breadcrumb trail">
+                                        <ol class="breadcrumb">
+                                            <!--<li class="breadcrumb-item">
+                                                <a href="#">Home</a>
+                                            </li>
+                                            <li class="breadcrumb-item">My courses</li>
+                                            <li class="breadcrumb-item">
+                                                <a href="#">*** Review for Final Exam ***</a>
+                                            </li>
+                                            <li class="breadcrumb-item">
+                                                <a href="#" aria-current="page" title="Quiz">Practice Final Exam</a>
+                                            </li>-->
+                                            <li class="breadcrumb-item">
+                                                <a asp-page="@Global.PAGE_ASSIGNMENT_OVERVIEW" asp-route-id="@Model.Assignment.Id"
+                                                    aria-current="page" title="Quiz">@Model.Assignment.Name</a>
+                                            </li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div id="page-content" class="row">
+                <div id="region-main-box" class="col-12">
+                    <section id="region-main" class="has-blocks mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <span class="notifications" id="user-notifications"></span>
+                                <div role="main">
+                                    <div>
+                                        @for (int i = 0; i < Model.Assignment.Questions.Count; i++)
+                                        {
+                                            var question = Model.Assignment.Questions[i];
+                                            Model.Question_Choice.TryGetValue(question.Id, out var choices);
+
+                                            <div id="q1" class="que multichoice deferredfeedback notyetanswered">
+                                                <div class="info">
+                                                    <h3 class="no">Question <span class="qno">@(i + 1)</span></h3>
+                                                </div>
+                                                <div class="content">
+                                                    <div class="formulation clearfix">
+                                                        <div class="qtext">@question.Content</div>
+                                                        <div class="ablock">
+                                                            <!--<div class="prompt">Select one:</div>-->
+                                                            <div class="answer">
+                                                                <!--Make radio array works-->
+                                                                <input name="AnswerChoices.Index" type="hidden" value="@i" />
+                                                                @foreach (var choice in question.Choices)
+                                                                {
+                                                                    <div class="r0">
+                                                                        <input type="radio" value="@choice.Id" @Html.Raw(Model.Submission.Answers.Any(_ => _.MCQChoiceId == choice.Id) ? "checked" : "")/>
+                                                                        <label for="@choice.Id" class="m-l-1">
+                                                                            @choice.Content
+                                                                        </label>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="outcome clearfix">
+                                                        <div class="feedback">
+                                                            <div class="rightanswer">The correct answer is:</div>
+                                                            @foreach (var choice in question.Choices)
+                                                            {
+                                                                if (choice.IsCorrect)
+                                                                {
+                                                                    <div>@choice.Content</div>
+                                                                }
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

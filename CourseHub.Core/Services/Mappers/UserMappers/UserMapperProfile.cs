@@ -17,8 +17,13 @@ public class UserMapperProfile : Profile
         cfg => cfg.CreateMap<User, UserOverviewModel>()
     );
 
+    public static readonly IConfigurationProvider MinModelConfig = new MapperConfiguration(
+        cfg => cfg.CreateMap<User, UserMinModel>()
+    );
+
     public UserMapperProfile()
     {
+        CreateMap<User, UserMinModel>();
         CreateMap<User, UserFullModel>();
     }
 }

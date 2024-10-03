@@ -2,6 +2,8 @@
 using CourseHub.API.Services.AppInfo;
 using CourseHub.API.Services.Authentication;
 using CourseHub.API.Services.Email;
+using CourseHub.API.Services.External.Payment;
+using CourseHub.API.Services.Realtime;
 using CourseHub.Core.Interfaces.Authentication;
 
 namespace CourseHub.API.Helpers.AppStart;
@@ -41,9 +43,15 @@ public class Configurer
     public static OAuthOptions GetGoogleOAuthOptions()
         => _configuration!.GetSection("External:OAuth:Google").Get<OAuthOptions>();
 
+    public static PaymentOptions GetPaymentOptions()
+        => _configuration!.GetSection("External:Payment:VNPay").Get<PaymentOptions>();
+
     public static AppInfoOptions GetAppInfoOptions()
         => _configuration!.GetSection("AppInfo").Get<AppInfoOptions>();
 
     public static string[] GetCorsOrigins()
         => _configuration!.GetSection("CORS").Get<string[]>();
+
+    public static RealtimeOptions GetRealtimeOptions()
+        => _configuration!.GetSection("Azure:SignalR").Get<RealtimeOptions>();
 }

@@ -13,7 +13,7 @@ internal class BillConfig : SqlServerEntityConfiguration<Bill>
     {
         { _ => _.Action, VARCHAR100 },
         { _ => _.Note, NVARCHAR255 },
-        { _ => _.Amount, VARCHAR20 },
+        // Amount
         { _ => _.Gateway, VARCHAR20 },
         { _ => _.TransactionId, VARCHAR100 },
         { _ => _.ClientTransactionId, VARCHAR100 },

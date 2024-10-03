@@ -1,0 +1,76 @@
+﻿@page
+@model CourseHub.UI.Pages.Assignment.ManageModel
+@{
+    ViewData[Global.TITLE] = "Assignment List";
+}
+
+
+
+<style>
+    .app-btn-container {
+        display: flex;
+        flex-direction: row-reverse;
+        margin-bottom: 20px;
+    }
+
+    .app-btn-container a {
+        width: 200px;
+        height: 50px;
+        text-align: center;
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    #dataTable th, #dataTable td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+
+<div class="container-fluid" style="margin-top: 40px;">
+
+    <h1 style="font-size: 36px; text-align: center; margin-bottom: 12px">Manage Assignments</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Name</th>
+                            <th class="text-center">Duration (sec)</th>
+                            <th class="text-center">Number of questions</th>
+                            <th class="text-center">Section</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Assignments.Count == 0)
+                        {
+                            <tr>
+                                <th style="text-align: center; color: red" colspan="10">Empty</th>
+                            </tr>
+                        }
+                        else foreach (var assignment in Model.Assignments)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-page="@Global.PAGE_ASSIGNMENT_UPDATE" asp-route-id="@assignment.Id">@assignment.Name</a>
+                                </td>
+                                <td>
+                                    <div>@assignment.Duration</div>
+                                </td>
+                                <td>
+                                    <div>@assignment.QuestionCount</div>
+                                </td>
+                                <td>
+                                    <a asp-page="@Global.PAGE_SECTION_UPDATE" asp-route-sectionId="@assignment.Section?.Id">@assignment.Section?.Title</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,5 @@
-using CourseHub.UI.Services.Contracts;
+using CourseHub.UI.Helpers;
+using CourseHub.UI.Services.Contracts.UserServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -11,15 +12,18 @@ public class ForgotPasswordModel : PageModel
     [EmailAddress]
     public string Email { get; set; }
 
-    public void OnGet()
-    {
-    }
-
-    public void OnPost([FromServices] IUserApiService userApiService)
+    public async Task OnPost([FromServices] IUserApiService userApiService)
     {
         if (!ModelState.IsValid)
             return;
 
-        userApiService.RequestPasswordResetAsync(Email);
+        var response = await userApiService.RequestPasswordResetAsync(Email);
+
+        TempData[Global.ALERT_MESSAGE] = response.IsSuccessStatusCode
+            ? "Passsword reset email was sent."
+            : "Could not send email!";
+        TempData[Global.ALERT_STATUS] = response.IsSuccessStatusCode;
+
+        Email = string.Empty;
     }
 }

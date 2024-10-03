@@ -8,13 +8,12 @@ using CourseHub.API.Helpers.Cookie;
 using CourseHub.API.Controllers.Shared;
 using CourseHub.Core.RequestDtos.User.UserDtos;
 using CourseHub.Core.Services.Domain.UserServices.TempModels;
-using CourseHub.Core.Services.Domain.UserServices;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using CourseHub.API.Services.AppInfo;
 using Microsoft.Extensions.Options;
 using CourseHub.Core.Entities.UserDomain.Enums;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using CourseHub.Core.Services.Domain.UserServices.Contracts;
 
 namespace CourseHub.API.Controllers.UserControllers;
 
@@ -37,7 +36,7 @@ public class AuthController : BaseController
     [HttpPost("SignIn")]
     public async Task<IActionResult> SignIn([FromBody] SignInDto dto, [FromServices] ITokenService tokenService)
     {
-        ServiceResult<AuthDto> result = await _userService.SignInAsync(dto, tokenService);
+        ServiceResult<AuthModel> result = await _userService.SignInAsync(dto, tokenService);
 
         if (result.IsSuccessful)
             SetAuthData(result.Data!);
@@ -57,13 +56,15 @@ public class AuthController : BaseController
     public async Task<IActionResult> OAuthCallback(Role role, [FromServices] IOptions<AppInfoOptions> appInfo)
     {
         // Make database and claims be in a valid state
-        var principalResult = await _userService.ExternalSignInAsync(User, role);
-        if (principalResult.Data is null)
-            return principalResult.AsResponse();
-        await HttpContext.SignInAsync(principalResult.Data);
+        var authResult = await _userService.ExternalSignInAsync(User, role);
+        if (authResult.Data is null)
+            return authResult.AsResponse();
 
         // After this, there will be two NameIdentifier Claims
-        return Redirect($"{appInfo.Value.MainFrontendApp}/external");
+        await HttpContext.SignInAsync(authResult.Data.Principal);
+
+        string data = JsonSerializer.Serialize(authResult.Data.User);
+        return Redirect($"{appInfo.Value.MainFrontendApp}/user/externalredirect?value={data}");
     }
 
     [HttpPost("SignOut")]
@@ -76,7 +77,7 @@ public class AuthController : BaseController
     [HttpPost("Refresh")]
     public async Task<IActionResult> Refresh([FromServices] ITokenService tokenService)
     {
-        ServiceResult<AuthDto> result = await _userService.RefreshAsync(
+        ServiceResult<AuthModel> result = await _userService.RefreshAsync(
             Request.GetAccessToken(),
             Request.GetRefreshToken(),
             tokenService
@@ -89,7 +90,7 @@ public class AuthController : BaseController
 
 
 
-    private void SetAuthData(AuthDto authData)
+    private void SetAuthData(AuthModel authData)
     {
         Response.SetCredentials(authData.AccessToken, authData.RefreshToken, CookieHelper.GetOptions());
     }

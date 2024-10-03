@@ -9,6 +9,23 @@ public class Conversation : CreationAuditedEntity
 
     // Navigations
     public User? Creator { get; set; }
-    public ICollection<ConversationMember> Members { get; set; }
-    public ICollection<ChatMessage> ChatMessages { get; set; }
+    public List<ConversationMember> Members { get; set; }
+    public List<ChatMessage> ChatMessages { get; set; }
+
+
+
+    public Conversation()
+    {
+
+    }
+
+    public Conversation(Guid id, Guid creatorId, string title, bool isPrivate, string avatarUrl, List<ConversationMember> members)
+    {
+        Id = id;
+        CreatorId = creatorId;
+        Title = title;
+        IsPrivate = isPrivate;
+        AvatarUrl = avatarUrl;
+        Members = members;
+    }
 }

@@ -1,6 +1,6 @@
 ﻿namespace CourseHub.Core.Entities.CommonDomain.Enums;
 
-public enum ReactionSourceEntityType
+public enum ReactionSourceEntityType : byte
 {
     Comment,
     Lecture,

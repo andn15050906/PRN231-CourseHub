@@ -1,0 +1,129 @@
+﻿@page
+@using CourseHub.Core.Helpers.Business;
+@using CourseHub.UI.Helpers.Utils;
+@model CourseHub.UI.Pages.Course.SearchModel
+@{
+    ViewData[Global.TITLE] = "Search Courses";
+}
+
+
+<link rel="stylesheet" href="~/css/common-app-css.5b914d85e01ba6db2ad0.css">
+<link rel="stylesheet" href="~/css/search-main.css">
+<style>
+    body {
+        display: unset;
+    }
+
+    /*.u-all-course {
+        margin-top: 160px;
+    }*/
+
+    .list-course>div {
+        float: left;
+    }
+
+    .u-number-page a {
+        padding: 12px 24px;
+    }
+</style>
+
+
+<body data-new-gr-c-s-check-loaded="14.1126.0" data-gr-ext-installed="">
+   <main>
+      <input type="hidden" id="txtNumberPage" name="txtNumberPage" value="1">
+      <div class="style-combo" style="padding:15px 0">
+         <div class="container">
+            <div class="row">
+
+
+               <!--<div class="style-title">
+                  <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 padding-left-5">
+                     <h1 style="font-size: 20px;font-family: inherit;color: inherit;margin-top: 0px; margin-bottom: 0;">Kết quả tìm kiếm: a</h1>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 u-all-courses">
+                     <h4>Tìm thấy <b>1869</b> khóa học online</h4>
+                  </div>
+               </div>-->
+
+
+
+
+               <div class="main-content" style="width: 100%; margin-top: 40px;">
+                   <div class="u-all-course">
+                       <section>
+                           <div class="u-hot-cate hidden-xs">
+                               <span class="order-new-seo"><i class="fa fa-sort" aria-hidden="true"></i>Sort By</span>
+                               <ul>
+                                   <li><a class="" href="?sortBy=new">Newest</a></li>
+                                   <li><a class="" href="?sortBy=learnerCount">Most learned</a></li>
+                                   <li><a class="" href="?sortBy=avgRating">Average Rating</a></li>
+                                   <li><a class="" href="?sortBy=price">Price</a></li>
+                                   <li><a class="" href="?sortBy=discount">Discount</a></li>
+                               </ul>
+                           </div>
+                       </section>
+                       <br>
+
+
+
+
+                       <div style="display: flex">
+
+                          <div style="max-width: 20%" class="col-lg-10 col-md-10 col-sm-10 u-list-leftbar padding-left-5  hidden">
+                              <section>
+                                 <div class="u-cate-list ">
+                                    <p style="font-size: 16px;font-weight: bold;border-bottom: 1px solid #d7d7d7;margin-bottom: 10px;padding-bottom: 5px;">
+                                       Categories
+                                    </p>
+                                 </div>
+                                 <ul>
+                                     @foreach (var parent in Model.Categories){
+                                         @if (!parent.IsLeaf) {
+                                             <li style="color: #777">
+                                                 <a href="?category=@parent.Id">
+                                                     <!--<i class="fa fa fa-language" aria-hidden="true"></i>-->
+                                                     @parent.Title
+                                                 </a>
+                                                 @*<ul class="issub" style="z-index: 1002; /*display: none;*/">
+                                                     @foreach (var child in Model.Categories)
+                                                     {
+                                                         if (child.IsLeaf && child.Path.StartsWith(parent.Path))
+                                                         {
+                                                             <li style="margin-left:16px"><a href="?category=@child.Id">@child.Title</a></li>
+                                                         }
+                                                     }
+                                                  </ul>*@
+                                             </li>
+                                         }
+                                     }
+                                 </ul>
+                              </section>
+                          </div>
+
+
+
+
+
+
+                         <section class="style-search" style="margin-left: 18px; width:100%">
+                            <div class="list-course a" style="height: 100%">
+                                @await Html.PartialAsync(Global.PARTIAL_COURSE_OVERVIEW, (Model.Courses.Items, 12))
+                            </div>
+
+                           <!--<div class="u-number-page text-center">
+                               <a href="javascript:void(0)" type="button" id="btn-load-more" class="btn">
+                                   <i class="fa fa-spinner fa-pulse fa-1x fa-fw" style="display: none;"></i>
+                                   SEE MORE
+                               </a>
+                           </div>-->
+                           @await Html.PartialAsync(Global.PARTIAL_PAGINATION, (Model.Courses.PageIndex, Model.Courses.PageSize, Model.Courses.PageCount, Global.PATTERN_COURSE_SEARCH))
+                         </section>
+
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </main>
+</body>

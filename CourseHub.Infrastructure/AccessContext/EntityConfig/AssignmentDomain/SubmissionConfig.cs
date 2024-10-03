@@ -20,10 +20,12 @@ internal class SubmissionConfig : SqlServerEntityConfiguration<Submission>
         builder
             .ToTable(RelationsConfig.SUBMISSION)
             .SetColumnsTypes(Columns)
-            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE);
+            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE)
+            .SetDefaultSQL(_ => _.LastModificationTime, SQL_GETDATE);
 
         builder.OwnsMany(_ => _.Answers, answer =>
         {
+            answer.HasKey(_ => new { _.SubmissionId, _.MCQChoiceId });
             answer.HasOne(_ => _.Submission).WithMany(_ => _.Answers).OnDelete(DeleteBehavior.NoAction);
         });
         builder.HasOne(_ => _.Creator).WithMany().OnDelete(DeleteBehavior.NoAction);

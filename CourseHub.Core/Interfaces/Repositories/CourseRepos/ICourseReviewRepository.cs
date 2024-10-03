@@ -6,5 +6,5 @@ namespace CourseHub.Core.Interfaces.Repositories.CourseRepos;
 
 public interface ICourseReviewRepository : IRepository<CourseReview>
 {
-    IPagingQuery<CourseReview, CourseReviewModel> GetPagingQuery(Expression<Func<User, bool>>? whereExpression, short pageIndex, byte pageSize);
+    IPagingQuery<CourseReview, CourseReviewModel> GetPagingQuery(Expression<Func<CourseReview, bool>>? whereExpression, short pageIndex, byte pageSize);
 }

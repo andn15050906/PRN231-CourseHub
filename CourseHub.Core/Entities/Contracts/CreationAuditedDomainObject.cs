@@ -2,6 +2,6 @@
 
 public abstract class CreationAuditedDomainObject : DomainObject
 {
-    public Guid CreatorId { get; protected set; }
-    public DateTime CreationTime { get; protected set; }
+    public Guid CreatorId { get; set; }
+    public DateTime CreationTime { get; set; }
 }

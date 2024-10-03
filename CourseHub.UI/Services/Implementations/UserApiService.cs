@@ -1,6 +1,7 @@
 ﻿using CourseHub.Core.Interfaces.Repositories.Shared;
 using CourseHub.Core.Models.User.UserModels;
 using CourseHub.Core.RequestDtos.User.UserDtos;
+using CourseHub.UI.Helpers.Http;
 using CourseHub.UI.Helpers.Utils;
 using CourseHub.UI.Services.Contracts;
 

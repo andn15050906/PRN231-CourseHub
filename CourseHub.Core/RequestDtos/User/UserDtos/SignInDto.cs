@@ -11,6 +11,7 @@ public class SignInDto
     [EmailAddress(ErrorMessage = UserDomainMessages.INVALID_EMAIL)]
     public string? Email { get; set; }
 
+    [Required]
     [PasswordValidation]
     public string Password { get; set; } = null!;
 }

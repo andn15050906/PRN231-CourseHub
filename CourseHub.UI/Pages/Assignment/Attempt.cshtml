@@ -1,0 +1,289 @@
+﻿@page
+@model CourseHub.UI.Pages.Assignment.AttemptModel
+@{
+    ViewData[Global.TITLE] = "Attempt";
+}
+
+
+<link rel="stylesheet" href="~/css/Assignment/yui.css" />
+
+<style>
+    #page-header .card:before{
+        width: 0 !important;
+    }
+
+    * {
+        border-top-color: #2f6473;
+    }
+
+    #responseform, .qtext, .othernav {
+        font-size: 18px !important;
+    }
+
+    #region-main {
+        overflow-x: unset;
+    }
+
+    #page-header {
+        font-size: 16px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .info {
+        margin: 2rem 0;
+    }
+
+    .othernav {
+        margin: .5em 0;
+    }
+
+    .breadcrumb {
+        background-color: unset;
+    }
+
+    div[role="main"] {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin: 50px auto;
+        padding: 40px;
+        width: 80%;
+        max-width: 1000px;
+    }
+
+    #finish-btn {
+        padding: 12px 25px;
+        background-color: #0074E1;
+        color: #fff;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        margin-top: 30px;
+    }
+
+    #finish-btn:hover {
+        background-color: #005bb5;
+    }
+
+    .que {
+        margin-bottom: 30px;
+    }
+
+    .answer {
+        margin-left: 20px;
+    }
+
+    #user-notifications {
+        margin-bottom: 20px;
+    }
+
+    .submission-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 40px;
+    }
+
+    #quiz-timer {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #0074E1;
+    }
+</style>
+
+<body id="page-mod-quiz-attempt" class="format-topics  path-mod path-mod-quiz chrome dir-ltr lang-en yui-skin-sam yui3-skin-sam cmshn-fpt-edu-vn pagelayout-incourse course-3929 context-280099 cmid-142960 category-391 drawer-open-left">
+    <div id="page-wrapper">
+        <div id="page" class="container-fluid">
+            <header id="page-header" class="row">
+                <div class="col-12 pt-3 pb-3">
+                    <div class="card">
+                        <div class="card-body ">
+                            <div class="d-flex">
+                                <div class="mr-auto">
+                                    <div class="page-context-header">
+                                        <div class="page-header-headings">
+                                            <h1>Python Bootcamp 2023</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap">
+                                <div id="page-navbar">
+                                    <nav role="navigation" aria-label="Breadcrumb trail">
+                                        <ol class="breadcrumb">
+                                            <!--<li class="breadcrumb-item">
+                                                <a href="#">Home</a>
+                                            </li>
+                                            <li class="breadcrumb-item">My courses</li>
+                                            <li class="breadcrumb-item">
+                                                <a href="#">*** Review for Final Exam ***</a>
+                                            </li>
+                                            <li class="breadcrumb-item">
+                                                <a href="#" aria-current="page" title="Quiz">Practice Final Exam</a>
+                                            </li>-->
+                                            <li class="breadcrumb-item">
+                                                <a asp-page="@Global.PAGE_ASSIGNMENT_OVERVIEW" asp-route-id="@Model.Assignment.Id"
+                                                    aria-current="page" title="Quiz">@Model.Assignment.Name</a>
+                                            </li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div id="page-content" class="row">
+                <div id="region-main-box" class="col-12">
+                    <section id="region-main" class="has-blocks mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <span class="notifications" id="user-notifications"></span>
+                                <div role="main">
+                                    <form method="post" id="responseform">
+                                        <!-- //... -->
+                                        <input asp-for="Dto.TimeSpentInSec" type="text" id="time-spent" hidden value="@Model.Assignment.Duration"/>
+                                        <input asp-for="Dto.AssignmentId" type="text" hidden value="@Model.Assignment.Id"/>
+                                        <div>
+                                            @for (int i = 0; i < Model.Assignment.Questions.Count; i++)
+                                            {
+                                                var question = Model.Assignment.Questions[i];
+
+                                                <div id="q1" class="que multichoice deferredfeedback notyetanswered">
+                                                    <div class="info">
+                                                        <h3 class="no">Question <span class="qno">@(i + 1)</span></h3>
+                                                    </div>
+                                                    <div class="content">
+                                                        <div class="formulation clearfix">
+                                                            <div class="qtext">@question.Content</div>
+                                                            <div class="ablock">
+                                                                <!--<div class="prompt">Select one:</div>-->
+                                                                <div class="answer">
+                                                                    <!--Make radio array works-->
+                                                                    <input name="AnswerChoices.Index" type="hidden" value="@i" />
+                                                                    @foreach (var choice in question.Choices)
+                                                                    {
+                                                                        <div class="r0">
+                                                                            <input type="radio" asp-for="AnswerChoices[i]" value="@choice.Id" />
+                                                                            <label for="@choice.Id" class="m-l-1">
+                                                                                @choice.Content
+                                                                            </label>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        @if (Model.Course.Creator.Id == Model.Client.Id)
+                                                        {
+                                                            <div class="outcome clearfix">
+                                                                <div class="feedback">
+                                                                    <div class="rightanswer">The correct answer is:</div>
+                                                                    @foreach (var choice in question.Choices)
+                                                                    {
+                                                                        if (choice.IsCorrect)
+                                                                        {
+                                                                            <div>@choice.Content</div>
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+
+                    @if (Model.Course.Creator.Id != Model.Client.Id)
+                    {
+                        <section data-region="blocks-column" class="d-print-none">
+                            <aside id="block-region-side-pre" class="block-region" data-blockregion="side-pre" data-droptarget="1">
+                                <section id="mod_quiz_navblock" class=" block block__fake  card mb-3" role="navigation" data-block="_fake" aria-labelledby="instance-0-header">
+                                    <div class="card-body p-3">
+                                        <div class="card-text content mt-3">
+                                            @*<div class="qn_buttons clearfix multipages">
+                                                @for (int i = 0; i < Model.Questions.Count; i++)
+                                                {
+                                                    <button class="qnbutton notyetanswered free btn btn-secondary thispage"
+                                                        id="@("quiznavbutton" + i)" title="Not yet answered">
+                                                        @(i + 1)
+                                                    </button>
+                                                }
+                                            </div>*@
+                                            <div class="othernav">
+                                                <div class="submission-area">
+                                                    <a href="#" id="finish-btn">Finish attempt</a>
+                                                    <div id="quiz-timer" role="timer" aria-atomic="true" aria-relevant="text">
+                                                        Time left: <span id="quiz-time-left"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </aside>
+                        </section>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Course.Creator.Id != Model.Client.Id)
+    {
+        <script type="text/javascript">
+            var duration = @Model.Assignment.Duration;
+            var timeLeft = duration;
+            var timeLeftEle = document.getElementById('quiz-time-left');
+            var timeUsedInp = document.getElementById('time-spent');
+            var form = document.getElementById('responseform');
+            var finishBtn = document.getElementById('finish-btn');
+
+            finishBtn.onclick = () => {
+                submitAssignment();
+            }
+
+            function submitAssignment() {
+                form.submit();
+                submitted = true;
+                setTimeout(() => {
+                        window.location.href = "/assignment/overview?id=@Model.Assignment.Id";
+                }, 2000);
+            }
+
+            var submitted = false;
+
+            setInterval(() =>
+            {
+                if (timeLeft > 0)
+                {
+                    timeLeft--;
+                    timeLeftEle.innerHTML = timeLeft;
+                    timeUsedInp.value = duration - timeLeft;
+                }
+                else if (!submitted)
+                {
+                    submitAssignment();
+                }
+            }, 1000);
+        </script>
+    }
+    else
+    {
+        
+    }
+</body>

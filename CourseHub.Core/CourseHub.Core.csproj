@@ -14,6 +14,10 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14" />
+    <PackageReference Include="MimeTypes" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
   </ItemGroup>
 
@@ -22,7 +26,6 @@
     <Folder Include="Interfaces\Repositories\PaymentRepos\" />
     <Folder Include="Interfaces\Repositories\SocialRepos\" />
     <Folder Include="Models\Common\ReactionModels\" />
-    <Folder Include="Models\Course\LectureModels\" />
     <Folder Include="RequestDtos\Common\ReactionDtos\" />
   </ItemGroup>
 

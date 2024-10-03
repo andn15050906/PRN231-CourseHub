@@ -1,5 +1,6 @@
 ﻿using CourseHub.Core.Entities.UserDomain.Enums;
 using CourseHub.Core.Helpers.Cryptography;
+using CourseHub.Core.Helpers.Messaging.Messages;
 using CourseHub.Core.Helpers.Text;
 
 namespace CourseHub.Core.Entities.UserDomain;
@@ -17,7 +18,7 @@ public class User : TimeAuditedEntity
     public string Token { get; set; }
     public string RefreshToken { get; set; }
     public bool IsVerified { get; set; }
-    public bool IsApproved { get; private set; }        // for Admins
+    public bool IsApproved { get; private set; }
     public byte AccessFailedCount { get; private set; }
     public string? LoginProvider { get; set; }          // OAuth
     public string? ProviderKey { get; set; }            // OAuth
@@ -26,42 +27,71 @@ public class User : TimeAuditedEntity
     public string? Phone { get; set; }
 
     public int EnrollmentCount { get; set; }
-    //public int SystemBalance { get; set; }
-    //public int Point { get; set; }
+    public long SystemBalance { get; set; }
+
+    // FKs
+    public Guid? InstructorId { get; set; }
 
     // Navigations
+    public Instructor? Instructor { get; set; }
     // public ICollection<Enrollment> Enrollments { get; private set; }
-    public ICollection<PaymentAccount> PaymentAccounts { get; private set; }
     public ICollection<ConversationMember> ConversationMembers { get; private set; }
 
 #pragma warning disable CS8618
 
-    public User(Guid id)
-    {
-        Id = id;
-    }
-
-    public User(Guid id, string fullName, string inputPassword)
+    // For seeding
+    public User(Guid id, string fullName, string inputPassword, bool isVerified, bool isApproved)
     {
         Id = id;
         SetFullName(fullName);
         SetPassword(inputPassword);
         SetCreationTime();
+        IsVerified = isVerified;
+        IsApproved = isApproved;
+        AvatarUrl = string.Empty;
+        Token = string.Empty;
+        RefreshToken = string.Empty;
+    }
+
+    public User(string userName, string inputPassword, string email, string fullName, Role role, DateTime dateOfBirth, string phone, Guid id)
+    {
+        Id = id;
+        SetCreationTime();
+        UserName = userName;
+        SetPassword(inputPassword);
+        Email = email;
+        SetFullName(fullName);
+        SetPassword(inputPassword);
+        AvatarUrl = string.Empty;
+        Role = role;
+        Token = string.Empty;
+        RefreshToken = string.Empty;
+        IsApproved = true;
+        IsVerified = true;
+        Bio = string.Empty;
+        DateOfBirth = dateOfBirth;
+        Phone = phone;
     }
 
     /// <summary>
-    /// Used for password registration
+    /// Used for registration
     /// </summary>
-    public User(string userName, string inputPassword)
+    public User(string userName, string inputPassword, string email, Role role)
     {
         Id = Guid.NewGuid();
         UserName = userName;
-        SetFullName(userName);                  // default Full Name is UserName
         SetPassword(inputPassword);
+        Email = email;
+        SetFullName(userName);                  // default Full Name is UserName
+        Role = role;
         GenerateToken();
         SetCreationTime();
         AvatarUrl = string.Empty;
         Bio = string.Empty;
+
+        if (Role == Role.Admin)
+            IsApproved = true;
+        DateOfBirth = new DateTime(2000, 1, 1);
     }
 
     /// <summary>
@@ -85,6 +115,8 @@ public class User : TimeAuditedEntity
         // IsApproved
         LoginProvider = loginProvider;
         ProviderKey = providerKey;
+
+        DateOfBirth = new DateTime(2000, 1, 1);
     }
 
 #pragma warning restore CS8618
@@ -135,11 +167,30 @@ public class User : TimeAuditedEntity
         return Role == Role.Admin ? !IsApproved : !IsVerified;
     }
 
+    public void SetInstructor(Guid instructorId)
+    {
+        if (Role > Role.Learner)
+            throw new Exception(UserDomainMessages.FORBIDDEN_NOT_APPROVED);
+        Role = Role.Instructor;
+        InstructorId = instructorId;
+    }
+
     private void SetCreationTime()
     {
         DateTime now = DateTime.UtcNow;
         CreationTime = now;
         LastModificationTime = now;
+    }
+
+    public void Block()
+    {
+        IsApproved = false;
+        AccessFailedCount = 100;
+    }
+
+    public bool IsBlocked()
+    {
+        return AccessFailedCount == 100;
     }
 
 

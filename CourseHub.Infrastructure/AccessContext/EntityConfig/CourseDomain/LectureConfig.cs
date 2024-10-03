@@ -14,14 +14,16 @@ internal class LectureConfig : SqlServerEntityConfiguration<Lecture>
     {
         { _ => _.Title, NVARCHAR255 },
         { _ => _.Content, NVARCHAR3000 }
+        // IsPreviewable
     };
 
     public override void Configure(EntityTypeBuilder<Lecture> builder)
     {
         builder
-            .ToTable(RelationsConfig.LECTURE)
+            .ToTable(RelationsConfig.LECTURE, _ => _.HasTrigger(RelationsConfig.TRIGGER_onLectureInsertDelete))
             .SetColumnsTypes(Columns)
-            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE);
+            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE)
+            .SetDefaultSQL(_ => _.LastModificationTime, SQL_GETDATE);
 
         builder.OwnsMany(_ => _.Materials, material => {
             material.Property(_ => _.Type).HasConversion(_ => _.ToString(), _ => (LectureMaterialType)Enum.Parse(typeof(LectureMaterialType), _));

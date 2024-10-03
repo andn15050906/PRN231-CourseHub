@@ -2,6 +2,6 @@
 
 public abstract class AuditedEntity : TimeAuditedEntity
 {
-    public Guid CreatorId { get; protected set; }
-    public Guid LastModifierId { get; protected set; }
+    public Guid CreatorId { get; set; }
+    public Guid LastModifierId { get; set; }
 }

@@ -1,7 +1,7 @@
 ﻿using CourseHub.API.Controllers.Shared;
 using CourseHub.API.Helpers.Cookie;
 using CourseHub.Core.RequestDtos.Common.CommentDtos;
-using CourseHub.Core.Services.Domain.CommonServices;
+using CourseHub.Core.Services.Domain.CommonServices.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;

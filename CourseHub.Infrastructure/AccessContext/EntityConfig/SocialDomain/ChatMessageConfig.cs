@@ -21,7 +21,8 @@ internal class ChatMessageConfig : SqlServerEntityConfiguration<ChatMessage>
             .ToTable(RelationsConfig.CHAT_MESSAGE)
             .SetColumnsTypes(Columns)
             .SetEnumParsing(_ => _.Status)
-            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE);
+            .SetDefaultSQL(_ => _.CreationTime, SQL_GETDATE)
+            .SetDefaultSQL(_ => _.LastModificationTime, SQL_GETDATE);
 
         builder.HasOne(_ => _.Creator).WithMany().OnDelete(DeleteBehavior.NoAction);
     }

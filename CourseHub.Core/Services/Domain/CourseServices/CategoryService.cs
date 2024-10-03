@@ -4,6 +4,7 @@ using CourseHub.Core.Helpers.Messaging.Messages;
 using CourseHub.Core.Interfaces.Logging;
 using CourseHub.Core.Interfaces.Repositories;
 using CourseHub.Core.RequestDtos.Course.CategoryDtos;
+using CourseHub.Core.Services.Domain.CourseServices.Contracts;
 
 namespace CourseHub.Core.Services.Domain.CourseServices;
 

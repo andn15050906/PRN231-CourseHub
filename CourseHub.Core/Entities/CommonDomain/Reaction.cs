@@ -17,6 +17,21 @@ public class Reaction : CreationAuditedDomainObject
 
 
 
+    public Reaction()
+    {
+
+    }
+
+    public Reaction(Guid creatorId, Guid sourceEntityId, string content, ReactionSourceEntityType sourceType)
+    {
+        CreatorId = creatorId;
+        SourceEntityId = sourceEntityId;
+        Content = content;
+        SourceType = sourceType;
+    }
+
+
+
     public void SetPath(Guid sourceEntityId, ReactionSourceEntityType type)
     {
         SourceEntityId = sourceEntityId;

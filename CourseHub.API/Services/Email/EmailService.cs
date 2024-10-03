@@ -42,7 +42,10 @@ public class EmailService
     {
         string path = _hostEnvironment.WebRootPath + RELATIVE_REGISTRATION_TEMPLATE;
         if (!File.Exists(path))
+        {
+            _logger.Warn("Email Template Not found");
             throw new Exception(TEMPLATE_NOTFOUND);
+        }
 
         string template = File.ReadAllText(path);
         template = template.Replace("{username}", username).Replace("{app}", _senderName).Replace("{link}", link);

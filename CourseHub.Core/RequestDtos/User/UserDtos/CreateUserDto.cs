@@ -13,8 +13,7 @@ public class CreateUserDto
     [StringLength(20, MinimumLength = 6, ErrorMessage = UserDomainMessages.INVALID_USERNAME)]
     public string UserName { get; set; } = string.Empty;
 
+    [Required]
     [PasswordValidation]
     public string Password { get; set; } = string.Empty;
-
-    public Role Role { get; set; }
 }

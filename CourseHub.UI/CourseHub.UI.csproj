@@ -16,4 +16,23 @@
     <ProjectReference Include="..\CourseHub.Core\CourseHub.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Course\_PartialCarousel.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Course\Enrolled.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Course\_PartialCarousel.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Course\Enrolled.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\5f87e53d-f9a2-4c14-bd27-3622848b38dd.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

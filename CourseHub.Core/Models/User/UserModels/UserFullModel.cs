@@ -15,7 +15,7 @@ public class UserFullModel
     public bool IsApproved { get; set; }
     public string? LoginProvider { get; set; }
     public string Bio { get; set; }
-    public DateTime? DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; }
     public int EnrollmentCount { get; set; }
 
     public DateTime CreationTime { get; set; }

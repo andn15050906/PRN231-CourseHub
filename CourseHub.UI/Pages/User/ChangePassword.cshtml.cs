@@ -1,8 +1,8 @@
 using CourseHub.Core.Helpers.Validation;
 using CourseHub.Core.RequestDtos.User.UserDtos;
 using CourseHub.UI.Helpers;
-using CourseHub.UI.Helpers.Utils;
-using CourseHub.UI.Services.Contracts;
+using CourseHub.UI.Helpers.Http;
+using CourseHub.UI.Services.Contracts.UserServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -23,19 +23,28 @@ public class ChangePasswordModel : PageModel
     [Compare(nameof(NewPassword), ErrorMessage = "Passwords do not match")]
     public string? RePassword { get; set; }
 
-    /// <summary>
-    /// Only for authenticated users
-    /// </summary>
     public async Task<IActionResult> OnGet()
     {
         var data = await HttpContext.GetClientData();
         if (data is null)
             return Redirect(Global.PAGE_SIGNIN);
+        TempData[Global.DATA_USE_BACKGROUND] = true;
         return Page();
     }
 
     public async Task OnPost([FromServices] IUserApiService userApiService)
     {
+        if (NewPassword == CurrentPassword)
+        {
+            ModelState.AddModelError(nameof(NewPassword), "New Password must be different from Current Password");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            TempData[Global.DATA_USE_BACKGROUND] = true;
+            return;
+        }
+
         UpdateUserDto dto = new()
         {
             CurrentPassword = CurrentPassword,
@@ -43,6 +52,12 @@ public class ChangePasswordModel : PageModel
         };
 
         var response = await userApiService.UpdateAsync(dto, HttpContext);
-        System.Diagnostics.Debug.WriteLine(response);
+
+        TempData[Global.ALERT_MESSAGE] = response.IsSuccessStatusCode
+            ? "Updated successfully."
+            : "Invalid password!";
+        TempData[Global.ALERT_STATUS] = response.IsSuccessStatusCode;
+        TempData[Global.DATA_USE_BACKGROUND] = true;
+        return;
     }
 }

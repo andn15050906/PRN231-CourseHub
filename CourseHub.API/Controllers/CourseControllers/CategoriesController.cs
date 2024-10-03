@@ -1,7 +1,7 @@
 ﻿using CourseHub.API.Controllers.Shared;
 using CourseHub.Core.Entities.UserDomain.Enums;
 using CourseHub.Core.RequestDtos.Course.CategoryDtos;
-using CourseHub.Core.Services.Domain.CourseServices;
+using CourseHub.Core.Services.Domain.CourseServices.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;

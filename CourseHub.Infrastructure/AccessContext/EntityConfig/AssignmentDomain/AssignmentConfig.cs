@@ -14,6 +14,7 @@ internal class AssignmentConfig : SqlServerEntityConfiguration<Assignment>
         { _ => _.Name, NVARCHAR255 },
         // Duration
         // QuestionCount
+        // GradeToPass
     };
 
     public override void Configure(EntityTypeBuilder<Assignment> builder)
@@ -21,5 +22,7 @@ internal class AssignmentConfig : SqlServerEntityConfiguration<Assignment>
         builder
             .ToTable(RelationsConfig.ASSIGNMENT)
             .SetColumnsTypes(Columns);
+
+        builder.HasMany(_ => _.Questions).WithOne().OnDelete(DeleteBehavior.Cascade);
     }
 }

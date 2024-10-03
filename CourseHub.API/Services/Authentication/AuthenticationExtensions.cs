@@ -3,7 +3,9 @@ using CourseHub.Core.Interfaces.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Serilog;
 using System.Net;
+using System.Text.Json;
 
 namespace CourseHub.API.Services.Authentication;
 
@@ -34,6 +36,14 @@ public static class AuthenticationExtensions
             {
                 options.ForwardDefaultSelector = context =>
                 {
+                    /*if (context.Request.Path.StartsWithSegments("/hub"))
+                    {
+                        return JwtBearerDefaults.AuthenticationScheme;
+                    }*/
+
+                    if (context.Request.Headers.TryGetValue("Authorization", out _))
+                        return JwtBearerDefaults.AuthenticationScheme;
+
                     return context.Request.Cookies[Helpers.Cookie.CookieExtensions.BEARER] is not null
                         ? JwtBearerDefaults.AuthenticationScheme
                         : CookieAuthenticationDefaults.AuthenticationScheme;

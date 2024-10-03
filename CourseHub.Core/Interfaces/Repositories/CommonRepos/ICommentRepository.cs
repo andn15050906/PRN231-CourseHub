@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace CourseHub.Core.Interfaces.Repositories.CommonRepos;
 
-public interface ICommentRepository
+public interface ICommentRepository : IRepository<Comment>
 {
     IPagingQuery<Comment, CommentModel> GetPagingQuery(Expression<Func<Comment, bool>>? whereExpression, short pageIndex, byte pageSize);
 }

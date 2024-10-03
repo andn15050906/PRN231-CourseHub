@@ -12,4 +12,20 @@ public class ConversationMember : CreationAuditedDomainObject
     // Navigations
     public User? Creator { get; set; }
     public Conversation? Conversation { get; set; }
+
+
+
+    public ConversationMember()
+    {
+
+    }
+
+    public ConversationMember(Guid conversationId, Guid creatorId, bool isAdmin)
+    {
+        CreatorId = creatorId;
+        ConversationId = conversationId;
+
+        IsAdmin = isAdmin;
+        LastVisit = DateTime.Now;
+    }
 }

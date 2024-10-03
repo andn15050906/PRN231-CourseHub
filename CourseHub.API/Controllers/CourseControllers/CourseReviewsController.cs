@@ -1,7 +1,7 @@
 ﻿using CourseHub.API.Controllers.Shared;
 using CourseHub.API.Helpers.Cookie;
 using CourseHub.Core.RequestDtos.Course.CourseReviewDtos;
-using CourseHub.Core.Services.Domain.CourseServices;
+using CourseHub.Core.Services.Domain.CourseServices.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
@@ -46,12 +46,12 @@ public class CourseReviewsController : BaseController
         return result.AsResponse();
     }
 
-    [HttpDelete("{id}")]
+    /*[HttpDelete("{id}")]
     [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
         var clientId = HttpContext.GetClientId();
         var result = await _courseReviewService.DeleteAsync(id, clientId);
         return result.AsResponse();
-    }
+    }*/
 }

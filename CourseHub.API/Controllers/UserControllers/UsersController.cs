@@ -2,12 +2,13 @@
 using CourseHub.API.Helpers.Cookie;
 using CourseHub.API.Services.AppInfo;
 using CourseHub.API.Services.Email;
+using CourseHub.Core.Entities.UserDomain.Enums;
 using CourseHub.Core.Helpers.Messaging;
 using CourseHub.Core.Interfaces.Logging;
 using CourseHub.Core.Interfaces.Repositories.Shared;
 using CourseHub.Core.Models.User.UserModels;
 using CourseHub.Core.RequestDtos.User.UserDtos;
-using CourseHub.Core.Services.Domain.UserServices;
+using CourseHub.Core.Services.Domain.UserServices.Contracts;
 using CourseHub.Core.Services.Storage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ public class UsersController : BaseController
 
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserInfoAsync(Guid id)
+    public async Task<IActionResult> GetAsync(Guid id)
     {
         ServiceResult<UserModel> result = await _userService.GetAsync(id);
         return result.AsResponse();
@@ -48,18 +49,35 @@ public class UsersController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetUsersAsync([FromQuery] QueryUserDto dto)
+    public async Task<IActionResult> GetAsync([FromQuery] QueryUserDto dto)
     {
         ServiceResult<PagedResult<UserModel>> result = await _userService.GetPagedAsync(dto);
         return result.AsResponse();
     }
 
     [HttpGet("multiple")]
-    public async Task<IActionResult> GetMultipleUsersAsync([FromQuery] List<Guid> ids)
+    public async Task<IActionResult> GetMultipleAsync([FromQuery] List<Guid> ids)
     {
         ServiceResult<List<UserOverviewModel>> result = await _userService.GetOverviewAsync(ids);
         return result.AsResponse();
     }
+
+    [HttpGet("min")]
+    public async Task<IActionResult> GetMinAsync([FromQuery] List<Guid> ids)
+    {
+        ServiceResult<List<UserMinModel>> result = await _userService.GetMinAsync(ids);
+        return result.AsResponse();
+    }
+
+    //...
+    [HttpGet("all")]
+    [Authorize]
+    public async Task<IActionResult> GetAllMinAsync()
+    {
+        ServiceResult<List<UserMinModel>> result = await _userService.GetAllMinAsync();
+        return result.AsResponse();
+    }
+
 
     [HttpGet("avatar/{resourceId}")]
     public IActionResult GetAvatar(Guid resourceId)
@@ -81,11 +99,22 @@ public class UsersController : BaseController
     {
         ServiceResult<string> result = await _userService.CreateAsync(dto);
 
-        string link = $"{appInfo.Value.MainFrontendApp}/verify-email/{dto.Email}/{result.Data}";
+        if (result.IsSuccessful)
+        {
+            string link = $"{appInfo.Value.MainFrontendApp}/verify-email/{dto.Email}/{result.Data}";
 #pragma warning disable CS4014
-        emailService.SendRegistrationEmail(dto.Email, dto.UserName, link);
+            await emailService.SendRegistrationEmail(dto.Email, dto.UserName, link);
 #pragma warning restore CS4014
+        }
 
+        return result.AsResponse();
+    }
+
+    [HttpPost("admin")]
+    [Authorize(Roles = nameof(Role.SysAdmin))]
+    public async Task<IActionResult> CreateAdminAsync(CreateUserDto dto)
+    {
+        var result = await _userService.CreateAdminAsync(dto);
         return result.AsResponse();
     }
 
@@ -93,6 +122,14 @@ public class UsersController : BaseController
     public async Task<IActionResult> VerifyEmail(VerifyEmailDto dto)
     {
         var result = await _userService.VerifyAsync(dto);
+        return result.AsResponse();
+    }
+
+    [HttpPost("block/{id}")]
+    [Authorize(Roles = RoleConstants.ADMIN_OR_SYSADMIN)]
+    public async Task<IActionResult> Block(Guid id)
+    {
+        ServiceResult result = await _userService.BlockAsync(id);
         return result.AsResponse();
     }
 
@@ -130,6 +167,13 @@ public class UsersController : BaseController
     public async Task<IActionResult> ResetPasswordAsync(ResetPasswordDto dto)
     {
         var result = await _userService.ResetPasswordAsync(dto);
+        return result.AsResponse();
+    }
+
+    [HttpGet("CheckValidity")]
+    public async Task<IActionResult> CheckValidity(string email, string token)
+    {
+        var result = await _userService.IsValidToken(email, token);
         return result.AsResponse();
     }
 }

@@ -8,6 +8,7 @@ using CourseHub.Core.Interfaces.Repositories;
 using CourseHub.Core.Interfaces.Repositories.Shared;
 using CourseHub.Core.Models.User.UserModels;
 using CourseHub.Core.RequestDtos.User.UserDtos;
+using CourseHub.Core.Services.Domain.UserServices.Contracts;
 using CourseHub.Core.Services.Domain.UserServices.TempModels;
 using CourseHub.Core.Services.Storage;
 using CourseHub.Core.Services.Storage.Utils;
@@ -55,22 +56,28 @@ public class UserService : DomainService, IUserService
         return ToQueryResult(result);
     }
 
+    public async Task<ServiceResult<List<UserMinModel>>> GetMinAsync(List<Guid> ids)
+    {
+        var result = await _uow.UserRepo.GetMinAsync(ids);
+        return ToQueryResult(result);
+    }
+
 
 
 
 
 
     /// <summary>
-    /// All Registration needs verification (for Users : verify email, for Admins : need approval)
+    /// For Learner's Registration
     /// </summary>
     public async Task<ServiceResult<string>> CreateAsync(CreateUserDto dto)
     {
-        if (dto.Role == Role.SysAdmin)
-            return Forbidden<string>(UserDomainMessages.FORBIDDEN_NOT_APPROVED);
         if (await _uow.UserRepo.EmailExisted(dto.Email))
             return Conflict<string>(UserDomainMessages.CONFLICT_EMAIL);
+        if (await _uow.UserRepo.UserNameExisted(dto.UserName))
+            return Conflict<string>(UserDomainMessages.CONFLICT_USERNAME);
 
-        User newUser = Adapt(dto);
+        User newUser = Adapt(dto, Role.Learner);
         try
         {
             await _uow.UserRepo.Insert(newUser);
@@ -84,11 +91,32 @@ public class UserService : DomainService, IUserService
         }
     }
 
-    public async Task<ServiceResult<UserFullModel>> UpdateAsync(UpdateUserDto dto, Guid? userId)
+    public async Task<ServiceResult<string>> CreateAdminAsync(CreateUserDto dto)
     {
-        if (userId is null)
+        if (await _uow.UserRepo.EmailExisted(dto.Email))
+            return Conflict<string>(UserDomainMessages.CONFLICT_EMAIL);
+        if (await _uow.UserRepo.UserNameExisted(dto.UserName))
+            return Conflict<string>(UserDomainMessages.CONFLICT_USERNAME);
+
+        User newUser = Adapt(dto, Role.Admin);
+        try
+        {
+            await _uow.UserRepo.Insert(newUser);
+            await _uow.CommitAsync();
+            return Created(newUser.Token);
+        }
+        catch (Exception ex)
+        {
+            _logger.Warn(ex.Message);
+            return ServerError<string>(string.Empty);
+        }
+    }
+
+    public async Task<ServiceResult<UserFullModel>> UpdateAsync(UpdateUserDto dto, Guid? clientId)
+    {
+        if (clientId == default)
             return Unauthorized<UserFullModel>();
-        User? entity = await _uow.UserRepo.Find(userId);
+        User? entity = await _uow.UserRepo.Find(clientId);
         if (entity is null)
             return Unauthorized<UserFullModel>();
 
@@ -96,7 +124,7 @@ public class UserService : DomainService, IUserService
         {
             if (dto.NewPassword is null)
                 return BadRequest<UserFullModel>(UserDomainMessages.INVALID_NEWPASSWORD_MISSING);
-            if (User.IsMatchPasswords(dto.NewPassword, entity.Password))
+            if (!User.IsMatchPasswords(dto.CurrentPassword, entity.Password))
                 return Unauthorized<UserFullModel>(UserDomainMessages.UNAUTHORIZED_PASSWORD);
         }
 
@@ -127,7 +155,7 @@ public class UserService : DomainService, IUserService
         return Ok();
     }
 
-    public async Task<ServiceResult<AuthDto>> SignInAsync(SignInDto dto, ITokenService tokenService)
+    public async Task<ServiceResult<AuthModel>> SignInAsync(SignInDto dto, ITokenService tokenService)
     {
         User? entity;
         if (dto.UserName is not null)
@@ -135,48 +163,48 @@ public class UserService : DomainService, IUserService
         else if (dto.Email is not null)
             entity = await _uow.UserRepo.FindByEmail(dto.Email);
         else
-            return BadRequest<AuthDto>(UserDomainMessages.INVALID_EMAILPHONE_MISSING);
+            return BadRequest<AuthModel>(UserDomainMessages.INVALID_EMAILPHONE_MISSING);
 
         if (entity is null)
-            return Unauthorized<AuthDto>(UserDomainMessages.UNAUTHORIZED_SIGNIN);
-        if (entity.AccessFailedCount > MAX_ACCESS_FAILED_COUNT)
-            return Forbidden<AuthDto>(UserDomainMessages.FORBIDDEN_FAILED_EXCEED);
+            return Unauthorized<AuthModel>(UserDomainMessages.UNAUTHORIZED_SIGNIN);
         if (entity.IsNotApproved())
-            return Forbidden<AuthDto>(UserDomainMessages.FORBIDDEN_NOT_APPROVED);
+            return Forbidden<AuthModel>(UserDomainMessages.FORBIDDEN_NOT_APPROVED);
+        if (entity.AccessFailedCount > MAX_ACCESS_FAILED_COUNT)
+            return Forbidden<AuthModel>(UserDomainMessages.FORBIDDEN_FAILED_EXCEED);
 
         if (!User.IsMatchPasswords(dto.Password, entity.Password))
         {
             entity.IncreaseAccessFailedCount();
             await _uow.CommitAsync();
-            return Unauthorized<AuthDto>(UserDomainMessages.UNAUTHORIZED_SIGNIN);
+            return Unauthorized<AuthModel>(UserDomainMessages.UNAUTHORIZED_SIGNIN);
         }
 
         entity.ResetAccessFailedCount();
-        AuthDto authDTO = UpdateToken(tokenService, entity);
+        AuthModel authDTO = UpdateToken(tokenService, entity);
         authDTO.User = _mapper.Map<UserFullModel>(entity);
         await _uow.CommitAsync();
         return Ok(authDTO);
     }
 
-    public async Task<ServiceResult<ClaimsPrincipal>> ExternalSignInAsync(ClaimsPrincipal claimsPrincipal, Role role)
+    public async Task<ServiceResult<ClaimAuthModel>> ExternalSignInAsync(ClaimsPrincipal claimsPrincipal, Role role)
     {
         if (claimsPrincipal.Identity is null)
-            return Unauthorized<ClaimsPrincipal>();
+            return Unauthorized<ClaimAuthModel>();
         if (role == Role.SysAdmin)
-            return Forbidden<ClaimsPrincipal>();
+            return Forbidden<ClaimAuthModel>();
 
         // Requires email
         string? email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
         if (email is null)
-            return Unauthorized<ClaimsPrincipal>();
+            return Unauthorized<ClaimAuthModel>();
 
         User? entity = await _uow.UserRepo.FindByEmail(email);
         var identity = claimsPrincipal.Identity as ClaimsIdentity;
         if (identity is null)
-            return Unauthorized<ClaimsPrincipal>();
+            return Unauthorized<ClaimAuthModel>();
         Claim? providerIdentifier = identity.FindFirst(ClaimTypes.NameIdentifier);
         if (providerIdentifier is null)
-            return Unauthorized<ClaimsPrincipal>();
+            return Unauthorized<ClaimAuthModel>();
 
         if (entity is null)
         {
@@ -189,25 +217,25 @@ public class UserService : DomainService, IUserService
             catch (Exception ex)
             {
                 _logger.Warn(ex.Message);
-                return ServerError<ClaimsPrincipal>();
+                return ServerError<ClaimAuthModel>();
             }
         }
         else
         {
             // Update user if the user has an account
             if (entity.Role != role)
-                return Unauthorized<ClaimsPrincipal>();
+                return Unauthorized<ClaimAuthModel>();
 
             if (entity.LoginProvider != identity.AuthenticationType)
             {
                 if (entity.LoginProvider is not null)
-                    return Unauthorized<ClaimsPrincipal>();
+                    return Unauthorized<ClaimAuthModel>();
                 entity.LoginProvider = identity.AuthenticationType;
             }
             if (entity.ProviderKey != providerIdentifier.Value)
             {
                 if (entity.ProviderKey is not null)
-                    return Unauthorized<ClaimsPrincipal>();
+                    return Unauthorized<ClaimAuthModel>();
                 entity.ProviderKey = providerIdentifier.Value;
             }
 
@@ -217,30 +245,30 @@ public class UserService : DomainService, IUserService
 
         // SignIn
         if (entity.IsNotApproved())
-            return Forbidden<ClaimsPrincipal>(UserDomainMessages.FORBIDDEN_NOT_APPROVED);
+            return Forbidden<ClaimAuthModel>(UserDomainMessages.FORBIDDEN_NOT_APPROVED);
         var customClaims = identity.Claims.ToList();
         customClaims.Add(new Claim(ClaimTypes.NameIdentifier, entity.Id.ToString()));
         customClaims.Add(new Claim(ClaimTypes.Role, entity.Role.ToString()));
         ClaimsPrincipal principle = new(new ClaimsIdentity(customClaims, identity.AuthenticationType));
-        return Ok(principle);
+        return Ok(new ClaimAuthModel(_mapper.Map<UserFullModel>(entity), principle));
     }
 
-    public async Task<ServiceResult<AuthDto>> RefreshAsync(string? accessToken, string? refreshToken, ITokenService tokenService)
+    public async Task<ServiceResult<AuthModel>> RefreshAsync(string? accessToken, string? refreshToken, ITokenService tokenService)
     {
         if (accessToken is null || refreshToken is null)
-            return Unauthorized<AuthDto>("Missing credentials");
+            return Unauthorized<AuthModel>("Missing credentials");
         var principal = tokenService.GetPrincipalFromExpiredToken(accessToken);
         // not expired -> invalid
         if (principal is null)
-            return Unauthorized<AuthDto>("Invalid access token");
+            return Unauthorized<AuthModel>("Invalid access token");
 
         User? user = await FindByClaims(principal);
         if (user is null)
-            return Unauthorized<AuthDto>("Invalid access token");
+            return Unauthorized<AuthModel>("Invalid access token");
         if (user.RefreshToken != refreshToken)
-            return Unauthorized<AuthDto>("Invalid refresh token");
+            return Unauthorized<AuthModel>("Invalid refresh token");
 
-        AuthDto authDTO = UpdateToken(tokenService, user);
+        AuthModel authDTO = UpdateToken(tokenService, user);
         // no need user
         await _uow.CommitAsync();
         return Ok(authDTO);
@@ -266,6 +294,29 @@ public class UserService : DomainService, IUserService
         try
         {
             user.SetPassword(dto.NewPassword);
+            user.GenerateToken();
+            await _uow.CommitAsync();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.Warn(ex.Message);
+            return ServerError();
+        }
+    }
+
+    public async Task<ServiceResult> BlockAsync(Guid userId)
+    {
+        if (userId == default)
+            return BadRequest();
+        User? entity = await _uow.UserRepo.Find(userId);
+        if (entity is null)
+            return BadRequest();
+
+        try
+        {
+            if (entity.Role < Role.Admin)
+                entity.Block();
             await _uow.CommitAsync();
             return Ok();
         }
@@ -281,14 +332,36 @@ public class UserService : DomainService, IUserService
 
 
 
-    private static User Adapt(CreateUserDto dto)
+    public async Task<ServiceResult> IsValidToken(string email, string token)
     {
-        var entity = new User(dto.UserName, dto.Password)
-        {
-            Email = dto.Email,
-            Role = dto.Role
-        };
-        return entity;
+        var user = await _uow.UserRepo.FindByEmail(email);
+
+        if (user is null)
+            return NotFound();
+        if (user.Token != token)
+            return NotFound();
+        return Ok();
+    }
+
+    public async Task ForceCommitAsync()
+    {
+        await _uow.CommitAsync();
+    }
+
+    public async Task<ServiceResult<List<UserMinModel>>> GetAllMinAsync()
+    {
+        var result = await _uow.UserRepo.GetAllMinAsync();
+        return ToQueryResult(result);
+    }
+
+
+
+
+
+
+    private static User Adapt(CreateUserDto dto, Role role)
+    {
+        return new User(dto.UserName, dto.Password, dto.Email, role);
     }
 
     private async Task ApplyChanges(UpdateUserDto dto, User entity)
@@ -334,13 +407,13 @@ public class UserService : DomainService, IUserService
         return null;
     }
 
-    private AuthDto UpdateToken(ITokenService tokenService, User user)
+    private AuthModel UpdateToken(ITokenService tokenService, User user)
     {
         string accessToken = tokenService.GenerateAccessToken(user.Id.ToString(), user.Role.ToString());
         string refreshToken = tokenService.GenerateRefreshToken();
 
         user.SetRefreshToken(refreshToken);
-        return new AuthDto(_mapper.Map<UserFullModel>(user), accessToken, refreshToken);
+        return new AuthModel(_mapper.Map<UserFullModel>(user), accessToken, refreshToken);
     }
 
     private async Task<string> SaveAvatar(IFormFile file, Guid userId)

@@ -1,0 +1,71 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="@Global.FAVICON" rel="icon" />
+    <link rel="stylesheet" href="~/css/SignInAndRegister/style.css">
+    <title>@ViewData[Global.TITLE]</title>
+    <style>
+        .mt-5, .field-validation-error {
+            color: yellow;
+        }
+
+        .alert {
+            border-radius: 15px !important;
+        }
+
+        .alert li{
+            list-style-type: none;
+        }
+
+        .site-logo {
+            height: 70%;
+        }
+
+        .site-logo img{
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <nav class="nav">
+            <!--Logo-->
+            <div class="site-logo">
+				<a href="@Global.PAGE_INDEX" style="display: block; height: 100%">
+					<img src="~/img/Logo.png" alt="" style="pointer-events: none; user-select: none;">
+				</a>
+            </div>
+            <div class="nav-button">
+                @RenderSection("NavButton", required: false)
+            </div>
+        </nav>
+
+        @RenderBody()
+    </div>
+
+    <script>
+        let errorBox = document.querySelector(".pageError");
+        if (errorBox) {
+            if (errorBox.innerHTML == '<ul><li style="display:none"></li>\n</ul>')
+                errorBox.classList.add("d-none");
+            else
+                errorBox.classList.remove("d-none");
+        }
+    </script>
+    <link rel="stylesheet" 
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+        crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" 
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" 
+            crossorigin="anonymous">
+    </script>
+</body>
+</html>

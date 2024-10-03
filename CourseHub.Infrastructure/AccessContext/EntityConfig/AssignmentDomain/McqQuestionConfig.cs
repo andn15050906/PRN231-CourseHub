@@ -19,5 +19,7 @@ internal class McqQuestionConfig : SqlServerEntityConfiguration<McqQuestion>
         builder
             .ToTable(RelationsConfig.MCQ_QUESTION)
             .SetColumnsTypes(Columns);
+
+        builder.HasMany(_ => _.Choices).WithOne().OnDelete(DeleteBehavior.Cascade);
     }
 }

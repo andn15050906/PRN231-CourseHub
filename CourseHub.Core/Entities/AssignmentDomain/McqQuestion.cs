@@ -13,4 +13,16 @@ public class McqQuestion : Entity
 
     // Navigations
     public ICollection<McqChoice> Choices { get; set; }
+
+    public McqQuestion()
+    {
+
+    }
+
+    public McqQuestion(string content, Guid assignmentId, List<McqChoice> choices)
+    {
+        Content = content;
+        AssignmentId = assignmentId;
+        Choices = choices;
+    }
 }

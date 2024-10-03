@@ -9,5 +9,5 @@
 /// </summary>
 public abstract class Entity : DomainObject
 {
-    public Guid Id { get; protected set; }
+    public Guid Id { get; set; }
 }

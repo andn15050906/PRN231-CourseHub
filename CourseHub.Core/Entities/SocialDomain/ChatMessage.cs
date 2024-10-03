@@ -14,6 +14,22 @@ public class ChatMessage : AuditedEntity
 	// Navigations
 	public User? Creator { get; set; }
 	public Conversation? Conversation { get; set; }
-	public ICollection<Reaction> Reactions { get; set; }
-	// ICollection<Attachment>
+	public List<Reaction> Reactions { get; set; }
+	// List<Attachment>
+
+
+
+	public ChatMessage()
+	{
+
+	}
+
+	public ChatMessage(Guid id, Guid creatorId, string content, Guid conversationId)
+    {
+		Id = id;
+		CreatorId = creatorId;
+        Content = content;
+        Status = MessageStatus.Delivered;
+        ConversationId = conversationId;
+    }
 }

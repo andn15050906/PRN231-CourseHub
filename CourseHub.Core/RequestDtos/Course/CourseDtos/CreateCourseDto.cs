@@ -5,12 +5,6 @@ namespace CourseHub.Core.RequestDtos.Course.CourseDtos;
 
 public class CreateCourseDto
 {
-    public class CreateCourseMetaDto
-    {
-        public CourseMetaType Type { get; set; }
-        public string Value { get; set; }
-    }
-
     public string Title { get; set; }
     // MetaTitle: generated
     public CreateMediaDto Thumb { get; set; }
@@ -26,5 +20,13 @@ public class CreateCourseDto
 
     public Guid LeafCategoryId { get; set; }
     public List<string> SectionNames { get; set; }
-    public List<CreateCourseMetaDto> Metas { get; set; }
+    public List<CUCourseMetaDto>? Metas { get; set; }
+
+
+
+    public class CUCourseMetaDto
+    {
+        public CourseMetaType Type { get; set; }
+        public string Value { get; set; }
+    }
 }
