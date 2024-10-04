@@ -1,0 +1,59 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+
+pool:
+  name: 'Default'
+
+jobs:
+- job: BuildAndTestAPI
+  displayName: 'Build and Test API'
+
+  steps:
+    # Checkout source code
+    - checkout: self
+
+    # Setup .NET Core SDK
+    - task: UseDotNet@2
+      displayName: 'Setup .NET Core SDK 6.0.x'
+      inputs:
+        packageType: 'sdk'
+        version: '6.0.x'
+
+    # Restore and Build API
+    - script: |
+        dotnet restore
+        dotnet build
+      displayName: 'Restore and Build API'
+      workingDirectory: './CourseHub.API'
+
+    # Run Tests
+    - script: |
+        dotnet test
+      displayName: 'Run Tests'
+      workingDirectory: './CourseHub.Tests'
+      env:
+        CourseHub_DoNotUseStaticFiles: false
+
+- job: BuildUI
+  displayName: 'Build UI'
+
+  steps:
+    # Checkout source code
+    - checkout: self
+
+    # Setup .NET Core SDK
+    - task: UseDotNet@2
+      displayName: 'Setup .NET Core SDK 6.0.x'
+      inputs:
+        packageType: 'sdk'
+        version: '6.0.x'
+
+    # Restore and Build UI
+    - script: |
+        dotnet restore
+        dotnet build
+      displayName: 'Restore and Build UI'
+      workingDirectory: './CourseHub.UI'
