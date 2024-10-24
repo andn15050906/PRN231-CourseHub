@@ -12,6 +12,7 @@
         display: flex;
         justify-content: space-between;
     }
+
     .app-radio-label {
         color: #fff;
     }
@@ -35,7 +36,7 @@
 
 
 
-<form method="post">
+<form method="post" onsubmit="return validateForm()">
     <div class="form-box">
         <header>Request to be Instructor</header>
 
@@ -53,8 +54,25 @@
             <textarea asp-for="Dto.Experience" class="input-field"></textarea>
         </div>
 
+        <!--New-->
+        <div class="input-box">
+            <input type="checkbox" id="agree" name="agree" />
+            <label for="agree">I agree to the <a href="/terms">Terms of Use</a> and <a href="/privacy">Privacy Policy</a></label>
+        </div>
+
         <div class="input-box">
             <input type="submit" class="submit" value="Request">
         </div>
     </div>
 </form>
+
+<script>
+    function validateForm() {
+        var checkbox = document.getElementById("agree");
+        if (!checkbox.checked) {
+            alert("You must agree to the Terms of Use and Privacy Policy.");
+            return false;
+        }
+        return true;
+    }
+</script>
