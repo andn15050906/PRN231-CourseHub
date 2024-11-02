@@ -8,12 +8,16 @@
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <h1 class="h1 mb-0" style="color: #000000; font-weight: 600;">
+            Dashboard
+        </h1>
     </div>
 
     <!-- Content Row -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h4 mb-0 text-gray-800">View List</h1>
+    </div>
     <div class="row">
-
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
@@ -34,6 +38,29 @@
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <a asp-page="@AdminGlobal.PAGE_COURSES_INDEX" class="nav-link">
+                                    <i class="fas fa-fw fa-book-open"></i>
+                                    <span>Courses</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h4 mb-0 text-gray-800">Handle requests</h1>
+    </div>
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -43,7 +70,7 @@
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">
                                         <a asp-area="Admin" asp-page="@AdminGlobal.PAGE_NOTIFICATIONS_INDEX" class="nav-link">
                                             <i class="fas fa-fw fa-book-open"></i>
-                                            <span>Notifications</span>
+                                            <span>Personal Requests</span>
                                         </a>
                                     </div>
                                 </div>
@@ -53,7 +80,6 @@
                 </div>
             </div>
         </div>
-
 
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
@@ -75,7 +101,7 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
@@ -84,7 +110,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 <a asp-page="@AdminGlobal.PAGE_COURSES_REPORTED" class="nav-link">
                                     <i class="fas fa-fw fa-book-open"></i>
-                                    <span>Courses</span>
+                                    <span>Reported Courses</span>
                                 </a>
                             </div>
                         </div>
@@ -101,7 +127,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 <a asp-page="@AdminGlobal.PAGE_GROUPS_REPORTED" class="nav-link">
                                     <i class="fa fa-users"></i>
-                                    <span>Learning Groups</span>
+                                    <span>Reported Groups</span>
                                 </a>
                             </div>
                         </div>

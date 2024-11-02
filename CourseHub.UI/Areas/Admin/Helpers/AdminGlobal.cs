@@ -6,11 +6,14 @@ public class AdminGlobal
 
     // Pages
     public const string PAGE_INDEX = "/Index";
+
     public const string PAGE_USERS_INDEX = "/Users/Index";
+    public const string PAGE_COURSES_INDEX = "/Courses/Index";
+
     public const string PAGE_NOTIFICATIONS_INDEX = "/Notifications/Index";
     public const string PAGE_CREATE_ADMIN_INDEX = "/CreateAdmin/Index";
-    public const string PAGE_COURSES_REPORTED = "/Courses/Index";
-    public const string PAGE_GROUPS_REPORTED = "/Groups/Index";
+    public const string PAGE_COURSES_REPORTED = "/Courses/ReportedList";
+    public const string PAGE_GROUPS_REPORTED = "/Groups/ReportedList";
 
     // Layouts
     public const string LAYOUT_BASE = "_BaseLayout";

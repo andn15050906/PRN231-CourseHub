@@ -22,4 +22,5 @@ public interface IEnrollmentService
     Task<ServiceResult> Unenroll(Guid courseId, Guid client);
 
     Task ForceCommitAsync();
+    Task<ServiceResult> GrantEnrollment(Guid courseId, Guid userId);
 }

@@ -1,4 +1,5 @@
-﻿using CourseHub.Core.Helpers.Http;
+﻿using CourseHub.Core.Entities.CourseDomain;
+using CourseHub.Core.Helpers.Http;
 using CourseHub.Core.Interfaces.Repositories.Shared;
 using CourseHub.Core.Models.Course.CourseModels;
 using CourseHub.Core.Models.Course.EnrollmentModels;
@@ -107,14 +108,45 @@ public class CourseApiService : ICourseApiService
         }
     }
 
-    public Task<List<CourseOverviewModel>?> GetSimilarAsync(Guid id)
+    public async Task<List<CourseOverviewModel>?> GetSimilarAsync(Guid id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _client.GetFromJsonAsync<List<CourseOverviewModel>>($"api/{id}/similar", SerializeOptions.JsonOptions);
+
+            foreach (var item in result!)
+            {
+                if (!ResourceHelper.IsRemote(item.ThumbUrl))
+                    item.ThumbUrl = Configurer.GetApiClientOptions().ApiServerPath + $"/api/courses/Resource/{item.Id}/local-thumb";
+            }
+
+            return result;
+        }
+        catch
+        {
+            return new();
+        }
     }
 
-    public Task<List<CourseMinModel>?> GetMinAsync(QueryCourseDto id)
+    public async Task<PagedResult<CourseMinModel>?> GetMinAsync(QueryCourseDto dto)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _client.GetFromJsonAsync<PagedResult<CourseMinModel>>(
+                $"api/courses?{QueryBuilder.Build(dto)}", SerializeOptions.JsonOptions);
+
+            foreach (var item in result!.Items)
+            {
+                if (!ResourceHelper.IsRemote(item.ThumbUrl))
+                    item.ThumbUrl = Configurer.GetApiClientOptions().ApiServerPath + $"/api/courses/Resource/{item.Id}/local-thumb";
+            }
+
+            return result;
+        }
+        catch
+        {
+            return PagedResult<CourseMinModel>.GetEmpty();
+        }
     }
 
 
@@ -198,6 +230,13 @@ public class CourseApiService : ICourseApiService
         {
             return null;
         }
+    }
+
+    public async Task<HttpResponseMessage> GrantEnrollmentAsync(Guid courseId, Guid userId, HttpContext context)
+    {
+        _client.AddBearerHeader(context);
+        var result = await _client.PostAsJsonAsync("/api/courses", new { courseId = courseId, userId = userId });
+        return result;
     }
 
 

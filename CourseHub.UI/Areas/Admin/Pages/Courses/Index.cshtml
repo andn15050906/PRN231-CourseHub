@@ -1,19 +1,34 @@
 ﻿@page
-@using CourseHub.Core.Entities.CommonDomain.Enums;
-@using CourseHub.UI.Helpers;
-@using CourseHub.UI.Helpers.AppStart;
+@using CourseHub.UI.Helpers
+@using CourseHub.UI.Helpers.AppStart
 @model CourseHub.UI.Areas.Admin.Pages.Courses.IndexModel
-
-
 
 @{
     ViewData[Global.TITLE] = "Courses";
 
-    string notificationRequestPath = Configurer.GetApiClientOptions().ApiServerPath + "/api/notifications";
+    string grantEnrollmentRequestPath = Configurer.GetApiClientOptions().ApiServerPath + "/api/Enrollments/GrantEnrollment";
+    var defaultAvatar = "if(this.src!='/img/User_Empty.png')this.src='/img/User_Empty.png'";
 }
 
 
 
+<style>
+    #app-add-member-modal .card {
+        margin: 0;
+        padding: 0;
+    }
+
+    #app-add-member-modal .card-body {
+        padding: 0;
+    }
+
+    .avatar-img {
+        height: 3.125rem;
+        min-height: 3.125rem;
+        width: 3.125rem;
+        min-width: 3.125rem;
+    }
+</style>
 
 <div class="container-fluid">
     <div class="card shadow mb-4">
@@ -22,37 +37,32 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th class="text-center">Reporter</th>
-                            <th class="text-center">Course</th>
-                            <th class="text-center">Message</th>
-                            <th class="text-center">Instructor</th>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Thumbnail</th>
+                            <th class="text-center">Price</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.Notifications)
+                        @foreach (var item in Model.Courses)
                         {
-                            var course = Model.Notification_Course[item.Id];
-                            var creator = Model.RelatedUsers[item.CreatorId];
-                            if (creator is null || course.Creator is null)
-                                continue;
+                            var course = item.Value;
 
                             <tr>
                                 <td>
-                                    <a href="@("/User?id=" + creator.Id)">@creator.FullName</a>
-                                </td>
-                                <td>
                                     <a asp-page="@Global.PAGE_COURSE_DETAIL" asp-route-id="@course.Id">@course.Title</a>
                                 </td>
-                                <td>@Model.Notification_Message[item.Id]</td>
-                                <td>@course.Creator.FullName</td>
+                                <td style="width: 300px; max-width: 100%;">
+                                    <a asp-page="@Global.PAGE_COURSE_DETAIL" asp-route-id="@course.Id">
+                                        <img src="@course.ThumbUrl" alt="thumb" style="aspect-ratio: 1.5" />
+                                    </a>
+                                </td>
+                                <td>@course.Price</td>
                                 <td>
-                                    @if (item.Status == Core.Entities.CommonDomain.Enums.NotificationStatus.None)
-                                    {
-                                        @*<div class="app-approve-btn btn btn-primary" data-id="@item.Id">Contact Instructor</div>*@
-                                        <div class="app-approve-btn btn btn-primary" data-id="@item.Id">Alert</div>
-                                        <div class="app-dismiss-btn btn btn-danger" data-id="@item.Id">Dismiss</div>
-                                    }
+                                    <!--
+                                    <input type="submit" name="Action" value="Grant Enrollment" asp-page-handler="GrantEnrollment" />
+                                    -->
+                                    <div class="app-approve-btn btn btn-primary" data-courseId="@course.Id">Grant Enrollment</div>
                                 </td>
                             </tr>
                         }
@@ -63,113 +73,107 @@
     </div>
 </div>
 
+<div class="modal fade" id="app-add-member-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-uppercase text-danger">Grant Enrollment to User</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @foreach (var member in Model.Users.Values)
+                {
+                    <div @*class="card mb-6"*@>
+                        <div class="card-body">
+                            <div class="media">
+                                <div class="avatar mr-5">
+                                    <img class="avatar-img" src="@member.AvatarUrl" alt="@member.FullName" onerror="@defaultAvatar">
+                                </div>
+                                <div class="media-body align-self-center mr-6">
+                                    <h6 class="mb-0">@member.FullName</h6>
+                                    <!--<small class="text-muted">Online</small>-->
+                                </div>
 
+                                <div class="align-self-center ml-auto">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="app-add-member custom-control-input" data-val="@member.Id" id="id-user-@member.Id" type="checkbox">
+                                        <label class="custom-control-label" for="id-user-@member.Id"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <label class="stretched-label" for="id-user-@member.Id"></label>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="submitBtn" class="btn btn-outline-primary" data-bs-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script type="module">
-    import { patchJsonWithCredentials } from '/js/apis/http.js';
+    import { postJsonWithCredentials } from '/js/apis/http.js';
 
+    var pageModel = {
+        courseId: undefined,
+        userId: undefined
+    };
 
-
-    var approveBtns = document.getElementsByClassName('app-approve-btn');
-    var dismissBtns = document.getElementsByClassName('app-dismiss-btn');
-
-    for (let btn of approveBtns) {
-        btn.addEventListener('click', () => {
-            patchJsonWithCredentials("@notificationRequestPath", {
-                Id : btn.getAttribute('data-id'),
-                Status: @((int)NotificationStatus.Approved)
-            }).then(res => {
-                if (res.ok) {
-                    swal({
-                        title: "Success",
-                        text: "Sent alert to instructor!",
-                        icon: "success",
-                        buttons: {
-                            confirm: "Okay"
-                        },
-                        closeOnClickOutside: false
-                    });
-                    setTimeoutReload();
-                }
-            })
-        });
-    }
-
-    for (let btn of dismissBtns) {
-        btn.addEventListener('click', () => {
-            patchJsonWithCredentials("@notificationRequestPath", {
-                Id : btn.getAttribute('data-id'),
-                Status: @((int)NotificationStatus.Dismissed)
-            }).then(res => {
-                if (res.ok) {
-                    swal({
-                        title: "Success",
-                        text: "",
-                        icon: "success",
-                        buttons: {
-                            confirm: "Okay"
-                        },
-                        closeOnClickOutside: false
-                    });
-                    setTimeoutReload();
-                }
-            })
-        });
-    }
-
-    function setTimeoutReload() {
-        setTimeout(() => {
-            window.location.reload();
-        }, 2000);
-    }
-
-</script>
-@* //... *@
-@*<script>
     var approveBtns = document.getElementsByClassName('app-approve-btn');
     for (var i = 0; i < approveBtns.length; i++) {
         let btn = approveBtns[i];
-        btn.onclick = () => {
-            fetch("@notificationPath", {
-                method: "POST",
-                body: JSON.stringify({ Id : btn.getAttribute('data-id'), Status: @((int)NotificationStatus.Approved) }),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: "include",
-            }).then(res => {
-                if (res.ok) {
-                    window.location.reload();
-                }
-            });
-        }
+        btn.onclick = () => openSelectUserModal(btn.getAttribute('data-courseId'))
     }
 
-    var dismissBtns = document.getElementsByClassName('app-dismiss-btn');
-    for (var i = 0; i < dismissBtns.length; i++) {
-        let btn = dismissBtns[i];
-        btn.onclick = () => {
-            /* CreateAdminMessageDto */
-            var jsonMessage = {
-                "Message" : "",
+    document.getElementById('submitBtn').onclick = () => submitGrantEnrollment();
+
+    function openSelectUserModal(courseId) {
+        pageModel.courseId = courseId;
+        $("#app-add-member-modal").modal('toggle');
+    }
+    
+    function closePopup() {
+        popupBox.classList.remove('show');
+    }
+
+    function submitGrantEnrollment() {
+        var members = [];
+        var memberInputs = document.getElementsByClassName('app-add-member');
+        for (var input of memberInputs) {
+            if (input.checked) {
+                var userId = input.getAttribute('data-val');
+                members.push(userId);
             }
+        }
+        if (members.length > 0)
+            pageModel.userId = members[0];
 
-            fetch("@notificationPath", {
-                method: "POST",
-                body: JSON.stringify({ Id : btn.getAttribute('data-id'), Status: @((int)NotificationStatus.Dismissed) }),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: "include",
-            }).then(res => {
-                if (res.ok) {
-                    window.location.reload();
-                }
-            });
+        if (pageModel != undefined && pageModel.userId != undefined && pageModel.courseId != undefined)
+        {
+            postJsonWithCredentials("@grantEnrollmentRequestPath" + `?courseId=${pageModel.courseId}&userId=${pageModel.userId}`, {})
+                .then(res => {
+                    if (res.ok) {
+                        swal({
+                            title: "Success",
+                            text: "",
+                            icon: "success",
+                            buttons: {
+                                confirm: "Okay"
+                            },
+                            closeOnClickOutside: false
+                        });
+                        closePopup();
+                    }
+                });
         }
     }
-</script>*@
+
+</script>

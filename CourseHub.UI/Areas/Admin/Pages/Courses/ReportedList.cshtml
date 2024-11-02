@@ -2,15 +2,16 @@
 @using CourseHub.Core.Entities.CommonDomain.Enums;
 @using CourseHub.UI.Helpers;
 @using CourseHub.UI.Helpers.AppStart;
-@model CourseHub.UI.Areas.Admin.Pages.Groups.IndexModel
+@model CourseHub.UI.Areas.Admin.Pages.Courses.ReportedListModel
 
 
 
 @{
-    ViewData[Global.TITLE] = "Learning Groups";
+    ViewData[Global.TITLE] = "Courses";
 
     string notificationRequestPath = Configurer.GetApiClientOptions().ApiServerPath + "/api/notifications";
 }
+
 
 
 
@@ -22,31 +23,36 @@
                     <thead>
                         <tr>
                             <th class="text-center">Reporter</th>
-                            <th class="text-center">Group</th>
+                            <th class="text-center">Course</th>
                             <th class="text-center">Message</th>
+                            <th class="text-center">Instructor</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model.Notifications)
                         {
-                            var conversation = Model.Notification_Conversation[item.Id];
+                            var course = Model.Notification_Course[item.Id];
                             var creator = Model.RelatedUsers[item.CreatorId];
+                            if (creator is null || course.Creator is null)
+                                continue;
 
                             <tr>
                                 <td>
                                     <a href="@("/User?id=" + creator.Id)">@creator.FullName</a>
                                 </td>
                                 <td>
-                                    <a asp-page="@Global.PAGE_GROUP_CONVERSATION" asp-route-id="@conversation.Id">@conversation.Title</a>
+                                    <a asp-page="@Global.PAGE_COURSE_DETAIL" asp-route-id="@course.Id">@course.Title</a>
                                 </td>
                                 <td>@Model.Notification_Message[item.Id]</td>
+                                <td>@course.Creator.FullName</td>
                                 <td>
-                                @if (item.Status == Core.Entities.CommonDomain.Enums.NotificationStatus.None)
-                                {
-                                    <div class="app-approve-btn btn btn-primary" data-id="@item.Id">Alert Admin</div>
-                                    <div class="app-dismiss-btn btn btn-danger" data-id="@item.Id">Dismiss</div>
-                                }
+                                    @if (item.Status == Core.Entities.CommonDomain.Enums.NotificationStatus.None)
+                                    {
+                                        @*<div class="app-approve-btn btn btn-primary" data-id="@item.Id">Contact Instructor</div>*@
+                                        <div class="app-approve-btn btn btn-primary" data-id="@item.Id">Alert</div>
+                                        <div class="app-dismiss-btn btn btn-danger" data-id="@item.Id">Dismiss</div>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -80,7 +86,7 @@
                 if (res.ok) {
                     swal({
                         title: "Success",
-                        text: "Sent alert to group admin!",
+                        text: "Sent alert to instructor!",
                         icon: "success",
                         buttons: {
                             confirm: "Okay"
@@ -89,7 +95,7 @@
                     });
                     setTimeoutReload();
                 }
-            });
+            })
         });
     }
 

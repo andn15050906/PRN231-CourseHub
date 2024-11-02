@@ -296,4 +296,9 @@ internal class CourseApiTestService : ICourseApiService
 
         return helper.ToFormData();
     }
+
+    public Task<HttpResponseMessage> GrantEnrollmentAsync(Guid courseId, Guid userId, HttpContext context)
+    {
+        throw new NotImplementedException();
+    }
 }

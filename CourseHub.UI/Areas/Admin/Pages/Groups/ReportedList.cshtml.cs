@@ -13,7 +13,7 @@ using System.Text.Json;
 
 namespace CourseHub.UI.Areas.Admin.Pages.Groups;
 
-public class IndexModel : PageModel
+public class ReportedListModel : PageModel
 {
     public List<NotificationModel> Notifications { get; set; }
     public Dictionary<Guid, UserOverviewModel> RelatedUsers { get; set; }

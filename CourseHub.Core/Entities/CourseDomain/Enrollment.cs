@@ -38,4 +38,14 @@ public class Enrollment : CreationAuditedDomainObject
         AssignmentMilestones = string.Empty;
         SectionMilestones = string.Empty;
     }
+
+    public Enrollment(Guid courseId, Guid userId)
+    {
+        CourseId = courseId;
+        CreatorId = userId;
+
+        LectureMilestones = string.Empty;
+        AssignmentMilestones = string.Empty;
+        SectionMilestones = string.Empty;
+    }
 }

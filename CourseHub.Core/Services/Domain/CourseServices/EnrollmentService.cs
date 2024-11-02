@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CourseHub.Core.Entities.PaymentDomain;
 using CourseHub.Core.Helpers.Messaging;
 using CourseHub.Core.Interfaces.Logging;
 using CourseHub.Core.Interfaces.Repositories;
@@ -43,6 +44,7 @@ public class EnrollmentService : DomainService, IEnrollmentService
     {
         var entity = new Enrollment(courseId, client, billId);
         await _uow.EnrollmentRepo.Insert(entity);
+        // Commit using ForceCommitAsync
         return Ok();
     }
 
@@ -52,8 +54,16 @@ public class EnrollmentService : DomainService, IEnrollmentService
         if (entity is null)
             return BadRequest();
 
-        _uow.EnrollmentRepo.Delete(entity);
-        return Ok();
+        try
+        {
+            _uow.EnrollmentRepo.Delete(entity);
+            await _uow.CommitAsync();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return ServerError();
+        }
     }
 
 
@@ -61,5 +71,20 @@ public class EnrollmentService : DomainService, IEnrollmentService
     public async Task ForceCommitAsync()
     {
         await _uow.CommitAsync();
+    }
+
+    public async Task<ServiceResult> GrantEnrollment(Guid courseId, Guid userId)
+    {
+        try
+        {
+            var entity = new Enrollment(courseId, userId);
+            await _uow.EnrollmentRepo.Insert(entity);
+            await _uow.CommitAsync();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return ServerError();
+        }
     }
 }

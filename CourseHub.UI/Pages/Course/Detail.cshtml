@@ -5,6 +5,7 @@
 @using CourseHub.UI.Helpers.Utils;
 @model CourseHub.UI.Pages.Course.DetailModel
 @{
+    double avgRatingD = TextHelper.GetDoubleAverageRating(Model.Course.TotalRating, Model.Course.RatingCount);
     string avgRating = TextHelper.GetAverageRating(Model.Course.TotalRating, Model.Course.RatingCount);
     int postDiscount = CourseBusinessHelper.GetPostDiscount(Model.Course.Price, Model.Course.Discount, Model.Course.DiscountExpiry);
 
@@ -311,7 +312,7 @@
                                 <span class="ud-heading-sm star-rating-module--rating-number--2xeHu" aria-hidden="true" data-purpose="rating-number">@avgRating</span>
                                 <svg aria-hidden="true" width="100%" height="100%" viewBox="0 0 70 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <mask id="u9-star-rating-mask--3" data-purpose="star-rating-mask">
-                                        <rect x="0" y="0" width="90%" height="100%" fill="white"></rect>
+                                        <rect x="0" y="0" width="@(avgRatingD / 5 * 100)%" height="100%" fill="white"></rect>
                                     </mask>
                                     <g class="star-rating-module--star-filled--3CnHc" mask="url(#u9-star-rating-mask--3)" data-purpose="star-filled">
                                         <use xlink:href="#icon-rating-star" width="14" height="14" x="0"></use>
@@ -637,7 +638,7 @@
         <h2 data-purpose="description-title" class="ud-heading-xl styles--description__header--2Z7Vb">Description</h2>
         <div class="show-more-module--container--2QPRN">
             <span id="u9-show-more--6" data-type="checkbox" data-checked="" style="display:none"></span>
-            <div class="show-more-module--content--cjTh0 show-more-module--with-gradient--1ZDrA" style="max-height:22.1rem">
+            <div style="max-height:22.1rem">
                 <div tabindex="-1">
                     <div data-purpose="safely-set-inner-html:description:description">
                         @Model.Course.Description

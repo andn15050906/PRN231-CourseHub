@@ -77,7 +77,7 @@ public class CoursesController : BaseController
     [ResponseCache(Duration = 60)]
     public async Task<IActionResult> GetSimilar(Guid id)
     {
-        var result = await _courseService.GetAsync(id);
+        var result = await _courseService.GetSimilarAsync(id);
         return result.AsResponse();
     }
 

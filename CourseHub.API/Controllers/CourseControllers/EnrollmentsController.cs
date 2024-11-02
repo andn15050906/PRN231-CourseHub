@@ -1,6 +1,8 @@
 ﻿using CourseHub.API.Controllers.Shared;
 using CourseHub.API.Helpers.Cookie;
+using CourseHub.Core.Entities.UserDomain.Enums;
 using CourseHub.Core.Services.Domain.CourseServices.Contracts;
+using CourseHub.Core.Services.Domain.UserServices.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,6 +51,15 @@ public class EnrollmentsController : BaseController
     {
         var client = (Guid)HttpContext.GetClientId()!;
         var result = await _enrollmentService.GetLearners(courseId, client);
+        return result.AsResponse();
+    }
+
+    [HttpPost("GrantEnrollment")]
+    [Authorize(Roles = RoleConstants.SYSADMIN)]
+    public async Task<IActionResult> GrantEnrollment(Guid courseId, Guid userId, [FromServices] IUserService userService)
+    {
+        var user = await userService.GetAsync(userId);
+        var result = await _enrollmentService.GrantEnrollment(courseId, userId);
         return result.AsResponse();
     }
 }
