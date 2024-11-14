@@ -3,10 +3,10 @@
 // Gateway.API
 /*const baseAddress = '';
 const hubUrl = '/hub';*/
-/*const baseAddress = 'https://localhost:7277';
-const hubUrl = 'https://localhost:7277/hub';*/
-const baseAddress = 'https://wisnetapi.azurewebsites.net';
-const hubUrl = 'https://wisnetapi.azurewebsites.net/hub';
+const baseAddress = 'https://localhost:7277';
+const hubUrl = 'https://localhost:7277/hub';
+/*const baseAddress = 'https://wisnetapi.azurewebsites.net';
+const hubUrl = 'https://wisnetapi.azurewebsites.net/hub';*/
 
 
 

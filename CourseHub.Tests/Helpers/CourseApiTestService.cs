@@ -299,6 +299,14 @@ internal class CourseApiTestService : ICourseApiService
 
     public Task<HttpResponseMessage> GrantEnrollmentAsync(Guid courseId, Guid userId, HttpContext context)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(new HttpResponseMessage());
+        //throw new NotImplementedException();
+    }
+
+    Task<PagedResult<CourseMinModel>?> ICourseApiService.GetMinAsync(QueryCourseDto id)
+    {
+        PagedResult<CourseMinModel>? result = null;
+        return Task.FromResult(result);
+        //throw new NotImplementedException();
     }
 }
